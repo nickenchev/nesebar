@@ -1,0 +1,4 @@
+roms/
+.cquery_cached_index/
+*~
+build/
