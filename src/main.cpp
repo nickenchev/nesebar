@@ -4,9 +4,8 @@
 #include <fstream>
 #include <string>
 #include <bitset>
-#include "cpu.h"
 
-using byte = uint8_t;
+#include "cpu.h"
 
 constexpr int prgRomPageSize = 16384;
 constexpr int chrRomPageSize = 8192;
@@ -15,8 +14,6 @@ constexpr int flag6FourScreenMode = 3;
 constexpr int flag6Trainer = 2;
 constexpr int flag6SRAMBattery = 1;
 constexpr int flag6Mirroring = 0;
-
-void cpu(byte opCode);
 
 struct Header
 {
@@ -100,9 +97,10 @@ int main(int argc, const char *argv[])
 						  std::istream_iterator<byte>(romFile),
 						  std::istream_iterator<byte>());
 
+			CPUCore cpu;
 			for (auto opCode : prgRom)
 			{
-				cpu(opCode);
+				cpu.execue(opCode);
 			}
 
 			romFile.close();
@@ -120,23 +118,3 @@ int main(int argc, const char *argv[])
     return 0;
 }
 
-void cpu(byte opCode)
-{
-	std::string instruction;
-	switch (opCode)
-	{
-		case 0x00:
-		{
-			instruction = "BRK";
-			break;
-		}
-		default:
-		{
-			instruction = "???";
-			break;
-		}
-	}
-
-	std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)opCode << ' ';
-	std::cout << instruction << std::endl;
-}
