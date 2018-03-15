@@ -1,3 +1,4 @@
+#include <vector>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -7,12 +8,13 @@
 
 using byte = uint8_t;
 
-static const int prgRomPageSize = 16384;
-static const int chrRomPageSize = 8192;
-static const int flag6FourScreenMode = 3;
-static const int flag6Trainer = 2;
-static const int flag6SRAMBattery = 1;
-static const int flag6Mirroring = 0;
+constexpr int prgRomPageSize = 16384;
+constexpr int chrRomPageSize = 8192;
+constexpr int trainerSize = 512;
+constexpr int flag6FourScreenMode = 3;
+constexpr int flag6Trainer = 2;
+constexpr int flag6SRAMBattery = 1;
+constexpr int flag6Mirroring = 0;
 
 struct Header
 {
@@ -49,9 +51,11 @@ int main(int argc, const char *argv[])
 			Header header;
 			romFile.read((char *)&header, sizeof(Header));
 
+			// read flags
 			std::bitset<8> flag6(header.flag6);
 			std::bitset<8> flag7(header.flag7);
 
+			// reader mapper #
 			std::bitset<8> mapperBits(0);
 			for (int i = 4; i < 8; ++i)
 			{
@@ -65,7 +69,23 @@ int main(int argc, const char *argv[])
 				}
 			}
 			byte mapper = static_cast<byte>(mapperBits.to_ulong());
+
+			// check for trainer, read if needed
 			bool hasTrainer = flag6.test(flag6Trainer);
+			if (hasTrainer)
+			{
+				byte trainer[trainerSize];
+				romFile.read((char *)trainer, trainerSize);
+			}
+
+			// load PRG ROM
+			const size_t prgRomBytes = prgRomPageSize * header.prgRomSize;
+			const size_t chrRomBytes = chrRomPageSize * header.chrRomSize;
+			std::vector<byte> prgRom(prgRomBytes);
+			std::vector<byte> chrRom(chrRomBytes);
+
+			std::cout << "PRG ROM Size: " << prgRomBytes / 1024 << "KB" << std::endl;
+			std::cout << "CHR ROM Size: " << chrRomBytes / 1024 << "KB" << std::endl;
 
 			while (!romFile.eof())
 			{
