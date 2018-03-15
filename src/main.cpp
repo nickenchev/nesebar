@@ -5,7 +5,7 @@
 #include <string>
 #include <bitset>
 
-#include "cpu.h"
+#include "cpu.hpp"
 
 constexpr int prgRomPageSize = 16384;
 constexpr int chrRomPageSize = 8192;
@@ -107,12 +107,12 @@ int main(int argc, const char *argv[])
 		}
 		else
 		{
-			std::cerr << "Can't load rom file." << std::endl;
+			std::cerr << "Can't load ROM file." << std::endl;
 		}
 	}
 	else
 	{
-		std::cerr << "Can't load rom file." << std::endl;
+		std::cerr << "Can't load ROM file." << std::endl;
 	}
 
     return 0;
