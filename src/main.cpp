@@ -16,6 +16,8 @@ constexpr int flag6Trainer = 2;
 constexpr int flag6SRAMBattery = 1;
 constexpr int flag6Mirroring = 0;
 
+void cpu(byte opCode);
+
 struct Header
 {
 	char code[4];
@@ -47,9 +49,18 @@ int main(int argc, const char *argv[])
 		std::ifstream romFile(path, std::ios::in | std::ios::binary);
 		if (romFile.is_open())
 		{
-			std::cout << "Running: " << path << std::endl;
+			// load iNES header
 			Header header;
 			romFile.read((char *)&header, sizeof(Header));
+			if (header.code[0] == 'N' && header.code[1] == 'E' &&
+				header.code[2] == 'S' && header.code[3] == 0x1A)
+			{
+				std::cout << "iNES OK" << std::endl;
+			}
+			else
+			{
+				std::cout << "iNES Error" << std::endl;
+			}
 
 			// read flags
 			std::bitset<8> flag6(header.flag6);
@@ -81,18 +92,19 @@ int main(int argc, const char *argv[])
 			// load PRG ROM
 			const size_t prgRomBytes = prgRomPageSize * header.prgRomSize;
 			const size_t chrRomBytes = chrRomPageSize * header.chrRomSize;
+			std::cout << "PRG ROM Size: " << prgRomBytes << " Bytes" << std::endl;
+			std::cout << "CHR ROM Size: " << chrRomBytes << " Bytes" << std::endl;
 			std::vector<byte> prgRom(prgRomBytes);
 			std::vector<byte> chrRom(chrRomBytes);
+			prgRom.insert(prgRom.begin(),
+						  std::istream_iterator<byte>(romFile),
+						  std::istream_iterator<byte>());
 
-			std::cout << "PRG ROM Size: " << prgRomBytes / 1024 << "KB" << std::endl;
-			std::cout << "CHR ROM Size: " << chrRomBytes / 1024 << "KB" << std::endl;
-
-			while (!romFile.eof())
+			for (auto opCode : prgRom)
 			{
-				byte b = 0;
-				romFile.read((char *)&b, sizeof(byte));
-				//std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)b << ' ';
+				cpu(opCode);
 			}
+
 			romFile.close();
 		}
 		else
@@ -106,4 +118,25 @@ int main(int argc, const char *argv[])
 	}
 
     return 0;
+}
+
+void cpu(byte opCode)
+{
+	std::string instruction;
+	switch (opCode)
+	{
+		case 0x00:
+		{
+			instruction = "BRK";
+			break;
+		}
+		default:
+		{
+			instruction = "???";
+			break;
+		}
+	}
+
+	std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)opCode << ' ';
+	std::cout << instruction << std::endl;
 }
