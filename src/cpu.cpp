@@ -15,6 +15,7 @@ void CPUCore::execue(byte opCode)
 		case 0x00:
 		{
 			instruction = "BRK";
+			setStatus(CPUStatus::Break);
 			break;
 		}
 		case 0x01:
