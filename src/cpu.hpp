@@ -11,12 +11,19 @@ using byte = uint8_t;
 enum class CPUStatus
 {
 	Carry = 0,
-	Zero = 1,
+	ZeroResule = 1,
 	InterruptDisable = 2,
 	DecimalMode = 3,
-	Break = 4,
+	BreakCommand = 4,
 	Overflow = 5,
-	Negative = 6
+	NegativeResult = 6
+};
+
+enum class OpCode
+{
+	BRK = 0x00,
+	ORA = 0x01,
+	STP = 0x02,
 };
 
 class CPUCore

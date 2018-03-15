@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
-#include "cpu.h"
+#include "cpu.hpp"
 
 CPUCore::CPUCore()
 {
@@ -10,20 +10,20 @@ CPUCore::CPUCore()
 void CPUCore::execue(byte opCode)
 {
 	std::string instruction;
-	switch (opCode)
+	switch (static_cast<OpCode>(opCode))
 	{
-		case 0x00:
+		case OpCode::BRK:
 		{
 			instruction = "BRK";
-			setStatus(CPUStatus::Break);
+			setStatus(CPUStatus::BreakCommand);
 			break;
 		}
-		case 0x01:
+		case OpCode::ORA:
 		{
 			instruction = "ORA";
 			break;
 		}
-		case 0x02:
+		case OpCode::STP:
 		{
 			instruction = "STP";
 			break;
