@@ -5,6 +5,7 @@
 #include <cstdint>
 
 constexpr unsigned int ramSize = 2048;
+constexpr unsigned int cpuMemSize = 65535;
 
 using byte = uint8_t;
 
@@ -19,23 +20,18 @@ enum class CPUStatus
 	NegativeResult = 6
 };
 
-enum class OpCode
-{
-	BRK = 0x00,
-	ORA = 0x01,
-	STP = 0x02,
-};
-
 class CPUCore
 {
 	byte a, x, y, sp, pc;
-	byte ram[ramSize];
 	std::bitset<7> status;
 
 	void setStatus(CPUStatus flag)
 	{
 		status.set(static_cast<int>(flag));
 	}
+
+	byte memRead(byte address);
+	byte memWrite(byte address, byte data);
 	
 public:
     CPUCore();

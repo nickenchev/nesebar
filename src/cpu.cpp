@@ -38,3 +38,11 @@ void CPUCore::execue(byte opCode)
 	std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)opCode << ' ';
 	std::cout << instruction << std::endl;
 }
+
+byte CPUCore::memRead(byte address)
+{
+}
+
+byte CPUCore::memWrite(byte address, byte data)
+{
+}
