@@ -7,6 +7,21 @@ CPUCore::CPUCore(const std::vector<byte> &program) : program(program)
 {
 	pc = 0;
 	sp = 0;
+	// set map to nullptr
+	for (memAddress addr = 0; addr < cpuMemSize; ++addr)
+	{
+		memoryMap[addr] = nullptr;
+	}
+
+	// map RAM 4 times to emulate mirroring
+	memAddress memAddr = 0;
+	for (int x = 0; x < 4; ++x)
+	{
+		for (memAddress ramAddr = 0; ramAddr < ramSize; ++ramAddr)
+		{
+			memoryMap[memAddr++] = &ram[ramAddr];
+		}
+	}
 }
 
 bool CPUCore::step()
@@ -20,7 +35,7 @@ bool CPUCore::step()
 		std::string instruction;
 		short stepSize = 1;
 		short cycles = 1;
-		switch (*opCode)
+		switch (opCode[0])
 		{
 			case 0x00:
 			{
@@ -31,6 +46,8 @@ bool CPUCore::step()
 			case 0x01:
 			{
 				instruction = "ORA";
+				cycles = 6;
+				stepSize = 2;
 				break;
 			}
 			case 0x02:

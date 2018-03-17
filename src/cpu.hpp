@@ -9,6 +9,7 @@ constexpr unsigned int ramSize = 2048;
 constexpr unsigned int cpuMemSize = 65535;
 
 using byte = uint8_t;
+using memAddress = uint16_t;
 
 enum class CPUStatus
 {
@@ -23,6 +24,8 @@ enum class CPUStatus
 
 class CPUCore
 {
+	byte ram[ramSize];
+	byte *memoryMap[cpuMemSize];
 	const std::vector<byte> &program;
 	byte a, x, y, sp, pc;
 	std::bitset<7> status;
@@ -30,6 +33,9 @@ class CPUCore
 	void setStatus(CPUStatus flag)
 	{
 		status.set(static_cast<int>(flag));
+	}
+	void clearStatus(CPUStatus flag)
+	{
 	}
 
 	byte memRead(byte address) const;
