@@ -88,11 +88,8 @@ int main(int argc, const char *argv[])
 						  std::istream_iterator<byte>(romFile),
 						  std::istream_iterator<byte>());
 
-			CPUCore cpu;
-			for (auto opCode : prgRom)
-			{
-				cpu.execue(opCode);
-			}
+			CPUCore cpu(prgRom);
+			while (cpu.step()) { }
 
 			romFile.close();
 		}

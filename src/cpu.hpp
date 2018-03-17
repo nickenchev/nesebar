@@ -3,6 +3,7 @@
 
 #include <bitset>
 #include <cstdint>
+#include <vector>
 
 constexpr unsigned int ramSize = 2048;
 constexpr unsigned int cpuMemSize = 65535;
@@ -22,6 +23,7 @@ enum class CPUStatus
 
 class CPUCore
 {
+	const std::vector<byte> &program;
 	byte a, x, y, sp, pc;
 	std::bitset<7> status;
 
@@ -34,9 +36,9 @@ class CPUCore
 	void memWrite(byte address, byte data);
 	
 public:
-    CPUCore();
+    CPUCore(const std::vector<byte> &program);
 	
-	void execue(byte opCode);
+	bool step();
 };
 
 #endif /* CPU_H */

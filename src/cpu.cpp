@@ -2,42 +2,62 @@
 #include <iostream>
 #include <iomanip>
 #include "cpu.hpp"
-#include "opcodes.hpp"
 
-CPUCore::CPUCore()
+CPUCore::CPUCore(const std::vector<byte> &program) : program(program)
 {
+	pc = 0;
+	sp = 0;
 }
 
-void CPUCore::execue(byte opCode)
+bool CPUCore::step()
 {
-	std::string instruction;
-	switch (static_cast<OpCode>(opCode))
+	bool keepGoing = false;
+	if (pc < static_cast<size_t>(program.size()))
 	{
-		case OpCode::BRK:
-		{
-			instruction = "BRK";
-			setStatus(CPUStatus::BreakCommand);
-			break;
-		}
-		case OpCode::ORA:
-		{
-			instruction = "ORA";
-			break;
-		}
-		case OpCode::STP:
-		{
-			instruction = "STP";
-			break;
-		}
-		default:
-		{
-			instruction = "???";
-			break;
-		}
-	}
+		keepGoing = true;
+		const byte *opCode = &program[pc];
 
-	//std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)opCode << ' ';
-	//std::cout << instruction << std::endl;
+		std::string instruction;
+		short stepSize = 1;
+		short cycles = 1;
+		switch (*opCode)
+		{
+			case 0x00:
+			{
+				instruction = "BRK";
+				setStatus(CPUStatus::BreakCommand);
+				break;
+			}
+			case 0x01:
+			{
+				instruction = "ORA";
+				break;
+			}
+			case 0x02:
+			{
+				instruction = "STP";
+				break;
+			}
+			case 0x78:
+			{
+				cycles = 2;
+				instruction = "SEI";
+				setStatus(CPUStatus::InterruptDisable);
+				break;
+			}
+			default:
+			{
+				instruction = "Unknown Instruction";
+				keepGoing = false;
+				break;
+			}
+		}
+		pc += stepSize;
+
+		std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)*opCode << ' ';
+		std::cout << instruction << std::endl;
+	}
+	return keepGoing;
 }
 
 byte CPUCore::memRead(byte address) const
