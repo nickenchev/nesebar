@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include "cpu.hpp"
+#include "opcodes.hpp"
 
 CPUCore::CPUCore()
 {
@@ -35,14 +36,15 @@ void CPUCore::execue(byte opCode)
 		}
 	}
 
-	std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)opCode << ' ';
-	std::cout << instruction << std::endl;
+	//std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)opCode << ' ';
+	//std::cout << instruction << std::endl;
 }
 
-byte CPUCore::memRead(byte address)
+byte CPUCore::memRead(byte address) const
 {
+	return 0;
 }
 
-byte CPUCore::memWrite(byte address, byte data)
+void CPUCore::memWrite(byte address, byte data)
 {
 }

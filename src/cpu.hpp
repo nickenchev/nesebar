@@ -30,8 +30,8 @@ class CPUCore
 		status.set(static_cast<int>(flag));
 	}
 
-	byte memRead(byte address);
-	byte memWrite(byte address, byte data);
+	byte memRead(byte address) const;
+	void memWrite(byte address, byte data);
 	
 public:
     CPUCore();

@@ -64,21 +64,12 @@ int main(int argc, const char *argv[])
 			std::bitset<8> flag7(header.flag7);
 
 			// reader mapper #
-			std::bitset<8> mapperBits(0);
-			for (int i = 4; i < 8; ++i)
-			{
-				if (flag6.test(i))
-				{
-					mapperBits.set(i);
-				}
-				if (flag7.test(i))
-				{
-					mapperBits.set(i + 4);
-				}
-			}
-			byte mapper = static_cast<byte>(mapperBits.to_ulong());
+			byte flag6bits = static_cast<byte>(flag6.to_ulong());
+			byte flag7bits = static_cast<byte>(flag7.to_ulong());
+			byte mapperNum = ((flag6bits >> 4) & 0b00001111) | (flag7bits & 0b11110000);
+			std::cout << "Read Mapper #" << std::setw(2) << std::setfill('0') << (int)mapperNum << std::endl;
 
-			// check for trainer, read if needed
+			// check flag6 for trainer, read if needed
 			bool hasTrainer = flag6.test(flag6Trainer);
 			if (hasTrainer)
 			{
