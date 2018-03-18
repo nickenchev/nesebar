@@ -5,8 +5,11 @@
 #include <cstdint>
 #include <vector>
 
-constexpr unsigned int ramSize = 2048;
 constexpr unsigned int cpuMemSize = 65535;
+constexpr unsigned int ramSize = 2048;
+constexpr unsigned int ppuRegistersSize = 8;
+constexpr unsigned int ppuSize = 8184;
+constexpr unsigned int apuIORegistersSize = 24;
 
 using byte = uint8_t;
 using memAddress = uint16_t;
@@ -24,10 +27,14 @@ enum class CPUStatus
 
 class CPUCore
 {
-	byte ram[ramSize];
 	byte *memoryMap[cpuMemSize];
+	byte ram[ramSize];
+	byte ppuRegisters[ppuRegistersSize];
+	byte apuRegisters[apuIORegistersSize];
+
 	const std::vector<byte> &program;
-	byte a, x, y, sp, pc;
+	byte a, x, y;
+	memAddress pc, sp;
 	std::bitset<7> status;
 
 	void setStatus(CPUStatus flag)
@@ -38,11 +45,12 @@ class CPUCore
 	{
 	}
 
-	byte memRead(byte address) const;
-	void memWrite(byte address, byte data);
+	byte memRead(memAddress address) const;
+	void memWrite(memAddress address, byte data);
+	memAddress combine(const byte &&highByte, const byte &&lowByte) const;
 	
 public:
-    CPUCore(const std::vector<byte> &program);
+    CPUCore(std::vector<byte> &program);
 	
 	bool step();
 };

@@ -42,6 +42,7 @@ int main(int argc, const char *argv[])
 	if (argc > 1 && argv[1] != nullptr)
 	{
 		std::string path(argv[1]);
+		std::cout << "ROM File: " << path << std::endl;
 
 		std::ifstream romFile(path, std::ios::in | std::ios::binary);
 		if (romFile.is_open())

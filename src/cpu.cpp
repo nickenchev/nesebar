@@ -3,15 +3,10 @@
 #include <iomanip>
 #include "cpu.hpp"
 
-CPUCore::CPUCore(const std::vector<byte> &program) : program(program)
+CPUCore::CPUCore(std::vector<byte> &program) : program(program)
 {
 	pc = 0;
 	sp = 0;
-	// set map to nullptr
-	for (memAddress addr = 0; addr < cpuMemSize; ++addr)
-	{
-		memoryMap[addr] = nullptr;
-	}
 
 	// map RAM 4 times to emulate mirroring
 	memAddress memAddr = 0;
@@ -22,7 +17,26 @@ CPUCore::CPUCore(const std::vector<byte> &program) : program(program)
 			memoryMap[memAddr++] = &ram[ramAddr];
 		}
 	}
+
+	// PPU registers / PPU mirroring
+	short ppuIndex = 0;
+	for (memAddress x = 0x2000; x <= 0x3fff; ++x)
+	{
+		memoryMap[x] = &ppuRegisters[ppuIndex++];
+		if (ppuIndex % 8 == 0)
+		{
+			ppuIndex = 0;
+		}
+	}
+
+	// APU Registers
+	short apuIndex = 0;
+	for (memAddress x = 0x4000; x <= 0x4017; ++x)
+	{
+		memoryMap[x] = &apuRegisters[apuIndex++];
+	}
 }
+
 
 bool CPUCore::step()
 {
@@ -35,6 +49,7 @@ bool CPUCore::step()
 		std::string instruction;
 		short stepSize = 1;
 		short cycles = 1;
+
 		switch (opCode[0])
 		{
 			case 0x00:
@@ -77,11 +92,20 @@ bool CPUCore::step()
 	return keepGoing;
 }
 
-byte CPUCore::memRead(byte address) const
+byte CPUCore::memRead(memAddress address) const
 {
-	return 0;
+	return *memoryMap[address];
 }
 
-void CPUCore::memWrite(byte address, byte data)
+void CPUCore::memWrite(memAddress address, byte data)
 {
+	*memoryMap[address] = data;
+}
+
+memAddress CPUCore::combine(const byte &&highByte, const byte &&lowByte) const
+{
+	memAddress address = 0;
+	address = (address | highByte) << 8;
+	address = address | lowByte;
+	return address;
 }
