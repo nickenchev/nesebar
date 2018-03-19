@@ -70,11 +70,22 @@ bool CPUCore::step()
 				instruction = "STP";
 				break;
 			}
-			case 0x78:
+			case 0x05:
 			{
+				instruction = "ORA";
+				A = A | memZeroPage();
+				updateStatusFlags();
+				stepSize = 2;
+				cycles = 3;
+				break;
+			}
+			case 0x09:
+			{
+				instruction = "ORA";
+				A = A | memImmediate();
+				updateStatusFlags();
 				cycles = 2;
-				instruction = "SEI";
-				setStatus(CPUStatus::InterruptDisable);
+				stepSize = 2;
 				break;
 			}
 			default:
@@ -92,20 +103,21 @@ bool CPUCore::step()
 	return keepGoing;
 }
 
-byte CPUCore::memRead(memAddress address) const
-{
-	return *memoryMap[address];
-}
-
-void CPUCore::memWrite(memAddress address, byte data)
-{
-	*memoryMap[address] = data;
-}
-
-memAddress CPUCore::combine(const byte &&highByte, const byte &&lowByte) const
+memAddress CPUCore::combine(const byte &highByte, const byte &lowByte) const
 {
 	memAddress address = 0;
 	address = (address | highByte) << 8;
 	address = address | lowByte;
 	return address;
+}
+
+bool CPUCore::checkBit(int bitNumber) const
+{
+	return A & (1 << bitNumber);
+}
+
+void CPUCore::updateStatusFlags()
+{
+	if (A == 0) setStatus(CPUStatus::ZeroResult);
+	if (checkBit(7)) setStatus(CPUStatus::NegativeResult);
 }

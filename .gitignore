@@ -4,3 +4,4 @@ roms/
 build/
 compile_commands.json
 *swp
+nes-test-roms/

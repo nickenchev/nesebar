@@ -17,7 +17,7 @@ using memAddress = uint16_t;
 enum class CPUStatus
 {
 	Carry = 0,
-	ZeroResule = 1,
+	ZeroResult = 1,
 	InterruptDisable = 2,
 	DecimalMode = 3,
 	BreakCommand = 4,
@@ -33,7 +33,7 @@ class CPUCore
 	byte apuRegisters[apuIORegistersSize];
 
 	const std::vector<byte> &program;
-	byte a, x, y;
+	byte A, X, Y;
 	memAddress pc, sp;
 	std::bitset<7> status;
 
@@ -43,11 +43,31 @@ class CPUCore
 	}
 	void clearStatus(CPUStatus flag)
 	{
+		status.reset(static_cast<int>(flag));
 	}
 
-	byte memRead(memAddress address) const;
-	void memWrite(memAddress address, byte data);
-	memAddress combine(const byte &&highByte, const byte &&lowByte) const;
+	// addressing modes
+	byte &memImmediate() const
+	{
+		return *memoryMap[pc + 1];
+	}
+	byte &memAbsolute() const
+	{
+		return *memoryMap[combine(program[pc + 1], program[pc + 2])];
+	}
+	byte &memZeroPage() const
+	{
+		return *memoryMap[pc + 1];
+	}
+	byte &memIndexed(const byte &reg) const
+	{
+		return *memoryMap[pc + reg];
+	}
+
+
+	memAddress combine(const byte &highByte, const byte &lowByte) const;
+	bool checkBit(int bitNumber) const;
+	void updateStatusFlags();
 	
 public:
     CPUCore(std::vector<byte> &program);
