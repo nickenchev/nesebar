@@ -88,6 +88,10 @@ bool CPUCore::step()
 				stepSize = 2;
 				break;
 			}
+			case 0x15:
+			{
+				break;
+			}
 			default:
 			{
 				instruction = "Unknown Instruction";
@@ -101,6 +105,7 @@ bool CPUCore::step()
 				  << (int)*opCode << ' ';
 		std::cout << instruction << std::endl;
 	}
+
 	return keepGoing;
 }
 

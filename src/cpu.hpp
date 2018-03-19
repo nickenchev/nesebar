@@ -47,24 +47,20 @@ class CPUCore
 	}
 
 	// addressing modes
-	byte &memImmediate() const
-	{
-		return *memoryMap[pc + 1];
-	}
-	byte &memAbsolute() const { return *memoryMap[readMemAddress()]; }
-	byte &memZeroPage() const
-	{
-		return *memoryMap[pc + 1];
-	}
-	byte &memIndexed(const byte &reg)
-	{
-		return *memoryMap[pc + reg];
-	}
+	byte &memImmediate() { return *memoryMap[pc + 1]; }
+	byte &memAbsolute() { return *memoryMap[readMemAddress()]; }
+	byte &memAbsoluteX() { return *memoryMap[readMemAddress() + X]; }
+	byte &memAbsoluteY() { return *memoryMap[readMemAddress() + Y]; }
+	byte &memZeroPage() const { return *memoryMap[pc + 1]; }
+	byte &memZeroPageX() const { return *memoryMap[pc + 1]; }
+	byte &memZeroPageY() const { return *memoryMap[pc + 1]; }
+	byte &memIndexed(const byte &reg) { return *memoryMap[pc + reg]; }
 	byte &memIndexedX() { return memIndexed(X); }
 	byte &memIndexedY() { return memIndexed(Y); }
 
 
 	// utility methods
+	byte readByte() const { return *memoryMap[pc + 1]; }
 	memAddress readMemAddress() const
 	{
 		return combine(*memoryMap[pc + 1], *memoryMap[pc + 2]);
