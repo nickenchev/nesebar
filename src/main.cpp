@@ -67,8 +67,10 @@ int main(int argc, const char *argv[])
 			// reader mapper #
 			byte flag6bits = static_cast<byte>(flag6.to_ulong());
 			byte flag7bits = static_cast<byte>(flag7.to_ulong());
-			byte mapperNum = ((flag6bits >> 4) & 0b00001111) | (flag7bits & 0b11110000);
-			std::cout << "Read Mapper #" << std::setw(2) << std::setfill('0') << (int)mapperNum << std::endl;
+			byte mapperNum = ((flag6bits >> 4) & 0b00001111)
+				| (flag7bits & 0b11110000);
+			std::cout << "Read Mapper #" << std::setw(2)
+					  << std::setfill('0') << (int)mapperNum << std::endl;
 
 			// check flag6 for trainer, read if needed
 			bool hasTrainer = flag6.test(flag6Trainer);
@@ -81,8 +83,10 @@ int main(int argc, const char *argv[])
 			// load PRG ROM
 			const size_t prgRomBytes = prgRomPageSize * header.prgRomSize;
 			const size_t chrRomBytes = chrRomPageSize * header.chrRomSize;
-			std::cout << "PRG ROM Size: " << prgRomBytes << " Bytes" << std::endl;
-			std::cout << "CHR ROM Size: " << chrRomBytes << " Bytes" << std::endl;
+			std::cout << "PRG ROM Size: " << prgRomBytes
+					  << " Bytes" << std::endl;
+			std::cout << "CHR ROM Size: " << chrRomBytes
+					  << " Bytes" << std::endl;
 			std::vector<byte> prgRom(prgRomBytes);
 			std::vector<byte> chrRom(chrRomBytes);
 			prgRom.insert(prgRom.begin(),

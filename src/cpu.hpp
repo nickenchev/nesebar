@@ -51,20 +51,24 @@ class CPUCore
 	{
 		return *memoryMap[pc + 1];
 	}
-	byte &memAbsolute() const
-	{
-		return *memoryMap[combine(program[pc + 1], program[pc + 2])];
-	}
+	byte &memAbsolute() const { return *memoryMap[readMemAddress()]; }
 	byte &memZeroPage() const
 	{
 		return *memoryMap[pc + 1];
 	}
-	byte &memIndexed(const byte &reg) const
+	byte &memIndexed(const byte &reg)
 	{
 		return *memoryMap[pc + reg];
 	}
+	byte &memIndexedX() { return memIndexed(X); }
+	byte &memIndexedY() { return memIndexed(Y); }
 
 
+	// utility methods
+	memAddress readMemAddress() const
+	{
+		return combine(*memoryMap[pc + 1], *memoryMap[pc + 2]);
+	}
 	memAddress combine(const byte &highByte, const byte &lowByte) const;
 	bool checkBit(int bitNumber) const;
 	void updateStatusFlags();

@@ -97,13 +97,15 @@ bool CPUCore::step()
 		}
 		pc += stepSize;
 
-		std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)*opCode << ' ';
+		std::cout << std::hex << std::setfill('0') << std::setw(2)
+				  << (int)*opCode << ' ';
 		std::cout << instruction << std::endl;
 	}
 	return keepGoing;
 }
 
-memAddress CPUCore::combine(const byte &highByte, const byte &lowByte) const
+memAddress CPUCore::combine(const byte &highByte,
+							const byte &lowByte) const
 {
 	memAddress address = 0;
 	address = (address | highByte) << 8;
