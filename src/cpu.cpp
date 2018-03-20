@@ -61,8 +61,10 @@ bool CPUCore::step()
 			case 0x01:
 			{
 				instruction = "ORA";
-				cycles = 6;
+				A = A | memAbsolute() + X;
+				updateStatusFlags();
 				stepSize = 2;
+				cycles = 6;
 				break;
 			}
 			case 0x02:
@@ -84,12 +86,26 @@ bool CPUCore::step()
 				instruction = "ORA";
 				A = A | memImmediate();
 				updateStatusFlags();
-				cycles = 2;
 				stepSize = 2;
+				cycles = 2;
+				break;
+			}
+			case 0x0d:
+			{
+				instruction = "ORA";
+				A = A | memAbsolute();
+				updateStatusFlags();
+				stepSize = 3;
+				cycles = 4;
 				break;
 			}
 			case 0x15:
 			{
+				instruction = "ORA";
+				A = A | memZeroPage() + X;
+				updateStatusFlags();
+				stepSize = 2;
+				cycles = 4;
 				break;
 			}
 			default:

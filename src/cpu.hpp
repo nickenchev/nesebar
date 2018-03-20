@@ -52,8 +52,6 @@ class CPUCore
 	byte &memAbsoluteX() { return *memoryMap[readMemAddress() + X]; }
 	byte &memAbsoluteY() { return *memoryMap[readMemAddress() + Y]; }
 	byte &memZeroPage() const { return *memoryMap[pc + 1]; }
-	byte &memZeroPageX() const { return *memoryMap[pc + 1]; }
-	byte &memZeroPageY() const { return *memoryMap[pc + 1]; }
 	byte &memIndexed(const byte &reg) { return *memoryMap[pc + reg]; }
 	byte &memIndexedX() { return memIndexed(X); }
 	byte &memIndexedY() { return memIndexed(Y); }
