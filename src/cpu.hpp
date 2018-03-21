@@ -25,24 +25,29 @@ enum class CPUStatus
 	NegativeResult = 6
 };
 
-class StepSize
+class Instruction
 {
+	std::string name;
 	short pcStep;
 	short cycles;
 
 public:
-	StepSize()
+	Instruction() : name("")
 	{
 		pcStep = 0;
 		cycles = 0;
 	}
 
-	void setup(short pcStep, short cycles)
+	void begin(const std::string &name, short pcStep, short cycles)
 	{
+		this->name = name;
 		this->pcStep = pcStep;
 		this->cycles = cycles;
 	}
+	void end() const { }
 
+	void increaseCycles(short count) { cycles += count; }
+	const std::string &getName() const { return name; }
 	const short &getStepSize() const { return pcStep; }
 	const short &getCycles() const { return cycles; }
 };
@@ -58,7 +63,7 @@ class CPUCore
 	byte A, X, Y;
 	memAddress pc, sp;
 	std::bitset<7> status;
-	StepSize stepSize;
+	Instruction instruction;
 
 	void setStatus(CPUStatus flag)
 	{
@@ -72,25 +77,37 @@ class CPUCore
 	// addressing modes
 	byte &memImmediate() { return *memoryMap[pc + 1]; }
 	byte &memAbsolute() { return *memoryMap[readMemAddress()]; }
-	byte &memAbsoluteX() { return *memoryMap[readMemAddress() + X]; }
-	byte &memAbsoluteY() { return *memoryMap[readMemAddress() + Y]; }
-	byte &memZeroPage() { return *memoryMap[pc + 1]; }
-	byte &memIndexed(const byte &reg) { return *memoryMap[pc + reg]; }
-	byte &memIndexedX() { return memIndexed(X); }
-	byte &memIndexedY() { return memIndexed(Y); }
-
+	byte &memAbsoluteX()
+	{
+		memAddress addr = readMemAddress();
+		byte page = highByte(addr);
+		addr += X;
+		byte newPage = highByte(addr);
+		if (newPage > page) instruction.increaseCycles(1);
+		return *memoryMap[lowByte(addr)];
+	}
+	byte &memAbsoluteY()
+	{
+		memAddress addr = readMemAddress();
+		byte page = highByte(addr);
+		addr += Y;
+		byte newPage = highByte(addr);
+		if (newPage > page) instruction.increaseCycles(1);
+		return *memoryMap[lowByte(addr)];
+	}
+	byte &memZeroPage() const { return *memoryMap[pc + 1]; }
 
 	// utility methods
-	byte highByte(const memAddress &addr) const;
-	byte lowByte(const memAddress &addr) const;
+	void updateStatusFlags();
+	memAddress combine(const byte &highByte, const byte &lowByte) const;
+	byte highByte(const memAddress &addr) const { return addr >> 8; }
+	byte lowByte(const memAddress &addr) const { return addr & 0xff; };
 	byte readByte() const { return *memoryMap[pc + 1]; }
 	memAddress readMemAddress() const
 	{
 		return combine(*memoryMap[pc + 1], *memoryMap[pc + 2]);
 	}
-	memAddress combine(const byte &highByte, const byte &lowByte) const;
 	bool checkBit(int bitNumber) const;
-	void updateStatusFlags();
 	
 public:
     CPUCore(std::vector<byte> &program);

@@ -46,77 +46,75 @@ bool CPUCore::step()
 		keepGoing = true;
 		const byte *opCode = &program[pc];
 
-		std::string instruction;
-
 		switch (opCode[0])
 		{
 			case 0x00:
 			{
-				instruction = "BRK";
+				instruction.begin("BRK", 1, 7);
 				setStatus(CPUStatus::BreakCommand);
 				break;
 			}
 			case 0x01:
 			{
-				instruction = "ORA";
+				instruction.begin("ORA", 2, 6);
 				A = A | memAbsolute() + X;
 				updateStatusFlags();
-				stepSize.setup(2, 6);
-				break;
-			}
-			case 0x02:
-			{
-				instruction = "STP";
 				break;
 			}
 			case 0x05:
 			{
-				instruction = "ORA";
+				instruction.begin("ORA", 2, 3);
 				A = A | memZeroPage();
 				updateStatusFlags();
-				stepSize.setup(2, 3);
 				break;
 			}
 			case 0x09:
 			{
-				instruction = "ORA";
+				instruction.begin("ORA", 2, 2);
 				A = A | memImmediate();
 				updateStatusFlags();
-				stepSize.setup(2, 2);
 				break;
 			}
 			case 0x0d:
 			{
-				instruction = "ORA";
+				instruction.begin("ORA", 3, 4);
 				A = A | memAbsolute();
 				updateStatusFlags();
-				stepSize.setup(3, 4);
 				break;
 			}
 			case 0x15:
 			{
-				instruction = "ORA";
+				instruction.begin("ORA", 2, 4);
 				A = A | memZeroPage() + X;
 				updateStatusFlags();
-				stepSize.setup(2, 4);
+				break;
+			}
+			case 0x19:
+			{
+				instruction.begin("ORA", 3, 4);
+				A = A | memAbsoluteY();
+				updateStatusFlags();
 				break;
 			}
 			case 0x1d:
 			{
+				instruction.begin("ORA", 3, 4);
+				A = A | memAbsoluteX();
+				updateStatusFlags();
 				break;
 			}
 			default:
 			{
-				instruction = "Unknown Instruction";
 				keepGoing = false;
 				break;
 			}
 		}
-		pc += stepSize.getStepSize();
+		pc += instruction.getStepSize();
+		instruction.end();
 
 		std::cout << std::hex << std::setfill('0') << std::setw(2)
 				  << (int)*opCode << ' ';
-		std::cout << instruction << std::endl;
+		std::cout << instruction.getName() << std::endl;
 	}
 
 	return keepGoing;
@@ -140,14 +138,4 @@ void CPUCore::updateStatusFlags()
 {
 	if (A == 0) setStatus(CPUStatus::ZeroResult);
 	if (checkBit(7)) setStatus(CPUStatus::NegativeResult);
-}
-
-byte CPUCore::highByte(const memAddress &addr) const
-{
-	return addr >> 8;
-}
-
-byte CPUCore::lowByte(const memAddress &addr) const
-{
-	return addr & 0b0000000011111111;
 }
