@@ -25,6 +25,28 @@ enum class CPUStatus
 	NegativeResult = 6
 };
 
+class StepSize
+{
+	short pcStep;
+	short cycles;
+
+public:
+	StepSize()
+	{
+		pcStep = 0;
+		cycles = 0;
+	}
+
+	void setup(short pcStep, short cycles)
+	{
+		this->pcStep = pcStep;
+		this->cycles = cycles;
+	}
+
+	const short &getStepSize() const { return pcStep; }
+	const short &getCycles() const { return cycles; }
+};
+
 class CPUCore
 {
 	byte *memoryMap[cpuMemSize];
@@ -36,6 +58,7 @@ class CPUCore
 	byte A, X, Y;
 	memAddress pc, sp;
 	std::bitset<7> status;
+	StepSize stepSize;
 
 	void setStatus(CPUStatus flag)
 	{
@@ -51,13 +74,15 @@ class CPUCore
 	byte &memAbsolute() { return *memoryMap[readMemAddress()]; }
 	byte &memAbsoluteX() { return *memoryMap[readMemAddress() + X]; }
 	byte &memAbsoluteY() { return *memoryMap[readMemAddress() + Y]; }
-	byte &memZeroPage() const { return *memoryMap[pc + 1]; }
+	byte &memZeroPage() { return *memoryMap[pc + 1]; }
 	byte &memIndexed(const byte &reg) { return *memoryMap[pc + reg]; }
 	byte &memIndexedX() { return memIndexed(X); }
 	byte &memIndexedY() { return memIndexed(Y); }
 
 
 	// utility methods
+	byte highByte(const memAddress &addr) const;
+	byte lowByte(const memAddress &addr) const;
 	byte readByte() const { return *memoryMap[pc + 1]; }
 	memAddress readMemAddress() const
 	{

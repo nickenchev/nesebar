@@ -47,8 +47,6 @@ bool CPUCore::step()
 		const byte *opCode = &program[pc];
 
 		std::string instruction;
-		short stepSize = 1;
-		short cycles = 1;
 
 		switch (opCode[0])
 		{
@@ -63,8 +61,7 @@ bool CPUCore::step()
 				instruction = "ORA";
 				A = A | memAbsolute() + X;
 				updateStatusFlags();
-				stepSize = 2;
-				cycles = 6;
+				stepSize.setup(2, 6);
 				break;
 			}
 			case 0x02:
@@ -77,8 +74,7 @@ bool CPUCore::step()
 				instruction = "ORA";
 				A = A | memZeroPage();
 				updateStatusFlags();
-				stepSize = 2;
-				cycles = 3;
+				stepSize.setup(2, 3);
 				break;
 			}
 			case 0x09:
@@ -86,8 +82,7 @@ bool CPUCore::step()
 				instruction = "ORA";
 				A = A | memImmediate();
 				updateStatusFlags();
-				stepSize = 2;
-				cycles = 2;
+				stepSize.setup(2, 2);
 				break;
 			}
 			case 0x0d:
@@ -95,8 +90,7 @@ bool CPUCore::step()
 				instruction = "ORA";
 				A = A | memAbsolute();
 				updateStatusFlags();
-				stepSize = 3;
-				cycles = 4;
+				stepSize.setup(3, 4);
 				break;
 			}
 			case 0x15:
@@ -104,8 +98,11 @@ bool CPUCore::step()
 				instruction = "ORA";
 				A = A | memZeroPage() + X;
 				updateStatusFlags();
-				stepSize = 2;
-				cycles = 4;
+				stepSize.setup(2, 4);
+				break;
+			}
+			case 0x1d:
+			{
 				break;
 			}
 			default:
@@ -115,7 +112,7 @@ bool CPUCore::step()
 				break;
 			}
 		}
-		pc += stepSize;
+		pc += stepSize.getStepSize();
 
 		std::cout << std::hex << std::setfill('0') << std::setw(2)
 				  << (int)*opCode << ' ';
@@ -143,4 +140,14 @@ void CPUCore::updateStatusFlags()
 {
 	if (A == 0) setStatus(CPUStatus::ZeroResult);
 	if (checkBit(7)) setStatus(CPUStatus::NegativeResult);
+}
+
+byte CPUCore::highByte(const memAddress &addr) const
+{
+	return addr >> 8;
+}
+
+byte CPUCore::lowByte(const memAddress &addr) const
+{
+	return addr & 0b0000000011111111;
 }

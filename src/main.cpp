@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <iterator>
 #include <string>
 #include <bitset>
 
