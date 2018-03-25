@@ -12,7 +12,8 @@ constexpr unsigned int ppuSize = 8184;
 constexpr unsigned int apuIORegistersSize = 24;
 
 using byte = uint8_t;
-using memAddress = uint16_t;
+using signed_byte = int8_t;
+using mem_address = uint16_t;
 
 enum class CPUStatus
 {
@@ -61,7 +62,7 @@ class CPUCore
 
 	const std::vector<byte> &program;
 	byte A, X, Y;
-	memAddress pc, sp;
+	mem_address pc, sp;
 	std::bitset<7> status;
 	Instruction instruction;
 
@@ -79,7 +80,7 @@ class CPUCore
 	byte &memAbsolute() { return *memoryMap[readMemAddress()]; }
 	byte &memAbsoluteX()
 	{
-		memAddress addr = readMemAddress();
+		mem_address addr = readMemAddress();
 		byte page = highByte(addr);
 		addr += X;
 		byte newPage = highByte(addr);
@@ -88,7 +89,7 @@ class CPUCore
 	}
 	byte &memAbsoluteY()
 	{
-		memAddress addr = readMemAddress();
+		mem_address addr = readMemAddress();
 		byte page = highByte(addr);
 		addr += Y;
 		byte newPage = highByte(addr);
@@ -99,11 +100,11 @@ class CPUCore
 
 	// utility methods
 	void updateStatusFlags();
-	memAddress combine(const byte &highByte, const byte &lowByte) const;
-	byte highByte(const memAddress &addr) const { return addr >> 8; }
-	byte lowByte(const memAddress &addr) const { return addr & 0xff; };
+	mem_address combine(const byte &highByte, const byte &lowByte) const;
+	byte highByte(const mem_address &addr) const { return addr >> 8; }
+	byte lowByte(const mem_address &addr) const { return addr & 0xff; };
 	byte readByte() const { return *memoryMap[pc + 1]; }
-	memAddress readMemAddress() const
+	mem_address readMemAddress() const
 	{
 		return combine(*memoryMap[pc + 1], *memoryMap[pc + 2]);
 	}

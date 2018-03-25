@@ -9,10 +9,10 @@ CPUCore::CPUCore(std::vector<byte> &program) : program(program)
 	sp = 0;
 
 	// map RAM 4 times to emulate mirroring
-	memAddress memAddr = 0;
+	mem_address memAddr = 0;
 	for (int x = 0; x < 4; ++x)
 	{
-		for (memAddress ramAddr = 0; ramAddr < ramSize; ++ramAddr)
+		for (mem_address ramAddr = 0; ramAddr < ramSize; ++ramAddr)
 		{
 			memoryMap[memAddr++] = &ram[ramAddr];
 		}
@@ -20,7 +20,7 @@ CPUCore::CPUCore(std::vector<byte> &program) : program(program)
 
 	// PPU registers / PPU mirroring
 	short ppuIndex = 0;
-	for (memAddress x = 0x2000; x <= 0x3fff; ++x)
+	for (mem_address x = 0x2000; x <= 0x3fff; ++x)
 	{
 		memoryMap[x] = &ppuRegisters[ppuIndex++];
 		if (ppuIndex % 8 == 0)
@@ -31,7 +31,7 @@ CPUCore::CPUCore(std::vector<byte> &program) : program(program)
 
 	// APU Registers
 	short apuIndex = 0;
-	for (memAddress x = 0x4000; x <= 0x4017; ++x)
+	for (mem_address x = 0x4000; x <= 0x4017; ++x)
 	{
 		memoryMap[x] = &apuRegisters[apuIndex++];
 	}
@@ -120,10 +120,10 @@ bool CPUCore::step()
 	return keepGoing;
 }
 
-memAddress CPUCore::combine(const byte &highByte,
+mem_address CPUCore::combine(const byte &highByte,
 							const byte &lowByte) const
 {
-	memAddress address = 0;
+	mem_address address = 0;
 	address = (address | highByte) << 8;
 	address = address | lowByte;
 	return address;
