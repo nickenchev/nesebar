@@ -12,17 +12,17 @@ CPUCore::CPUCore(std::vector<byte> &program) : program(program)
 	mem_address memAddr = 0;
 	for (int x = 0; x < 4; ++x)
 	{
-		for (mem_address ramAddr = 0; ramAddr < ramSize; ++ramAddr)
+		for (mem_address ramAddr = 0; ramAddr < ramSize; ++ramAddr.value)
 		{
-			memoryMap[memAddr++] = &ram[ramAddr];
+			memoryMap[memAddr.value++] = &ram[ramAddr.value];
 		}
 	}
 
 	// PPU registers / PPU mirroring
 	short ppuIndex = 0;
-	for (mem_address x = 0x2000; x <= 0x3fff; ++x)
+	for (mem_address x = 0x2000; x <= 0x3fff; ++x.value)
 	{
-		memoryMap[x] = &ppuRegisters[ppuIndex++];
+		memoryMap[x.value] = &ppuRegisters[ppuIndex++];
 		if (ppuIndex % 8 == 0)
 		{
 			ppuIndex = 0;
@@ -31,9 +31,9 @@ CPUCore::CPUCore(std::vector<byte> &program) : program(program)
 
 	// APU Registers
 	short apuIndex = 0;
-	for (mem_address x = 0x4000; x <= 0x4017; ++x)
+	for (mem_address x = 0x4000; x <= 0x4017; ++x.value)
 	{
-		memoryMap[x] = &apuRegisters[apuIndex++];
+		memoryMap[x.value] = &apuRegisters[apuIndex++];
 	}
 }
 
@@ -44,7 +44,7 @@ bool CPUCore::step()
 	if (pc < static_cast<size_t>(program.size()))
 	{
 		keepGoing = true;
-		const byte *opCode = &program[pc];
+		const byte *opCode = &program[pc.value];
 
 		switch (opCode[0])
 		{
@@ -57,49 +57,49 @@ bool CPUCore::step()
 			case 0x01:
 			{
 				instruction.begin("ORA", 2, 6);
-				A = A | memAbsolute() + X;
+				a = a | memAbsolute() + x;
 				updateStatusFlags();
 				break;
 			}
 			case 0x05:
 			{
 				instruction.begin("ORA", 2, 3);
-				A = A | memZeroPage();
+				a = a | memZeroPage();
 				updateStatusFlags();
 				break;
 			}
 			case 0x09:
 			{
 				instruction.begin("ORA", 2, 2);
-				A = A | memImmediate();
+				a = a | memImmediate();
 				updateStatusFlags();
 				break;
 			}
 			case 0x0d:
 			{
 				instruction.begin("ORA", 3, 4);
-				A = A | memAbsolute();
+				a = a | memAbsolute();
 				updateStatusFlags();
 				break;
 			}
 			case 0x15:
 			{
 				instruction.begin("ORA", 2, 4);
-				A = A | memZeroPage() + X;
+				a = a | memZeroPage() + x;
 				updateStatusFlags();
 				break;
 			}
 			case 0x19:
 			{
 				instruction.begin("ORA", 3, 4);
-				A = A | memAbsoluteY();
+				a = a | memAbsoluteY();
 				updateStatusFlags();
 				break;
 			}
 			case 0x1d:
 			{
 				instruction.begin("ORA", 3, 4);
-				A = A | memAbsoluteX();
+				a = a | memAbsoluteX();
 				updateStatusFlags();
 				break;
 			}
@@ -109,7 +109,7 @@ bool CPUCore::step()
 				break;
 			}
 		}
-		pc += instruction.getStepSize();
+		pc.value += instruction.getStepSize();
 		instruction.end();
 
 		std::cout << std::hex << std::setfill('0') << std::setw(2)
@@ -120,22 +120,13 @@ bool CPUCore::step()
 	return keepGoing;
 }
 
-mem_address CPUCore::combine(const byte &highByte,
-							const byte &lowByte) const
-{
-	mem_address address = 0;
-	address = (address | highByte) << 8;
-	address = address | lowByte;
-	return address;
-}
-
 bool CPUCore::checkBit(int bitNumber) const
 {
-	return A & (1 << bitNumber);
+	return a & (1 << bitNumber);
 }
 
 void CPUCore::updateStatusFlags()
 {
-	if (A == 0) setStatus(CPUStatus::ZeroResult);
+	if (a == 0) setStatus(CPUStatus::ZeroResult);
 	if (checkBit(7)) setStatus(CPUStatus::NegativeResult);
 }
