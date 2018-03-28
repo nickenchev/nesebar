@@ -63,7 +63,7 @@ class CPUCore
 		return *memoryMap[addr.low()];
 	}
 	byte &memZeroPage() const { return *memoryMap[pc.value + 1]; }
-	byte &memZeropageX() const
+	byte &memZeroPageX() const
 	{
 		const byte &val = readByte();
 		return *memoryMap[val + x];

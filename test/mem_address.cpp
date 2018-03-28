@@ -17,6 +17,11 @@ TEST_CASE("mem_address initializations", "[mem_address]")
 	REQUIRE(addr3.low() == 5);
 	REQUIRE(addr3.high() == 11);
 	REQUIRE(addr3.value == 2821);
+
+	mem_address addr4 = 258;
+	REQUIRE(addr4.high() == 1);
+	REQUIRE(addr4.low() == 2);
+	REQUIRE(addr4.value == 258);
 }
 
 TEST_CASE("mem_address assignments", "[mem_address]")

@@ -5,8 +5,8 @@
 
 union mem_address
 {
-	byte bytes[2];
 	uint16_t value;
+	byte bytes[2];
 
 	mem_address(byte low, byte high)
 	{
@@ -16,10 +16,16 @@ union mem_address
 	mem_address(uint16_t value) : value(value) { }
 	mem_address() : value(0) { }
 
-	byte low() const { return bytes[0]; }
-	byte high() const { return bytes[1]; }
+	byte &low() { return bytes[0]; }
+	byte &high() { return bytes[1]; }
 
-	mem_address &operator=(uint16_t value)
+	mem_address operator=(const mem_address &rhs) const
+	{
+		mem_address addr{rhs.value};
+		return addr;
+	}
+
+	mem_address operator=(uint16_t value)
 	{
 		this->value = value;
 		return *this;
@@ -30,24 +36,18 @@ union mem_address
 		return this->value <= value;
 	}
 
-	mem_address operator+(int) const
+	mem_address operator+(const mem_address &rhs) const
+	{
+		mem_address addr = *this;
+		addr.value += rhs.value;
+		return addr;
+	}
+
+	mem_address operator+(uint16_t value) const
 	{
 		mem_address addr = *this;
 		addr.value += value;
 		return addr;
-	}
-
-	mem_address operator+(byte value) const
-	{
-		mem_address addr = *this;
-		addr.value += value;
-		return addr;
-	}
-
-	mem_address &operator+=(byte value)
-	{
-		this->bytes[0] += value;
-		return *this;
 	}
 
 	mem_address &operator+=(uint16_t value)
