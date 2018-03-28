@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <vector>
 #include "common.hpp"
-#include "memaddress.hpp"
+#include "mem_address.hpp"
 #include "instruction.hpp"
 
 enum class CPUStatus
