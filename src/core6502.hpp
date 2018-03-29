@@ -19,7 +19,7 @@ enum class CPUStatus
 	NegativeResult = 6
 };
 
-class CPUCore
+class Core6502
 {
 	byte *memoryMap[cpuMemSize];
 	byte ram[ramSize];
@@ -80,7 +80,7 @@ class CPUCore
 	bool checkBit(int bitNumber) const;
 	
 public:
-    CPUCore(std::vector<byte> &program);
+    Core6502(std::vector<byte> &program);
 	
 	bool step();
 };

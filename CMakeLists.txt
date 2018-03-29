@@ -7,4 +7,4 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 
 add_executable(nesebar
   src/main.cpp
-  src/cpu.cpp)
+  src/core6502.cpp)

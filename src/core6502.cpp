@@ -1,9 +1,9 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
-#include "cpu.hpp"
+#include "core6502.hpp"
 
-CPUCore::CPUCore(std::vector<byte> &program) : program(program)
+Core6502::Core6502(std::vector<byte> &program) : program(program)
 {
 	pc = 0;
 	sp = 0;
@@ -38,7 +38,7 @@ CPUCore::CPUCore(std::vector<byte> &program) : program(program)
 }
 
 
-bool CPUCore::step()
+bool Core6502::step()
 {
 	bool keepGoing = false;
 	if (pc < static_cast<size_t>(program.size()))
@@ -120,12 +120,12 @@ bool CPUCore::step()
 	return keepGoing;
 }
 
-bool CPUCore::checkBit(int bitNumber) const
+bool Core6502::checkBit(int bitNumber) const
 {
 	return a & (1 << bitNumber);
 }
 
-void CPUCore::updateStatusFlags()
+void Core6502::updateStatusFlags()
 {
 	if (a == 0) setStatus(CPUStatus::ZeroResult);
 	if (checkBit(7)) setStatus(CPUStatus::NegativeResult);

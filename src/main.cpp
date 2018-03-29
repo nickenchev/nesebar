@@ -6,7 +6,7 @@
 #include <string>
 #include <bitset>
 
-#include "cpu.hpp"
+#include "core6502.hpp"
 
 constexpr int prgRomPageSize = 16384;
 constexpr int chrRomPageSize = 8192;
@@ -94,7 +94,7 @@ int main(int argc, const char *argv[])
 						  std::istream_iterator<byte>(romFile),
 						  std::istream_iterator<byte>());
 
-			CPUCore cpu(prgRom);
+			Core6502 cpu(prgRom);
 			while (cpu.step()) { }
 
 			romFile.close();
