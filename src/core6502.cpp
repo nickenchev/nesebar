@@ -3,42 +3,15 @@
 #include <iomanip>
 #include "core6502.hpp"
 
-Core6502::Core6502(std::vector<byte> &program) : program(program)
+template<typename M>
+Core6502<M>::Core6502(std::vector<byte> &program) : program(program)
 {
 	pc = 0;
 	sp = 0;
-
-	// map RAM 4 times to emulate mirroring
-	mem_address memAddr = 0;
-	for (int x = 0; x < 4; ++x)
-	{
-		for (mem_address ramAddr = 0; ramAddr < ramSize; ++ramAddr.value)
-		{
-			memoryMap[memAddr.value++] = &ram[ramAddr.value];
-		}
-	}
-
-	// PPU registers / PPU mirroring
-	short ppuIndex = 0;
-	for (mem_address x = 0x2000; x <= 0x3fff; ++x.value)
-	{
-		memoryMap[x.value] = &ppuRegisters[ppuIndex++];
-		if (ppuIndex % 8 == 0)
-		{
-			ppuIndex = 0;
-		}
-	}
-
-	// APU Registers
-	short apuIndex = 0;
-	for (mem_address x = 0x4000; x <= 0x4017; ++x.value)
-	{
-		memoryMap[x.value] = &apuRegisters[apuIndex++];
-	}
 }
 
-
-bool Core6502::step()
+template<typename M>
+bool Core6502<M>::step()
 {
 	bool keepGoing = false;
 	if (pc < static_cast<size_t>(program.size()))
@@ -46,6 +19,7 @@ bool Core6502::step()
 		keepGoing = true;
 		const byte *opCode = &program[pc.value];
 
+		/*
 		switch (opCode[0])
 		{
 			case 0x00:
@@ -109,6 +83,7 @@ bool Core6502::step()
 				break;
 			}
 		}
+		*/
 		pc.value += instruction.getStepSize();
 		instruction.end();
 
@@ -120,13 +95,9 @@ bool Core6502::step()
 	return keepGoing;
 }
 
-bool Core6502::checkBit(int bitNumber) const
-{
-	return a & (1 << bitNumber);
-}
-
-void Core6502::updateStatusFlags()
+template<typename M>
+void Core6502<M>::updateStatusFlags()
 {
 	if (a == 0) setStatus(CPUStatus::ZeroResult);
-	if (checkBit(7)) setStatus(CPUStatus::NegativeResult);
+	if (checkBit(a, 7)) setStatus(CPUStatus::NegativeResult);
 }

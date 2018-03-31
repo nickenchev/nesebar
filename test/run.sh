@@ -1,3 +1,2 @@
 #!/bin/bash
-clear
-c++ mem_address.cpp -std=c++14 && ./a.out
+c++ main.cpp mem_address.cpp nesmemory.cpp -std=c++14 && ./a.out

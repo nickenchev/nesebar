@@ -50,6 +50,20 @@ union mem_address
 		return addr;
 	}
 
+	mem_address operator-(uint16_t value) const
+	{
+		mem_address addr = *this;
+		addr.value -= value;
+		return addr;
+	}
+
+	mem_address operator&(uint16_t value) const
+	{
+		mem_address addr = *this;
+		addr.value &= value;
+		return addr;
+	}
+
 	mem_address &operator+=(uint16_t value)
 	{
 		this->value += value;

@@ -1,5 +1,5 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef CORE6502_H
+#define CORE6502_H
 
 #include <bitset>
 #include <cstdint>
@@ -21,11 +21,7 @@ enum class CPUStatus
 
 class Core6502
 {
-	byte *memoryMap[cpuMemSize];
-	byte ram[ramSize];
-	byte ppuRegisters[ppuRegistersSize];
-	byte apuRegisters[apuIORegistersSize];
-
+	M memory;
 	const std::vector<byte> &program;
 	byte a, x, y;
 	mem_address pc, sp;
@@ -42,8 +38,14 @@ class Core6502
 	}
 
 	// addressing modes
-	byte &memImmediate() { return *memoryMap[pc.value + 1]; }
-	byte &memAbsolute() { return *memoryMap[readMemAddress().value]; }
+	byte &memImmediate()
+	{
+		return memory[pc.value + 1];
+	}
+	byte &memAbsolute()
+	{
+		return memory[readMemAddress().value];
+	}
 	byte &memAbsoluteX()
 	{
 		mem_address addr = readMemAddress();
@@ -51,7 +53,7 @@ class Core6502
 		addr += x;
 		byte newPage = addr.high();
 		if (newPage > page) instruction.increaseCycles(1);
-		return *memoryMap[addr.low()];
+		return memory[addr.low()];
 	}
 	byte &memAbsoluteY()
 	{
@@ -60,29 +62,39 @@ class Core6502
 		addr += y;
 		byte newPage = addr.high();
 		if (newPage > page) instruction.increaseCycles(1);
-		return *memoryMap[addr.low()];
+		return memory[addr.low()];
 	}
-	byte &memZeroPage() const { return *memoryMap[pc.value + 1]; }
+	byte memZeroPage() const
+	{
+		return memory[pc.value + 1];
+	}
 	byte &memZeroPageX() const
 	{
-		const byte &val = readByte();
-		return *memoryMap[val + x];
+		byte val = readByte();
+		return memory[val + x];
 	}
 
 	// utility methods
 	void updateStatusFlags();
 	mem_address combine(const byte &highByte, const byte &lowByte) const;
-	byte &readByte() const { return *memoryMap[pc.value + 1]; }
+	byte &readByte() const
+	{
+		return memory[pc.value + 1];
+	}
 	mem_address readMemAddress() const
 	{
-		return mem_address(*memoryMap[pc.value + 1], *memoryMap[pc.value + 2]);
+		return mem_address(memory[pc.value + 1], memory[pc.value + 2]);
 	}
-	bool checkBit(int bitNumber) const;
-	
+
+	bool checkBit(const byte &reg, int bitNumber) const
+	{
+		return reg & (1 << bitNumber);
+	}
+
 public:
     Core6502(std::vector<byte> &program);
 	
 	bool step();
 };
 
-#endif /* CPU_H */
+#endif /* CORE6502_H */
