@@ -13,9 +13,8 @@ int main(int argc, const char *argv[])
 		std::string path(argv[1]);
 		std::cout << "ROM File: " << path << std::endl;
 
-		auto cart = NESCart::load(path);
-
-		NES nes(cart.get());
+		NESCart cart(path);
+		NES nes(cart);
 		nes.start();
 	}
 	else

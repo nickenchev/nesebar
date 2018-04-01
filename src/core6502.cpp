@@ -7,7 +7,7 @@
 template<typename M>
 bool Core6502<M>::step()
 {
-	bool keepGoing = true;
+	bool keepGoing = false;
 		/*
 		switch (opCode[0])
 		{

@@ -41,13 +41,7 @@ class NESCart
 	std::vector<byte> chrRom;
 
 public:
-	NESCart(const Header &header) : header(header),
-									prgRom(prgRomPageSize * header.prgRomSize),
-									chrRom(prgRomPageSize * header.chrRomSize)
-	{
-	}
-
-	static std::unique_ptr<NESCart> load(const std::string &romPath);
+	NESCart(const std::string &romPath);
 };
 
 

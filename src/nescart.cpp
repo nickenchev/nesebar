@@ -7,14 +7,12 @@
 
 #include "nescart.hpp"
 
-std::unique_ptr<NESCart> NESCart::load(const std::string &romPath)
+NESCart::NESCart(const std::string &romPath)
 {
-	NESCart *cart = nullptr;
 	std::ifstream romFile(romPath, std::ios::in | std::ios::binary);
 	if (romFile.is_open())
 	{
 		// load iNES header
-		NESCart::Header header;
 		romFile.read((char *)&header, sizeof(Header));
 		if (header.code[0] == 'N' && header.code[1] == 'E' &&
 			header.code[2] == 'S' && header.code[3] == 0x1A)
@@ -48,23 +46,18 @@ std::unique_ptr<NESCart> NESCart::load(const std::string &romPath)
 
 		const size_t prgRomBytes = prgRomPageSize * header.prgRomSize;
 		const size_t chrRomBytes = chrRomPageSize * header.chrRomSize;
+		prgRom.resize(prgRomBytes);
+		chrRom.resize(chrRomBytes);
 		std::cout << "PRG ROM Size: " << prgRomBytes << " bytes\n"
 				  << "CHR ROM Size: " << chrRomBytes << " bytes" << std::endl;
 
-		cart = new NESCart(header);
-		cart->prgRom.insert(cart->prgRom.begin(),
-							std::istream_iterator<byte>(romFile),
-							std::istream_iterator<byte>());
+		romFile.read((char *)&prgRom[0], prgRomBytes);
+		romFile.read((char *)&chrRom[0], chrRomBytes);
 
-		cart->chrRom.insert(cart->chrRom.begin(),
-							std::istream_iterator<byte>(romFile),
-							std::istream_iterator<byte>());
 		romFile.close();
 	}
 	else
 	{
 		std::cerr << "Can't load ROM file." << std::endl;
 	}
-
-	return std::unique_ptr<NESCart>(cart);
 }
