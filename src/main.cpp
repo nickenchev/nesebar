@@ -15,8 +15,8 @@ int main(int argc, const char *argv[])
 
 		auto cart = NESCart::load(path);
 
-		NES nes;
-		nes.run(cart.get());
+		NES nes(cart.get());
+		nes.start();
 	}
 	else
 	{

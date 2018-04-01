@@ -8,10 +8,16 @@ class NESCart;
 
 class NES
 {
+	const NESCart *cart;
 	Core6502<NESMemory> cpu;
 
 public:
-	void run(NESCart *cart)
+	NES(NESCart *cart)
+	{
+		this->cart = cart;
+	}
+
+	void start()
 	{
 		while (cpu.step()) { }
 	}

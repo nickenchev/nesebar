@@ -12,35 +12,38 @@ constexpr int flag6Trainer = 2;
 constexpr int flag6SRAMBattery = 1;
 constexpr int flag6Mirroring = 0;
 
-struct Header
-{
-	char code[4];
-	byte prgRomSize;
-	byte chrRomSize;
-	byte flag6;
-	byte flag7;
-	byte prgRamSize;
-	byte flag9;
-	byte flag10;
-	byte zeroFilled[5];
-
-	Header()
-	{
-		for (int i = 0; i < 4; ++i) code[i] = 0;
-		prgRomSize = 0;
-		chrRomSize = 0;
-		flag6 = flag7 = flag9 = flag10 = 0;
-		for (int i = 0; i < 5; ++i) zeroFilled[i] = 0;
-	}
-};
-
 class NESCart
 {
+	struct Header
+	{
+		char code[4];
+		byte prgRomSize;
+		byte chrRomSize;
+		byte flag6;
+		byte flag7;
+		byte prgRamSize;
+		byte flag9;
+		byte flag10;
+		byte zeroFilled[5];
+
+		Header()
+		{
+			for (int i = 0; i < 4; ++i) code[i] = 0;
+			prgRomSize = 0;
+			chrRomSize = 0;
+			flag6 = flag7 = flag9 = flag10 = 0;
+			for (int i = 0; i < 5; ++i) zeroFilled[i] = 0;
+		}
+	};
+
+	Header header;
 	std::vector<byte> prgRom;
 	std::vector<byte> chrRom;
 
 public:
-	NESCart(size_t prgSize, size_t chrSize) : prgRom(prgSize), chrRom(chrSize)
+	NESCart(const Header &header) : header(header),
+									prgRom(prgRomPageSize * header.prgRomSize),
+									chrRom(prgRomPageSize * header.chrRomSize)
 	{
 	}
 
