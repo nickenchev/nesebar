@@ -43,15 +43,15 @@ class Core6502
 		return reg & (1 << bitNumber);
 	}
 
+	byte readByte()
+	{
+		return memory.memRead(pc + 1);
+	}
+	mem_address readMemAddress()
+	{
+		return mem_address(memory.memRead(pc + 1), memory.memRead(pc + 2));
+	}
 	/*
-	byte &readByte() const
-	{
-		return memory[pc.value + 1];
-	}
-	mem_address readMemAddress() const
-	{
-		return mem_address(memory[pc.value + 1], memory[pc.value + 2]);
-	}
 	byte &memImmediate()
 	{
 		return memory[pc.value + 1];

@@ -8,4 +8,5 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 add_executable(nesebar
   src/main.cpp
   src/core6502.cpp
-  src/nes.cpp)
+  src/nes.cpp
+  src/nescart.cpp)

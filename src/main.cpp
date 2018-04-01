@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "nes.hpp"
-
+#include "nescart.hpp"
 
 int main(int argc, const char *argv[])
 {
@@ -13,14 +13,14 @@ int main(int argc, const char *argv[])
 		std::string path(argv[1]);
 		std::cout << "ROM File: " << path << std::endl;
 
-		auto cart = NES::load(path);
+		auto cart = NESCart::load(path);
 
 		NES nes;
 		nes.run(cart.get());
 	}
 	else
 	{
-		std::cerr << "Can't load ROM file." << std::endl;
+		std::cerr << "ROM file not specified." << std::endl;
 	}
 
     return 0;
