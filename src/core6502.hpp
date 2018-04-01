@@ -19,10 +19,10 @@ enum class CPUStatus
 	NegativeResult = 6
 };
 
+template<typename M>
 class Core6502
 {
 	M memory;
-	const std::vector<byte> &program;
 	byte a, x, y;
 	mem_address pc, sp;
 	std::bitset<7> status;
@@ -37,7 +37,21 @@ class Core6502
 		status.reset(static_cast<int>(flag));
 	}
 
-	// addressing modes
+	void updateStatusFlags();
+	bool checkBit(const byte &reg, int bitNumber) const
+	{
+		return reg & (1 << bitNumber);
+	}
+
+	/*
+	byte &readByte() const
+	{
+		return memory[pc.value + 1];
+	}
+	mem_address readMemAddress() const
+	{
+		return mem_address(memory[pc.value + 1], memory[pc.value + 2]);
+	}
 	byte &memImmediate()
 	{
 		return memory[pc.value + 1];
@@ -73,26 +87,13 @@ class Core6502
 		byte val = readByte();
 		return memory[val + x];
 	}
-
-	// utility methods
-	void updateStatusFlags();
-	mem_address combine(const byte &highByte, const byte &lowByte) const;
-	byte &readByte() const
-	{
-		return memory[pc.value + 1];
-	}
-	mem_address readMemAddress() const
-	{
-		return mem_address(memory[pc.value + 1], memory[pc.value + 2]);
-	}
-
-	bool checkBit(const byte &reg, int bitNumber) const
-	{
-		return reg & (1 << bitNumber);
-	}
+	*/
 
 public:
-    Core6502(std::vector<byte> &program);
+    Core6502()
+	{
+		x = y = a = 0;
+	}
 	
 	bool step();
 };

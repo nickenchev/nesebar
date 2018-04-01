@@ -2,23 +2,12 @@
 #include <iostream>
 #include <iomanip>
 #include "core6502.hpp"
-
-template<typename M>
-Core6502<M>::Core6502(std::vector<byte> &program) : program(program)
-{
-	pc = 0;
-	sp = 0;
-}
+#include "nesmemory.hpp"
 
 template<typename M>
 bool Core6502<M>::step()
 {
-	bool keepGoing = false;
-	if (pc < static_cast<size_t>(program.size()))
-	{
-		keepGoing = true;
-		const byte *opCode = &program[pc.value];
-
+	bool keepGoing = true;
 		/*
 		switch (opCode[0])
 		{
@@ -83,14 +72,13 @@ bool Core6502<M>::step()
 				break;
 			}
 		}
-		*/
 		pc.value += instruction.getStepSize();
 		instruction.end();
 
 		std::cout << std::hex << std::setfill('0') << std::setw(2)
 				  << (int)*opCode << ' ';
 		std::cout << instruction.getName() << std::endl;
-	}
+		*/
 
 	return keepGoing;
 }
@@ -98,6 +86,8 @@ bool Core6502<M>::step()
 template<typename M>
 void Core6502<M>::updateStatusFlags()
 {
-	if (a == 0) setStatus(CPUStatus::ZeroResult);
-	if (checkBit(a, 7)) setStatus(CPUStatus::NegativeResult);
+	//if (a == 0) setStatus(CPUStatus::ZeroResult);
+	//if (checkBit(a, 7)) setStatus(CPUStatus::NegativeResult);
 }
+
+template class Core6502<NESMemory>;

@@ -45,5 +45,4 @@ public:
 	}
 };
 
-
 #endif /* NESMEMORY_H */
