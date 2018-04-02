@@ -4,8 +4,10 @@
 #include "core6502.hpp"
 #include "nesmemory.hpp"
 
+using namespace mos6502;
+
 template<typename M>
-bool Core6502<M>::step()
+bool Core<M>::step()
 {
 	bool keepGoing = false;
 		/*
@@ -84,10 +86,10 @@ bool Core6502<M>::step()
 }
 
 template<typename M>
-void Core6502<M>::updateStatusFlags()
+void Core<M>::updateStatusFlags()
 {
 	//if (a == 0) setStatus(CPUStatus::ZeroResult);
 	//if (checkBit(a, 7)) setStatus(CPUStatus::NegativeResult);
 }
 
-template class Core6502<NESMemory>;
+template class mos6502::Core<NESMemory>;

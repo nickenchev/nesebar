@@ -40,6 +40,7 @@ NESCart::NESCart(const std::string &romPath)
 		bool hasTrainer = flag6.test(flag6Trainer);
 		if (hasTrainer)
 		{
+			// throw away for now
 			byte trainer[trainerSize];
 			romFile.read((char *)trainer, trainerSize);
 		}

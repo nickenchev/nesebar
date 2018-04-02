@@ -9,7 +9,7 @@ class NESCart;
 class NES
 {
 	const NESCart &cart;
-	Core6502<NESMemory> cpu;
+	mos6502::Core<NESMemory> cpu;
 
 public:
 	NES(const NESCart &cart) : cart(cart) { }
