@@ -52,24 +52,25 @@ namespace mos6502
 
 		byte readByte(const mem_address &address)
 		{
-			return memory.memRead(address + 1);
+			return memory.memRead(address);
 		}
-		byte readByte() { return readByte(pc); }
+		byte readNextByte() { return readByte(pc + 1); }
 
 		mem_address readMemAddress(const mem_address &address)
 		{
-			return mem_address(memory.memRead(address + 1), memory.memRead(address + 2));
+			return mem_address(memory.memRead(address), memory.memRead(address + 1));
 		}
-		mem_address readMemAddress() { return readMemAddress(pc); }
+		mem_address readNextMemAddress() { return readMemAddress(pc + 1); }
+
+		byte memImmediate()
+		{
+			return readNextByte();
+		}
+		byte memAbsolute()
+		{
+			return memory.memRead(readNextMemAddress());
+		}
 		/*
-		byte &memImmediate()
-		{
-			return memory[pc.value + 1];
-		}
-		byte &memAbsolute()
-		{
-			return memory[readMemAddress().value];
-		}
 		byte &memAbsoluteX()
 		{
 			mem_address addr = readMemAddress();

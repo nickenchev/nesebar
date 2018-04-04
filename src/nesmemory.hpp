@@ -3,9 +3,14 @@
 
 #include "memchunk.hpp"
 
+constexpr unsigned int cpuMemSize = 65535;
+constexpr unsigned int ppuRegistersSize = 8;
+constexpr unsigned int ppuSize = 8184;
+constexpr unsigned int apuIORegistersSize = 24;
+
 class NESMemory
 {
-	MemChunk<byte, 65535> memory;
+	MemChunk<byte, cpuMemSize> memory;
 
 public:
 	byte memRead(const mem_address &address)
