@@ -70,25 +70,25 @@ namespace mos6502
 		{
 			return memory.memRead(readNextMemAddress());
 		}
-		/*
-		byte &memAbsoluteX()
+		byte memAbsoluteX()
 		{
-			mem_address addr = readMemAddress();
+			mem_address addr = readNextMemAddress();
 			byte page = addr.high();
 			addr += x;
 			byte newPage = addr.high();
 			if (newPage > page) instruction.increaseCycles(1);
-			return memory[addr.low()];
+			return memory.memRead(addr);
 		}
-		byte &memAbsoluteY()
+		byte memAbsoluteY()
 		{
-			mem_address addr = readMemAddress();
+			mem_address addr = readNextMemAddress();
 			byte page = addr.high();
 			addr += y;
 			byte newPage = addr.high();
 			if (newPage > page) instruction.increaseCycles(1);
-			return memory[addr.low()];
+			return memory.memRead(addr);
 		}
+		/*
 		byte memZeroPage() const
 		{
 			return memory[pc.value + 1];
