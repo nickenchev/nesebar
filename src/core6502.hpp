@@ -21,10 +21,10 @@ namespace mos6502
 		NegativeResult = 6
 	};
 
-	template<typename M>
+	template<typename MemType>
 	class Core
 	{
-		M memory;
+		MemType memory;
 		byte a, x, y;
 		mem_address pc, sp;
 		std::bitset<7> status;
@@ -88,17 +88,16 @@ namespace mos6502
 			if (newPage > page) instruction.increaseCycles(1);
 			return memory.memRead(addr);
 		}
-		/*
-		byte memZeroPage() const
+		
+		byte memZeroPage()
 		{
-			return memory[pc.value + 1];
+			return memory.memRead(readNextByte());
 		}
-		byte &memZeroPageX() const
+		byte memZeroPageX()
 		{
-			byte val = readByte();
-			return memory[val + x];
+			byte addr = readNextByte();
+			return memory.memRead(addr + x);
 		}
-		*/
 
 	public:
 		Core()
