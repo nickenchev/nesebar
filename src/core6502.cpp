@@ -75,20 +75,38 @@ bool Core<MemType>::step()
 			updateStatusFlags();
 			break;
 		}
+		case 0x78:
+		{
+			instruction.begin("SEI", 1, 1);
+			setStatus(CPUStatus::InterruptDisable);
+			break;
+		}
+		case 0xd8:
+		{
+			instruction.begin("CLD", 1, 1);
+			clearStatus(CPUStatus::DecimalMode);
+			break;
+		}
 		default:
 		{
 			keepGoing = false;
 			break;
 		}
 	}
+
+	logInstruction(instruction, pc, opCode);
+
 	pc.value += instruction.getStepSize();
 	instruction.end();
 
-	std::cout << std::hex << std::setfill('0') <<
-		std::setw(2) << (int)opCode << ' ';
-	std::cout << instruction.getName() << std::endl;
-
 	return keepGoing;
+}
+
+void logInstruction(const Instruction &inst, const mem_address &pc, const byte &opCode)
+{
+	std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
+	std::cout << ' ' << std::setw(2) << (int)opCode << ' ';
+	std::cout << inst.getName() << std::endl;
 }
 
 template<typename MemType>

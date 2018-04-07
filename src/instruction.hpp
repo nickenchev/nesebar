@@ -22,7 +22,12 @@ public:
 		this->pcStep = pcStep;
 		this->cycles = cycles;
 	}
-	void end() const { }
+	void end()
+	{
+		name = "Unknown";
+		pcStep = 0;
+		cycles = 0;
+	}
 
 	void increaseCycles(short count) { cycles += count; }
 	const std::string &getName() const { return name; }
