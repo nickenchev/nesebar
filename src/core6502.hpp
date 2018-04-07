@@ -1,6 +1,7 @@
 #ifndef CORE6502_H
 #define CORE6502_H
 
+#include <iostream>
 #include <bitset>
 #include <cstdint>
 #include <vector>
@@ -24,16 +25,11 @@ namespace mos6502
 	template<typename MemType>
 	class Core
 	{
-		MemType memory;
+		MemType &memory;
 		byte a, x, y;
 		mem_address pc, sp;
 		std::bitset<7> status;
 		Instruction instruction;
-
-		void reset()
-		{
-			pc = readMemAddress(mem_address{0xfffc});
-		}
 
 		void setStatus(CPUStatus flag)
 		{
@@ -100,10 +96,7 @@ namespace mos6502
 		}
 
 	public:
-		Core()
-		{
-			x = y = a = 0;
-		}
+		Core(MemType &memory);
 
 		bool step();
 	};

@@ -12,7 +12,7 @@ constexpr int flag6Trainer = 2;
 constexpr int flag6SRAMBattery = 1;
 constexpr int flag6Mirroring = 0;
 
-class NESCart
+struct NESCart
 {
 	struct Header
 	{
@@ -40,7 +40,6 @@ class NESCart
 	std::vector<byte> prgRom;
 	std::vector<byte> chrRom;
 
-public:
 	NESCart(const std::string &romPath);
 };
 

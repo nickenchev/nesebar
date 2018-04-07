@@ -9,12 +9,13 @@ class NESCart;
 class NES
 {
 	const NESCart &cart;
+	NESMemory memory;
 	mos6502::Core<NESMemory> cpu;
 
 public:
-	NES(const NESCart &cart) : cart(cart) { }
+	NES(const NESCart &cart) : cart(cart), memory(cart), cpu(memory) { }
 
-	void start()
+	void run()
 	{
 		while (cpu.step()) { }
 	}

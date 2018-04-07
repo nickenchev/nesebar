@@ -15,7 +15,7 @@ int main(int argc, const char *argv[])
 
 		NESCart cart(path);
 		NES nes(cart);
-		nes.start();
+		nes.run();
 	}
 	else
 	{

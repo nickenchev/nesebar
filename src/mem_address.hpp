@@ -19,21 +19,27 @@ union mem_address
 	byte &low() { return bytes[0]; }
 	byte &high() { return bytes[1]; }
 
-	mem_address operator=(const mem_address &rhs) const
+	mem_address &operator=(const mem_address &rhs)
 	{
-		mem_address addr{rhs.value};
-		return addr;
+		value = rhs.value;
+		return *this;
 	}
-
-	mem_address operator=(uint16_t value)
+	mem_address &operator=(uint16_t value)
 	{
 		this->value = value;
 		return *this;
 	}
-
 	bool operator<=(const uint16_t &value) const
 	{
 		return this->value <= value;
+	}
+	bool operator>=(const uint16_t &value) const
+	{
+		return this->value >= value;
+	}
+	bool operator<(const mem_address &rhs) const
+	{
+		return this->value < rhs.value;
 	}
 
 	mem_address operator+(const mem_address &rhs) const
@@ -42,37 +48,28 @@ union mem_address
 		addr.value += rhs.value;
 		return addr;
 	}
-
 	mem_address operator+(uint16_t value) const
 	{
 		mem_address addr = *this;
 		addr.value += value;
 		return addr;
 	}
-
 	mem_address operator-(uint16_t value) const
 	{
 		mem_address addr = *this;
 		addr.value -= value;
 		return addr;
 	}
-
-	mem_address operator&(uint16_t value) const
-	{
-		mem_address addr = *this;
-		addr.value &= value;
-		return addr;
-	}
-
 	mem_address &operator+=(uint16_t value)
 	{
 		this->value += value;
 		return *this;
 	}
-
-	bool operator<(const mem_address &rhs) const
+	mem_address operator&(uint16_t value) const
 	{
-		return this->value < rhs.value;
+		mem_address addr = *this;
+		addr.value &= value;
+		return addr;
 	}
 };
 

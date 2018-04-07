@@ -6,8 +6,15 @@
 
 using namespace mos6502;
 
-template<typename M>
-bool Core<M>::step()
+template<typename MemType>
+Core<MemType>::Core(MemType &memory) : memory(memory)
+{
+	x = y = a = 0;
+	pc = readMemAddress(mem_address{0xfffc});
+}
+
+template<typename MemType>
+bool Core<MemType>::step()
 {
 	bool keepGoing = true;
 	byte opCode = readByte(pc);
@@ -84,8 +91,8 @@ bool Core<M>::step()
 	return keepGoing;
 }
 
-template<typename M>
-void Core<M>::updateStatusFlags()
+template<typename MemType>
+void Core<MemType>::updateStatusFlags()
 {
 	if (a == 0) setStatus(CPUStatus::ZeroResult);
 	if (checkBit(a, 7)) setStatus(CPUStatus::NegativeResult);
