@@ -25,9 +25,12 @@ namespace mos6502
 	template<typename MemType>
 	class Core
 	{
+		constexpr static uint16_t stackAddress = 0x0100;
+		constexpr static byte stackSize = 0xff;
+
 		MemType &memory;
-		byte a, x, y;
-		mem_address pc, sp;
+		byte a, x, y, sp;
+		mem_address pc;
 		std::bitset<7> status;
 		Instruction instruction;
 
@@ -41,7 +44,7 @@ namespace mos6502
 		}
 
 		void updateStatusFlags();
-		bool checkBit(const byte &reg, int bitNumber) const
+		bool checkBit(const byte &reg, short bitNumber) const
 		{
 			return reg & (1 << bitNumber);
 		}

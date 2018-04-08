@@ -77,8 +77,13 @@ bool Core<MemType>::step()
 		}
 		case 0x78:
 		{
-			instruction.begin("SEI", 1, 1);
+			instruction.begin("SEI", 1, 2);
 			setStatus(CPUStatus::InterruptDisable);
+			break;
+		}
+		case 0xa9:
+		{
+			instruction.begin("LDA", 2, 2);
 			break;
 		}
 		case 0xd8:
