@@ -10,7 +10,13 @@ template<typename MemType>
 Core<MemType>::Core(MemType &memory) : memory(memory)
 {
 	x = y = a = 0;
-	pc = readMemAddress(mem_address{0xfffc});
+
+	for (mem_address addr = 0x4000; addr <= 0x400F; ++addr)
+	{
+		memory.memWrite(addr, 0);
+	}
+	memory.memWrite(0x4015, 0); // disable all channels
+	memory.memWrite(0x4017, 0); // frame IRQ enable
 }
 
 template<typename MemType>
@@ -119,6 +125,13 @@ void Core<MemType>::updateStatusFlags()
 {
 	if (a == 0) setStatus(CPUStatus::ZeroResult);
 	if (checkBit(a, 7)) setStatus(CPUStatus::NegativeResult);
+}
+
+template <typename MemType>
+void Core<MemType>::interruptReset()
+{
+	sp = 0xfd;
+	pc = readMemAddress(0xfffc);
 }
 
 template class mos6502::Core<NESMemory>;

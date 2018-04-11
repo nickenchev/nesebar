@@ -74,8 +74,7 @@ namespace mos6502
 			mem_address addr = readNextMemAddress();
 			byte page = addr.high();
 			addr += x;
-			byte newPage = addr.high();
-			if (newPage > page) instruction.increaseCycles(1);
+			if (addr.high() > page) instruction.increaseCycles(1);
 			return memory.memRead(addr);
 		}
 		byte memAbsoluteY()
@@ -83,8 +82,7 @@ namespace mos6502
 			mem_address addr = readNextMemAddress();
 			byte page = addr.high();
 			addr += y;
-			byte newPage = addr.high();
-			if (newPage > page) instruction.increaseCycles(1);
+			if (addr.high() > page) instruction.increaseCycles(1);
 			return memory.memRead(addr);
 		}
 		
@@ -98,9 +96,12 @@ namespace mos6502
 			return memory.memRead(addr + x);
 		}
 
+		void interruptReset();
+
 	public:
 		Core(MemType &memory);
 
+		void reset() { interruptReset(); }
 		bool step();
 	};
 };
