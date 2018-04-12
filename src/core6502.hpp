@@ -96,6 +96,12 @@ namespace mos6502
 			return memory.memRead(addr + x);
 		}
 
+		byte memIndirectIndexed()
+		{
+			mem_address addr = readMemAddress(mem_address{memZeroPage()});
+			return memory.memRead(addr);
+		}
+
 		void interruptReset();
 
 	public:
