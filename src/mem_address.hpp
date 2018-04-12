@@ -18,7 +18,11 @@ union mem_address
 
 	byte &low() { return bytes[0]; }
 	byte &high() { return bytes[1]; }
-
+	mem_address &addLow(byte lowInc)
+	{
+		low() += lowInc;
+		return *this;
+	}
 
 	mem_address &operator++()
 	{
@@ -76,6 +80,10 @@ union mem_address
 		mem_address addr = *this;
 		addr.value &= value;
 		return addr;
+	}
+	bool operator==(int value) const
+	{
+		return this->value == value;
 	}
 };
 

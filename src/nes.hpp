@@ -18,7 +18,9 @@ public:
 	void run()
 	{
 		cpu.reset();
-		while (cpu.step()) { }
+		while (cpu.step())
+		{
+		}
 	}
 };
 
