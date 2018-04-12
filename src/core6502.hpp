@@ -102,9 +102,17 @@ namespace mos6502
 			return memory.memRead(addr);
 		}
 
-		byte memIndirectX()
+		byte memIndexedIndirect()
 		{
 			mem_address addr = readMemAddress(mem_address{memZeroPageX()});
+			return memory.memRead(addr);
+		}
+		byte memIndirectIndexed()
+		{
+			mem_address addr = readMemAddress(mem_address{readNextByte()});
+			byte page = addr.high();
+			addr += y;
+			if (addr.high() > page) instruction.increaseCycles(1);
 			return memory.memRead(addr);
 		}
 
