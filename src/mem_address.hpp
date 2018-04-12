@@ -23,6 +23,12 @@ union mem_address
 		low() += lowInc;
 		return *this;
 	}
+	bool add(byte inc)
+	{
+		byte page = high();
+		value += inc;
+		return high() != page;
+	}
 
 	mem_address &operator++()
 	{

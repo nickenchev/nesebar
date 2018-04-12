@@ -68,6 +68,11 @@ namespace mos6502
 		{
 			return readNextByte();
 		}
+		byte memIndirect()
+		{
+			mem_address addr = readMemAddress(mem_address{memZeroPage()});
+			return memory.memRead(addr);
+		}
 		byte memAbsolute()
 		{
 			return memory.memRead(readNextMemAddress());
@@ -75,20 +80,15 @@ namespace mos6502
 		byte memAbsoluteX()
 		{
 			mem_address addr = readNextMemAddress();
-			byte page = addr.high();
-			addr += x;
-			if (addr.high() > page) instruction.increaseCycles(1);
+			if (addr.add(x)) instruction.increaseCycles(1);
 			return memory.memRead(addr);
 		}
 		byte memAbsoluteY()
 		{
 			mem_address addr = readNextMemAddress();
-			byte page = addr.high();
-			addr += y;
-			if (addr.high() > page) instruction.increaseCycles(1);
+			if (addr.add(y)) instruction.increaseCycles(1);
 			return memory.memRead(addr);
 		}
-		
 		byte memZeroPage()
 		{
 			return memory.memRead(readNextByte());
@@ -99,18 +99,11 @@ namespace mos6502
 			return memory.memRead(mem_address{val}.addLow(x));
 		}
 
-		byte memIndirect()
-		{
-			mem_address addr = readMemAddress(mem_address{memZeroPage()});
-			return memory.memRead(addr);
-		}
-
+		// indexed addressing
 		byte memAbsuluteIndexed()
 		{
 			mem_address addr = readNextMemAddress();
-			byte page = addr.high();
-			addr += x;
-			if (addr.high() > page) instruction.increaseCycles(1);
+			if (addr.add(x)) instruction.increaseCycles(1);
 			return memory.memRead(addr);
 		}
 		byte memIndexedIndirect()
@@ -121,12 +114,11 @@ namespace mos6502
 		byte memIndirectIndexed()
 		{
 			mem_address addr = readMemAddress(mem_address{readNextByte()});
-			byte page = addr.high();
-			addr += y;
-			if (addr.high() > page) instruction.increaseCycles(1);
+			if (addr.add(y)) instruction.increaseCycles(1);
 			return memory.memRead(addr);
 		}
 
+		// interrupts
 		void interruptReset();
 
 	public:
