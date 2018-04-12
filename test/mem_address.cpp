@@ -51,9 +51,7 @@ TEST_CASE("mem_address math", "[mem_address]")
 	REQUIRE(addr3.value == 5);
 	mem_address addr4 = addr3 + 90;
 	REQUIRE(addr4.value == 95);
-
-	addr4.low() += 161;
-	REQUIRE(addr4.value == 0);
+	REQUIRE(addr4.addLow(161) == 0);
 
 	addr4.high() += 1;
 	REQUIRE(addr4.value == 256);
