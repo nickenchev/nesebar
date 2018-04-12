@@ -54,7 +54,6 @@ namespace mos6502
 			return memory.memRead(address);
 		}
 		byte readNextByte() { return readByte(pc + 1); }
-
 		mem_address readMemAddress(const mem_address &address)
 		{
 			return mem_address(memory.memRead(address), memory.memRead(address + 1));
@@ -62,6 +61,10 @@ namespace mos6502
 		mem_address readNextMemAddress() { return readMemAddress(pc + 1); }
 
 		byte memImmediate()
+		{
+			return readNextByte();
+		}
+		char memRelative()
 		{
 			return readNextByte();
 		}
