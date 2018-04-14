@@ -24,7 +24,7 @@ namespace mos6502
 		NegativeResult = 6
 	};
 
-	template<typename MemType>
+	template<typename MemType, bool DecimalMode>
 	class Core
 	{
 		constexpr static uint16_t stackAddress = 0x0100;
@@ -56,6 +56,7 @@ namespace mos6502
 		{
 			status.reset(static_cast<int>(flag));
 		}
+		short getCarry() const { return getStatus(CPUStatus::Carry) ? 1 : 0; }
 
 		void updateStatusFlags();
 		bool checkBit(const byte &reg, short bitNumber) const

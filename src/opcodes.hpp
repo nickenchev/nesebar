@@ -8,10 +8,9 @@ namespace mos6502
 {
 	namespace OpCodes
 	{
-		using namespace std;
 		constexpr auto pair(const Instruction &inst)
 		{
-			return make_pair(inst, &inst);
+			return std::make_pair(inst, &inst);
 		}
 
 		static constexpr Instruction ADC_IMMED(0x69, "ADC", 2, 2);
@@ -22,6 +21,15 @@ namespace mos6502
 		static constexpr Instruction ADC_ABS_Y(0x79, "ADC", 3, 4);
 		static constexpr Instruction ADC_IND_X(0x61, "ADC", 2, 6);
 		static constexpr Instruction ADC_IND_Y(0x71, "ADC", 2, 5);
+
+        static constexpr Instruction AND_IMMED(0x29, "AND", 2, 2);
+        static constexpr Instruction AND_ZERO(0x25, "AND", 2, 3);
+        static constexpr Instruction AND_ZERO_X(0x35, "AND", 2, 4);
+        static constexpr Instruction AND_ABS(0x2d, "AND", 3, 4);
+        static constexpr Instruction AND_ABS_X(0x3d, "AND", 3, 4);
+        static constexpr Instruction AND_ABS_Y(0x39, "AND", 3, 4);
+        static constexpr Instruction AND_IND_X(0x21, "AND", 2, 6);
+        static constexpr Instruction AND_IND_Y(0x31, "AND", 2, 5);
 
 		static constexpr Instruction BRK(0x00, "BRK", 1, 7);
 
@@ -37,7 +45,7 @@ namespace mos6502
 		static constexpr Instruction CLD(0xd8, "CLD", 1, 1);
 		static constexpr Instruction SEI(0x78, "SEI", 1, 2);
 
-		static const map<const byte, const Instruction *> opCodeMap = {
+		static const std::map<const byte, const Instruction *> opCodeMap = {
 			pair(ADC_IMMED),
 			pair(ADC_ZERO),
 			pair(ADC_ZERO_X),

@@ -6,8 +6,8 @@
 
 using namespace mos6502;
 
-template<typename MemType>
-Core<MemType>::Core(MemType &memory) : memory(memory)
+template<typename MemType, bool DecimalMode>
+Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
 {
 	x = y = a = 0;
 
@@ -19,11 +19,10 @@ Core<MemType>::Core(MemType &memory) : memory(memory)
 	memory.memWrite(0x4017, 0); // frame IRQ enable
 }
 
-template<typename MemType>
-bool Core<MemType>::step()
+template<typename MemType, bool DecimalMode>
+bool Core<MemType, DecimalMode>::step()
 {
 	using namespace mos6502::OpCodes;
-	using namespace std;
 
 	bool keepGoing = true;
 	byte opcode = readByte(pc);
@@ -33,9 +32,24 @@ bool Core<MemType>::step()
 	{
 		case ADC_IMMED:
 		{
+			if constexpr(DecimalMode)
+			{
+			}
 			setInstruction(ADC_IMMED);
-			a += memImmediate();
-			if (getStatus(CPUStatus::Carry)) ++a;
+			a += memAbsolute() + getCarry();
+			updateStatusFlags();
+			break;
+		}
+		case ADC_ZERO:
+		{
+			setInstruction(ADC_ZERO);
+			a += memZeroPage() + getCarry();
+			break;
+		}
+		case ADC_ZERO_X:
+		{
+			setInstruction(ADC_ZERO_X);
+			a += memZeroPageX() + getCarry();
 			break;
 		}
 		case BRK:
@@ -123,27 +137,27 @@ bool Core<MemType>::step()
 	return keepGoing;
 }
 
-void logInstruction(const mem_address &pc, const byte &opcode)
-{
-	auto name = mos6502::OpCodes::opCodeMap.at(opcode)->name;
-
-	std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
-	std::cout << ' ' << std::setw(2) << (int)opcode << ' ';
-	std::cout << name << std::endl;
-}
-
-template<typename MemType>
-void Core<MemType>::updateStatusFlags()
+template<typename MemType, bool DecimalMode>
+void Core<MemType, DecimalMode>::updateStatusFlags()
 {
 	if (a == 0) setStatus(CPUStatus::ZeroResult);
 	if (checkBit(a, 7)) setStatus(CPUStatus::NegativeResult);
 }
 
-template <typename MemType>
-void Core<MemType>::interruptReset()
+template<typename MemType, bool DecimalMode>
+void Core<MemType, DecimalMode>::interruptReset()
 {
 	sp = 0xfd;
 	pc = readMemAddress(0xfffc);
 }
 
-template class mos6502::Core<NESMemory>;
+void logInstruction(const mem_address &pc, const byte &opcode)
+{
+	auto &inst = mos6502::OpCodes::opCodeMap.at(opcode);
+
+	std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
+	std::cout << ' ' << std::setw(2) << (int)opcode << ' ';
+	std::cout << inst->name << std::endl;
+}
+
+template class mos6502::Core<NESMemory, false>;

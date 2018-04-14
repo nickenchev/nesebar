@@ -3,7 +3,7 @@ project(nesebar)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
-set(CMAKE_CXX_FLAGS "-std=c++14")
+set(CMAKE_CXX_FLAGS "-std=c++17")
 
 add_executable(nesebar
   src/main.cpp
