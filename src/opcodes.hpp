@@ -2,34 +2,17 @@
 #define OPCODES_H
 
 #include <tuple>
+#include "instruction.hpp"
 
 namespace mos6502
 {
 	namespace OpCodes
 	{
 		using namespace std;
-
-		struct Instruction {
-			const byte opcode;
-			const char *name;
-			const short byteSize;
-			const short cycles;
-
-			constexpr Instruction(const byte opcode, const char *name, short byteSize, short cycles) : opcode(opcode),
-				name(name), byteSize(byteSize), cycles(cycles)
-			{
-			}
-
-			constexpr auto pair() const
-			{
-				return make_pair(opcode, this);
-			}
-
-			constexpr operator byte() const
-			{
-				return opcode;
-			}
-		};
+		constexpr auto pair(const Instruction &inst)
+		{
+			return make_pair(inst, &inst);
+		}
 
 		static constexpr Instruction ADC_IMMED(0x69, "ADC", 2, 2);
 		static constexpr Instruction ADC_ZERO(0x65, "ADC", 2, 3);
@@ -55,9 +38,17 @@ namespace mos6502
 		static constexpr Instruction SEI(0x78, "SEI", 1, 2);
 
 		static const map<const byte, const Instruction *> opCodeMap = {
-			BRK.pair(),
-			CLD.pair(),
-			SEI.pair(),
+			pair(ADC_IMMED),
+			pair(ADC_ZERO),
+			pair(ADC_ZERO_X),
+			pair(ADC_ABS),
+			pair(ADC_ABS_X),
+			pair(ADC_ABS_Y),
+			pair(ADC_IND_X),
+			pair(ADC_IND_Y),
+			pair(BRK),
+			pair(CLD),
+			pair(SEI),
 		};
 	};
 };

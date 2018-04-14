@@ -34,6 +34,8 @@ bool Core<MemType>::step()
 		case ADC_IMMED:
 		{
 			setInstruction(ADC_IMMED);
+			a += memImmediate();
+			if (getStatus(CPUStatus::Carry)) ++a;
 			break;
 		}
 		case BRK:

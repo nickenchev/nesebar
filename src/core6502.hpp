@@ -9,6 +9,7 @@
 #include "common.hpp"
 #include "mem_address.hpp"
 #include "opcodes.hpp"
+#include "instruction.hpp"
 
 namespace mos6502
 {
@@ -38,12 +39,15 @@ namespace mos6502
 		short cycles = 0;
 		short byteStep = 0;
 
-		void setInstruction(const OpCodes::Instruction &inst)
+		void setInstruction(const Instruction &inst)
 		{
 			cycles = inst.cycles;
 			byteStep = inst.byteSize;
 		}
-
+		bool getStatus(CPUStatus flag) const
+		{
+			return status.test(static_cast<int>(flag));
+		}
 		void setStatus(CPUStatus flag)
 		{
 			status.set(static_cast<int>(flag));
