@@ -5,9 +5,9 @@
 #include <bitset>
 #include <cstdint>
 #include <vector>
+#include <map>
 #include "common.hpp"
 #include "mem_address.hpp"
-#include "instruction.hpp"
 
 namespace mos6502
 {
@@ -28,11 +28,14 @@ namespace mos6502
 		constexpr static uint16_t stackAddress = 0x0100;
 		constexpr static byte stackSize = 0xff;
 
+		using OpMap = std::map<byte, std::string>;
+		static OpMap opcodeMap;
 		MemType &memory;
 		byte a, x, y, sp;
 		mem_address pc;
 		std::bitset<7> status;
-		Instruction instruction;
+		short cycles = 0;
+		short pcStep = 0;
 
 		void setStatus(CPUStatus flag)
 		{
@@ -80,13 +83,13 @@ namespace mos6502
 		byte memAbsoluteX()
 		{
 			mem_address addr = readNextMemAddress();
-			if (addr.add(x)) instruction.increaseCycles(1);
+			if (addr.add(x)) ++cycles;
 			return memory.memRead(addr);
 		}
 		byte memAbsoluteY()
 		{
 			mem_address addr = readNextMemAddress();
-			if (addr.add(y)) instruction.increaseCycles(1);
+			if (addr.add(y)) ++cycles;
 			return memory.memRead(addr);
 		}
 		byte memZeroPage()
@@ -103,7 +106,7 @@ namespace mos6502
 		byte memAbsuluteIndexed()
 		{
 			mem_address addr = readNextMemAddress();
-			if (addr.add(x)) instruction.increaseCycles(1);
+			if (addr.add(x)) ++cycles;
 			return memory.memRead(addr);
 		}
 		byte memIndexedIndirect()
@@ -114,7 +117,7 @@ namespace mos6502
 		byte memIndirectIndexed()
 		{
 			mem_address addr = readMemAddress(mem_address{readNextByte()});
-			if (addr.add(y)) instruction.increaseCycles(1);
+			if (addr.add(y)) ++cycles;
 			return memory.memRead(addr);
 		}
 

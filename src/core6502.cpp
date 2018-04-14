@@ -3,6 +3,7 @@
 #include <iomanip>
 #include "core6502.hpp"
 #include "nesmemory.hpp"
+#include "opcodes.hpp"
 
 using namespace mos6502;
 
@@ -23,78 +24,97 @@ template<typename MemType>
 bool Core<MemType>::step()
 {
 	bool keepGoing = true;
-	byte opCode = readByte(pc);
-	switch (opCode)
+	byte opcode = readByte(pc);
+	using namespace mos6502;
+	switch (opcode)
 	{
-		case 0x00:
+		case OpCodes::BRK:
 		{
-			instruction.begin("BRK", 1, 7);
+			cycles = 7;
+			pcStep = 1;
 			setStatus(CPUStatus::BreakCommand);
 			break;
 		}
 		case 0x01:
 		{
-			instruction.begin("ORA", 2, 6);
-			a = a | memAbsolute() + x;
+			cycles = 6;
+			pcStep = 2;
+			a = a | memIndexedIndirect();
 			updateStatusFlags();
 			break;
 		}
 		case 0x05:
 		{
-			instruction.begin("ORA", 2, 3);
+			cycles = 3;
+			pcStep = 2;
 			a = a | memZeroPage();
 			updateStatusFlags();
 			break;
 		}
 		case 0x09:
 		{
-			instruction.begin("ORA", 2, 2);
+			cycles = 2;
+			pcStep = 2;
 			a = a | memImmediate();
 			updateStatusFlags();
 			break;
 		}
 		case 0x0d:
 		{
-			instruction.begin("ORA", 3, 4);
+			cycles = 4;
+			pcStep = 3;
 			a = a | memAbsolute();
+			updateStatusFlags();
+			break;
+		}
+		case 0x11:
+		{
+			cycles = 5;
+			pcStep = 2;
+			a = a | memIndirectIndexed();
 			updateStatusFlags();
 			break;
 		}
 		case 0x15:
 		{
-			instruction.begin("ORA", 2, 4);
-			a = a | memZeroPage() + x;
+			cycles = 4;
+			pcStep = 2;
+			a = a | memZeroPageX();
 			updateStatusFlags();
 			break;
 		}
 		case 0x19:
 		{
-			instruction.begin("ORA", 3, 4);
+			cycles = 4;
+			pcStep = 3;
 			a = a | memAbsoluteY();
 			updateStatusFlags();
 			break;
 		}
 		case 0x1d:
 		{
-			instruction.begin("ORA", 3, 4);
+			cycles = 4;
+			pcStep = 3;
 			a = a | memAbsoluteX();
 			updateStatusFlags();
 			break;
 		}
-		case 0x78:
+		case OpCodes::SEI:
 		{
-			instruction.begin("SEI", 1, 2);
+			cycles = 2;
+			pcStep = 1;
 			setStatus(CPUStatus::InterruptDisable);
 			break;
 		}
 		case 0xa9:
 		{
-			instruction.begin("LDA", 2, 2);
+			//instruction.begin(opcode, "LDA", 2, 2);
 			break;
 		}
-		case 0xd8:
+		case OpCodes::CLD:
 		{
-			instruction.begin("CLD", 1, 1);
+			cycles = 1;
+			pcStep = 1;
 			clearStatus(CPUStatus::DecimalMode);
 			break;
 		}
@@ -104,20 +124,9 @@ bool Core<MemType>::step()
 			break;
 		}
 	}
-
-	logInstruction(instruction, pc, opCode);
-
-	pc.value += instruction.getStepSize();
-	instruction.end();
+	pc += pcStep;
 
 	return keepGoing;
-}
-
-void logInstruction(const Instruction &inst, const mem_address &pc, const byte &opCode)
-{
-	std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
-	std::cout << ' ' << std::setw(2) << (int)opCode << ' ';
-	std::cout << inst.getName() << std::endl;
 }
 
 template<typename MemType>
@@ -133,5 +142,18 @@ void Core<MemType>::interruptReset()
 	sp = 0xfd;
 	pc = readMemAddress(0xfffc);
 }
+
+template <typename MemType>
+typename Core<MemType>::OpMap Core<MemType>::opcodeMap = {
+	{ 0x00, "BRK" },
+	{ 0x01, "ORA" },
+	{ 0x05, "ORA" },
+	{ 0x09, "ORA" },
+	{ 0x0d, "ORA" },
+	{ 0x11, "ORA" },
+	{ 0x15, "ORA" },
+	{ 0x19, "ORA" },
+	{ 0x1d, "ORA" },
+};
 
 template class mos6502::Core<NESMemory>;
