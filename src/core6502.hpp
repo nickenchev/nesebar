@@ -8,6 +8,7 @@
 #include <map>
 #include "common.hpp"
 #include "mem_address.hpp"
+#include "opcodes.hpp"
 
 namespace mos6502
 {
@@ -35,7 +36,13 @@ namespace mos6502
 		mem_address pc;
 		std::bitset<7> status;
 		short cycles = 0;
-		short pcStep = 0;
+		short byteStep = 0;
+
+		void setInstruction(const OpCodes::Instruction &inst)
+		{
+			cycles = inst.cycles;
+			byteStep = inst.byteSize;
+		}
 
 		void setStatus(CPUStatus flag)
 		{

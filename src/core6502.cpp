@@ -3,7 +3,6 @@
 #include <iomanip>
 #include "core6502.hpp"
 #include "nesmemory.hpp"
-#include "opcodes.hpp"
 
 using namespace mos6502;
 
@@ -28,96 +27,86 @@ bool Core<MemType>::step()
 
 	bool keepGoing = true;
 	byte opcode = readByte(pc);
+	logInstruction(pc, opcode);
 
 	switch (opcode)
 	{
-		case get<0>(BRK):
+		case ADC_IMMED:
 		{
-			cycles = 7;
-			pcStep = 1;
+			setInstruction(ADC_IMMED);
+			break;
+		}
+		case BRK:
+		{
+			setInstruction(BRK);
 			setStatus(CPUStatus::BreakCommand);
 			break;
 		}
-		case get<0>(ORA_IND_X):
+		case ORA_IND_X:
 		{
-			cycles = 6;
-			pcStep = 2;
+			setInstruction(ORA_IND_X);
 			a = a | memIndexedIndirect();
 			updateStatusFlags();
 			break;
 		}
-		case get<0>(ORA_ZERO):
+		case ORA_ZERO:
 		{
-			cycles = 3;
-			pcStep = 2;
+			setInstruction(ORA_ZERO);
 			a = a | memZeroPage();
 			updateStatusFlags();
 			break;
 		}
-		case get<0>(ORA_IMMED):
+		case ORA_IMMED:
 		{
-			cycles = 2;
-			pcStep = 2;
+			setInstruction(ORA_IMMED);
 			a = a | memImmediate();
 			updateStatusFlags();
 			break;
 		}
-		case get<0>(ORA_ABS):
+		case ORA_ABS:
 		{
-			cycles = 4;
-			pcStep = 3;
+			setInstruction(ORA_ABS);
 			a = a | memAbsolute();
 			updateStatusFlags();
 			break;
 		}
-		case get<0>(ORA_IND_Y):
+		case ORA_IND_Y:
 		{
-			cycles = 5;
-			pcStep = 2;
+			setInstruction(ORA_IND_Y);
 			a = a | memIndirectIndexed();
 			updateStatusFlags();
 			break;
 		}
-		case get<0>(ORA_ZERO_X):
+		case ORA_ZERO_X:
 		{
-			cycles = 4;
-			pcStep = 2;
+			setInstruction(ORA_ZERO_X);
 			a = a | memZeroPageX();
 			updateStatusFlags();
 			break;
 		}
-		case get<0>(ORA_ABS_Y):
+		case ORA_ABS_Y:
 		{
-			cycles = 4;
-			pcStep = 3;
+			setInstruction(ORA_ABS_Y);
 			a = a | memAbsoluteY();
 			updateStatusFlags();
 			break;
 		}
-		case 0x1d:
+		case ORA_ABS_X:
 		{
-			cycles = 4;
-			pcStep = 3;
+			setInstruction(ORA_ABS_X);
 			a = a | memAbsoluteX();
 			updateStatusFlags();
 			break;
 		}
-		case get<0>(SEI):
+		case SEI:
 		{
-			cycles = 2;
-			pcStep = 1;
+			setInstruction(SEI);
 			setStatus(CPUStatus::InterruptDisable);
 			break;
 		}
-		case 0xa9:
+		case CLD:
 		{
-			//instruction.begin(opcode, "LDA", 2, 2);
-			break;
-		}
-		case get<0>(CLD):
-		{
-			cycles = 1;
-			pcStep = 1;
+			setInstruction(CLD);
 			clearStatus(CPUStatus::DecimalMode);
 			break;
 		}
@@ -127,15 +116,14 @@ bool Core<MemType>::step()
 			break;
 		}
 	}
-	logInstruction(pc, opcode);
-	pc += pcStep;
+	pc += byteStep;
 
 	return keepGoing;
 }
 
 void logInstruction(const mem_address &pc, const byte &opcode)
 {
-	std::string name = mos6502::OpCodes::opCodeMap[opcode];
+	auto name = mos6502::OpCodes::opCodeMap.at(opcode)->name;
 
 	std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
 	std::cout << ' ' << std::setw(2) << (int)opcode << ' ';
