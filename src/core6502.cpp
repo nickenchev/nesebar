@@ -146,17 +146,4 @@ void Core<MemType>::interruptReset()
 	pc = readMemAddress(0xfffc);
 }
 
-template <typename MemType>
-typename Core<MemType>::OpMap Core<MemType>::opcodeMap = {
-	{ 0x00, "BRK" },
-	{ 0x01, "ORA" },
-	{ 0x05, "ORA" },
-	{ 0x09, "ORA" },
-	{ 0x0d, "ORA" },
-	{ 0x11, "ORA" },
-	{ 0x15, "ORA" },
-	{ 0x19, "ORA" },
-	{ 0x1d, "ORA" },
-};
-
 template class mos6502::Core<NESMemory>;
