@@ -23,19 +23,22 @@ Core<MemType>::Core(MemType &memory) : memory(memory)
 template<typename MemType>
 bool Core<MemType>::step()
 {
+	using namespace mos6502::OpCodes;
+	using namespace std;
+
 	bool keepGoing = true;
 	byte opcode = readByte(pc);
-	using namespace mos6502;
+
 	switch (opcode)
 	{
-		case OpCodes::BRK:
+		case get<0>(BRK):
 		{
 			cycles = 7;
 			pcStep = 1;
 			setStatus(CPUStatus::BreakCommand);
 			break;
 		}
-		case 0x01:
+		case get<0>(ORA_IND_X):
 		{
 			cycles = 6;
 			pcStep = 2;
@@ -43,7 +46,7 @@ bool Core<MemType>::step()
 			updateStatusFlags();
 			break;
 		}
-		case 0x05:
+		case get<0>(ORA_ZERO):
 		{
 			cycles = 3;
 			pcStep = 2;
@@ -51,7 +54,7 @@ bool Core<MemType>::step()
 			updateStatusFlags();
 			break;
 		}
-		case 0x09:
+		case get<0>(ORA_IMMED):
 		{
 			cycles = 2;
 			pcStep = 2;
@@ -59,7 +62,7 @@ bool Core<MemType>::step()
 			updateStatusFlags();
 			break;
 		}
-		case 0x0d:
+		case get<0>(ORA_ABS):
 		{
 			cycles = 4;
 			pcStep = 3;
@@ -67,7 +70,7 @@ bool Core<MemType>::step()
 			updateStatusFlags();
 			break;
 		}
-		case 0x11:
+		case get<0>(ORA_IND_Y):
 		{
 			cycles = 5;
 			pcStep = 2;
@@ -75,7 +78,7 @@ bool Core<MemType>::step()
 			updateStatusFlags();
 			break;
 		}
-		case 0x15:
+		case get<0>(ORA_ZERO_X):
 		{
 			cycles = 4;
 			pcStep = 2;
@@ -83,7 +86,7 @@ bool Core<MemType>::step()
 			updateStatusFlags();
 			break;
 		}
-		case 0x19:
+		case get<0>(ORA_ABS_Y):
 		{
 			cycles = 4;
 			pcStep = 3;
@@ -99,7 +102,7 @@ bool Core<MemType>::step()
 			updateStatusFlags();
 			break;
 		}
-		case OpCodes::SEI:
+		case get<0>(SEI):
 		{
 			cycles = 2;
 			pcStep = 1;
@@ -111,7 +114,7 @@ bool Core<MemType>::step()
 			//instruction.begin(opcode, "LDA", 2, 2);
 			break;
 		}
-		case OpCodes::CLD:
+		case get<0>(CLD):
 		{
 			cycles = 1;
 			pcStep = 1;
@@ -124,9 +127,19 @@ bool Core<MemType>::step()
 			break;
 		}
 	}
+	logInstruction(pc, opcode);
 	pc += pcStep;
 
 	return keepGoing;
+}
+
+void logInstruction(const mem_address &pc, const byte &opcode)
+{
+	std::string name = mos6502::OpCodes::opCodeMap[opcode];
+
+	std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
+	std::cout << ' ' << std::setw(2) << (int)opcode << ' ';
+	std::cout << name << std::endl;
 }
 
 template<typename MemType>
