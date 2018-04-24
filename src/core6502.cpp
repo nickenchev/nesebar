@@ -32,24 +32,50 @@ bool Core<MemType, DecimalMode>::step()
 	{
 		case ADC_IMMED:
 		{
-			if constexpr(DecimalMode)
-			{
-			}
 			setInstruction(ADC_IMMED);
-			a += memAbsolute() + getCarry();
-			updateStatusFlags();
+			addWithCarry(memAbsolute());
 			break;
 		}
 		case ADC_ZERO:
 		{
 			setInstruction(ADC_ZERO);
-			a += memZeroPage() + getCarry();
+			addWithCarry(memZeroPage());
 			break;
 		}
 		case ADC_ZERO_X:
 		{
 			setInstruction(ADC_ZERO_X);
-			a += memZeroPageX() + getCarry();
+			addWithCarry(memZeroPageX());
+			break;
+		}
+		case ADC_ABS:
+		{
+			setInstruction(ADC_ABS);
+			addWithCarry(ADC_ABS);
+			break;
+		}
+		case ADC_ABS_X:
+		{
+			setInstruction(ADC_ABS_X);
+			addWithCarry(ADC_ABS_X);
+			break;
+		}
+		case ADC_ABS_Y:
+		{
+			setInstruction(ADC_ABS_Y);
+			addWithCarry(ADC_ABS_Y);
+			break;
+		}
+		case ADC_IND_X:
+		{
+			setInstruction(ADC_IND_X);
+			addWithCarry(memIndexedIndirect());
+			break;
+		}
+		case ADC_IND_Y:
+		{
+			setInstruction(ADC_IND_Y);
+			addWithCarry(memIndirectIndexed());
 			break;
 		}
 		case BRK:
@@ -62,56 +88,48 @@ bool Core<MemType, DecimalMode>::step()
 		{
 			setInstruction(ORA_IND_X);
 			a = a | memIndexedIndirect();
-			updateStatusFlags();
 			break;
 		}
 		case ORA_ZERO:
 		{
 			setInstruction(ORA_ZERO);
 			a = a | memZeroPage();
-			updateStatusFlags();
 			break;
 		}
 		case ORA_IMMED:
 		{
 			setInstruction(ORA_IMMED);
 			a = a | memImmediate();
-			updateStatusFlags();
 			break;
 		}
 		case ORA_ABS:
 		{
 			setInstruction(ORA_ABS);
 			a = a | memAbsolute();
-			updateStatusFlags();
 			break;
 		}
 		case ORA_IND_Y:
 		{
 			setInstruction(ORA_IND_Y);
 			a = a | memIndirectIndexed();
-			updateStatusFlags();
 			break;
 		}
 		case ORA_ZERO_X:
 		{
 			setInstruction(ORA_ZERO_X);
 			a = a | memZeroPageX();
-			updateStatusFlags();
 			break;
 		}
 		case ORA_ABS_Y:
 		{
 			setInstruction(ORA_ABS_Y);
 			a = a | memAbsoluteY();
-			updateStatusFlags();
 			break;
 		}
 		case ORA_ABS_X:
 		{
 			setInstruction(ORA_ABS_X);
 			a = a | memAbsoluteX();
-			updateStatusFlags();
 			break;
 		}
 		case SEI:
@@ -132,6 +150,7 @@ bool Core<MemType, DecimalMode>::step()
 			break;
 		}
 	}
+	updateStatusFlags();
 	pc += byteStep;
 
 	return keepGoing;

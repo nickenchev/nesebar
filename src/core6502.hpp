@@ -27,9 +27,6 @@ namespace mos6502
 	template<typename MemType, bool DecimalMode>
 	class Core
 	{
-		constexpr static uint16_t stackAddress = 0x0100;
-		constexpr static byte stackSize = 0xff;
-
 		using OpMap = std::map<byte, std::string>;
 		static OpMap opcodeMap;
 		MemType &memory;
@@ -44,6 +41,8 @@ namespace mos6502
 			cycles = inst.cycles;
 			byteStep = inst.byteSize;
 		}
+
+		// status management
 		bool getStatus(CPUStatus flag) const
 		{
 			return status.test(static_cast<int>(flag));
@@ -56,14 +55,14 @@ namespace mos6502
 		{
 			status.reset(static_cast<int>(flag));
 		}
-		short getCarry() const { return getStatus(CPUStatus::Carry) ? 1 : 0; }
-
-		void updateStatusFlags();
 		bool checkBit(const byte &reg, short bitNumber) const
 		{
 			return reg & (1 << bitNumber);
 		}
+		short getCarry() const { return getStatus(CPUStatus::Carry) ? 1 : 0; }
+		void updateStatusFlags();
 
+		// Memory access
 		byte readByte(const mem_address &address)
 		{
 			return memory.memRead(address);
@@ -75,6 +74,7 @@ namespace mos6502
 		}
 		mem_address readNextMemAddress() { return readMemAddress(pc + 1); }
 
+		// Memory Addressing
 		byte memImmediate()
 		{
 			return readNextByte();
@@ -131,6 +131,28 @@ namespace mos6502
 			mem_address addr = readMemAddress(mem_address{readNextByte()});
 			if (addr.add(y)) ++cycles;
 			return memory.memRead(addr);
+		}
+
+		// Common math
+		void addWithCarry(const byte &data)
+		{
+			if constexpr(DecimalMode)
+			{
+				// TODO: Decimal mode for other systems
+			}
+			else
+			{
+				uint16_t sum = a + data + getCarry();
+				if (sum > 0xff)
+				{
+					setStatus(CPUStatus::Carry);
+				}
+				else if (sum > 127 || sum < -128)
+				{
+					setStatus(CPUStatus::Overflow);
+				}
+				a = sum & 0xff; // take only 8-bits of 16-bit result
+			}
 		}
 
 		// interrupts
