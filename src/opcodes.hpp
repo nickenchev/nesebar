@@ -22,14 +22,14 @@ namespace mos6502
 		static constexpr Instruction ADC_IND_X(0x61, "ADC", 2, 6);
 		static constexpr Instruction ADC_IND_Y(0x71, "ADC", 2, 5);
 
-        static constexpr Instruction AND_IMMED(0x29, "AND", 2, 2);
-        static constexpr Instruction AND_ZERO(0x25, "AND", 2, 3);
-        static constexpr Instruction AND_ZERO_X(0x35, "AND", 2, 4);
-        static constexpr Instruction AND_ABS(0x2d, "AND", 3, 4);
-        static constexpr Instruction AND_ABS_X(0x3d, "AND", 3, 4);
-        static constexpr Instruction AND_ABS_Y(0x39, "AND", 3, 4);
-        static constexpr Instruction AND_IND_X(0x21, "AND", 2, 6);
-        static constexpr Instruction AND_IND_Y(0x31, "AND", 2, 5);
+		static constexpr Instruction AND_IMMED(0x29, "AND", 2, 2);
+		static constexpr Instruction AND_ZERO(0x25, "AND", 2, 3);
+		static constexpr Instruction AND_ZERO_X(0x35, "AND", 2, 4);
+		static constexpr Instruction AND_ABS(0x2d, "AND", 3, 4);
+		static constexpr Instruction AND_ABS_X(0x3d, "AND", 3, 4);
+		static constexpr Instruction AND_ABS_Y(0x39, "AND", 3, 4);
+		static constexpr Instruction AND_IND_X(0x21, "AND", 2, 6);
+		static constexpr Instruction AND_IND_Y(0x31, "AND", 2, 5);
 
 		static constexpr Instruction BRK(0x00, "BRK", 1, 7);
 
