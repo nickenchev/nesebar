@@ -43,7 +43,7 @@ namespace mos6502
 		}
 
 		// status management
-		bool getStatus(CPUStatus flag) const
+		bool isStatus(CPUStatus flag) const
 		{
 			return status.test(static_cast<int>(flag));
 		}
@@ -59,7 +59,7 @@ namespace mos6502
 		{
 			return reg & (1 << bitNumber);
 		}
-		short getCarry() const { return getStatus(CPUStatus::Carry) ? 1 : 0; }
+		short getCarry() const { return isStatus(CPUStatus::Carry) ? 1 : 0; }
 		void updateStatusFlags();
 
 		// Memory access
@@ -134,7 +134,7 @@ namespace mos6502
 		}
 
 		// Common math
-		void addWithCarry(const byte &data)
+		void addWithCarry(const signed_byte &a, const signed_byte &b)
 		{
 			if constexpr(DecimalMode)
 			{
@@ -142,16 +142,17 @@ namespace mos6502
 			}
 			else
 			{
-				uint16_t sum = a + data + getCarry();
-				if (sum > 0xff)
-				{
-					setStatus(CPUStatus::Carry);
-				}
-				else if (sum > 127 || sum < -128)
-				{
-					setStatus(CPUStatus::Overflow);
-				}
-				a = sum & 0xff; // take only 8-bits of 16-bit result
+				const signed_byte c = a + b;
+				// uint16_t sum = a + data + getCarry();
+				// if (sum > 0xff)
+				// {
+				// 	setStatus(CPUStatus::Carry);
+				// }
+				// else if (sum > 127 || sum < -128)
+				// {
+				// 	setStatus(CPUStatus::Overflow);
+				// }
+				// a = sum & 0xff; // take only 8-bits of 16-bit result
 			}
 		}
 

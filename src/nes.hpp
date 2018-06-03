@@ -14,14 +14,7 @@ class NES
 
 public:
 	NES(const NESCart &cart) : cart(cart), memory(cart), cpu(memory) { }
-
-	void run()
-	{
-		cpu.reset();
-		while (cpu.step())
-		{
-		}
-	}
+	void run();
 };
 
 #endif /* NES_H */

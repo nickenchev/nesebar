@@ -33,49 +33,49 @@ bool Core<MemType, DecimalMode>::step()
 		case ADC_IMMED:
 		{
 			setInstruction(ADC_IMMED);
-			addWithCarry(memAbsolute());
+			addWithCarry(a, memAbsolute());
 			break;
 		}
 		case ADC_ZERO:
 		{
 			setInstruction(ADC_ZERO);
-			addWithCarry(memZeroPage());
+			addWithCarry(a, memZeroPage());
 			break;
 		}
 		case ADC_ZERO_X:
 		{
 			setInstruction(ADC_ZERO_X);
-			addWithCarry(memZeroPageX());
+			addWithCarry(a, memZeroPageX());
 			break;
 		}
 		case ADC_ABS:
 		{
 			setInstruction(ADC_ABS);
-			addWithCarry(ADC_ABS);
+			addWithCarry(a, memAbsolute());
 			break;
 		}
 		case ADC_ABS_X:
 		{
 			setInstruction(ADC_ABS_X);
-			addWithCarry(ADC_ABS_X);
+			addWithCarry(a, memAbsoluteX());
 			break;
 		}
 		case ADC_ABS_Y:
 		{
 			setInstruction(ADC_ABS_Y);
-			addWithCarry(ADC_ABS_Y);
+			addWithCarry(a, memAbsoluteY());
 			break;
 		}
 		case ADC_IND_X:
 		{
 			setInstruction(ADC_IND_X);
-			addWithCarry(memIndexedIndirect());
+			addWithCarry(a, memIndexedIndirect());
 			break;
 		}
 		case ADC_IND_Y:
 		{
 			setInstruction(ADC_IND_Y);
-			addWithCarry(memIndirectIndexed());
+			addWithCarry(a, memIndirectIndexed());
 			break;
 		}
 		case BRK:
