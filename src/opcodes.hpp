@@ -45,20 +45,6 @@ namespace mos6502
 
 		static constexpr Instruction CLD(0xd8, "CLD", 1, 1);
 		static constexpr Instruction SEI(0x78, "SEI", 1, 2);
-
-		static const std::map<const byte, const Instruction *> opCodeMap = {
-			pair(ADC_IMMED),
-			pair(ADC_ZERO),
-			pair(ADC_ZERO_X),
-			pair(ADC_ABS),
-			pair(ADC_ABS_X),
-			pair(ADC_ABS_Y),
-			pair(ADC_IND_X),
-			pair(ADC_IND_Y),
-			pair(BRK),
-			pair(CLD),
-			pair(SEI),
-		};
 	};
 };
 
