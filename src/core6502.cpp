@@ -1,6 +1,4 @@
 #include <string>
-#include <iostream>
-#include <iomanip>
 #include "core6502.hpp"
 #include "nesmemory.hpp"
 
@@ -26,7 +24,6 @@ bool Core<MemType, DecimalMode>::step()
 
 	bool keepGoing = true;
 	byte opcode = readByte(pc);
-	logInstruction(pc, opcode);
 
 	switch (opcode)
 	{
@@ -168,15 +165,6 @@ void Core<MemType, DecimalMode>::interruptReset()
 {
 	sp = 0xfd;
 	pc = readMemAddress(0xfffc);
-}
-
-void logInstruction(const mem_address &pc, const byte &opcode)
-{
-	auto &inst = mos6502::OpCodes::opCodeMap.at(opcode);
-
-	std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
-	std::cout << ' ' << std::setw(2) << (int)opcode << ' ';
-	std::cout << inst->name << std::endl;
 }
 
 template class mos6502::Core<NESMemory, false>;

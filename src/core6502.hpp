@@ -2,6 +2,7 @@
 #define CORE6502_H
 
 #include <iostream>
+#include <iomanip>
 #include <bitset>
 #include <cstdint>
 #include <vector>
@@ -24,6 +25,8 @@ namespace mos6502
 		NegativeResult = 6
 	};
 
+	void logInstruction(const mem_address &pc, const Instruction &inst);
+
 	template<typename MemType, bool DecimalMode>
 	class Core
 	{
@@ -36,6 +39,10 @@ namespace mos6502
 
 		void setInstruction(const Instruction &inst)
 		{
+			std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
+			std::cout << ' ' << std::setw(2) << (int)inst.opcode << ' ';
+			std::cout << inst.name << std::endl;
+
 			cycles = inst.cycles;
 			byteStep = inst.byteSize;
 		}
