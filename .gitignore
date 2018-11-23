@@ -1,5 +1,6 @@
 roms/
 .cquery_cached_index/
+.ccls-cache/
 *~
 build/
 compile_commands.json

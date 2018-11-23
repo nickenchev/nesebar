@@ -1,6 +1,8 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
+#include "common.hpp"
+
 namespace mos6502
 {
 	struct Instruction {

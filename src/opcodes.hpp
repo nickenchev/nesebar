@@ -2,6 +2,7 @@
 #define OPCODES_H
 
 #include <tuple>
+#include <map>
 #include "instruction.hpp"
 
 namespace mos6502

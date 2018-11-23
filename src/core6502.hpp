@@ -5,7 +5,7 @@
 #include <bitset>
 #include <cstdint>
 #include <vector>
-#include <map>
+
 #include "common.hpp"
 #include "mem_address.hpp"
 #include "opcodes.hpp"
@@ -27,8 +27,6 @@ namespace mos6502
 	template<typename MemType, bool DecimalMode>
 	class Core
 	{
-		using OpMap = std::map<byte, std::string>;
-		static OpMap opcodeMap;
 		MemType &memory;
 		byte a, x, y, sp;
 		mem_address pc;
