@@ -143,6 +143,7 @@ bool Core<MemType, DecimalMode>::step()
 		}
 		default:
 		{
+			std::cout << "Invalid opcode \"" << std::setw(2) << (int)opcode << "\", stopping." << std::endl;
 			keepGoing = false;
 			break;
 		}
