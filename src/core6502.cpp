@@ -140,12 +140,6 @@ bool Core<MemType, DecimalMode>::step()
 			sp = x;
 			break;
 		}
-		case LDA_ABS:
-		{
-			setInstruction(LDA_ABS);
-			a = memAbsolute();
-			break;
-		}
 		case SEI:
 		{
 			setInstruction(SEI);
@@ -153,12 +147,25 @@ bool Core<MemType, DecimalMode>::step()
 			break;
 		}
 		*/
+		case TXS:
+		{
+			setInstruction(TXS);
+			sp = x;
+			handleFlags<TXS.flagsAffected>();
+			break;
+		}
 		case LDX_IMMED:
 		{
 			setInstruction(LDX_IMMED);
 			x = memImmediate();
-
 			handleFlags<LDX_IMMED.flagsAffected>();
+			break;
+		}
+		case LDA_ABS:
+		{
+			setInstruction(LDA_ABS);
+			a = memAbsolute();
+			handleFlags<LDA_ABS.flagsAffected>();
 			break;
 		}
 		case CLD:

@@ -46,12 +46,13 @@ constexpr auto pair(const Instruction &inst)
 
 	static constexpr Instruction TXS(0x9a, "TXS", 1, 2); // Done
 
-	static constexpr Instruction LDA_ABS(0xad, "LDA", 3, 4); // Done
 
 	static constexpr Instruction SEI(0x78, "SEI", 1, 2);
 */
 
-static constexpr Instruction LDX_IMMED(0xa2, "LDX", 2, 2, 0b10000010);
+static constexpr Instruction TXS(0x9a, "TXS", 1, 2, 0);
+static constexpr Instruction LDX_IMMED(0xa2, "LDX #", 2, 2, 0b10000010);
+static constexpr Instruction LDA_ABS(0xad, "LDA $", 3, 4, 0b10000010);
 static constexpr Instruction CLD(0xd8, "CLD", 1, 1, 0b00001000);
 
 };
