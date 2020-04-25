@@ -5,22 +5,28 @@
 
 namespace mos6502
 {
-	struct Instruction {
-		const byte opcode;
-		const char *name;
-		const short byteSize;
-		const short cycles;
 
-		constexpr Instruction(const byte opcode, const char *name, short byteSize, short cycles) : opcode(opcode),
-			name(name), byteSize(byteSize), cycles(cycles)
-		{
-		}
+struct Instruction
+{
+	const byte opcode;
+	const char *name;
+	const short byteSize;
+	const short cycles;
+	const byte flagsAffected;
 
-		constexpr operator byte() const
-		{
-			return opcode;
-		}
-	};
+	constexpr Instruction(const byte opcode, const char *name,
+						  short byteSize, short cycles, byte flagsAffected)
+		: opcode(opcode), name(name), byteSize(byteSize),
+		  cycles(cycles), flagsAffected(flagsAffected)
+	{
+	}
+
+	constexpr operator byte() const
+	{
+		return opcode;
+	}
+};
+
 };
 
 #endif /* INSTRUCTION_H */

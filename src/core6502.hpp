@@ -14,165 +14,200 @@
 
 namespace mos6502
 {
-	enum class CPUStatus
+
+enum class Status
+{
+	Carry = 0,
+	ZeroResult = 1,
+	InterruptDisable = 2,
+	DecimalMode = 3,
+	BreakCommand = 4,
+	Unused = 5,
+	Overflow = 6,
+	NegativeResult = 7
+};
+
+constexpr auto status_int(const Status status)
+{
+	return static_cast<short>(status);
+}
+
+
+void logInstruction(const MemAddress &pc, const Instruction &inst);
+
+template<typename MemType, bool DecimalMode>
+class Core
+{
+	MemType &memory;
+	byte a, x, y, sp;
+	MemAddress pc;
+	std::bitset<7> status;
+	short cycles;
+	short byteStep;
+	byte instructionResult;
+	byte flagsAffected;
+
+	constexpr inline void setInstruction(const Instruction &inst)
 	{
-		Carry = 0,
-		ZeroResult = 1,
-		InterruptDisable = 2,
-		DecimalMode = 3,
-		BreakCommand = 4,
-		Overflow = 5,
-		NegativeResult = 6
-	};
+		std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
+		std::cout << ' ' << std::setw(2) << (int)inst.opcode << ' ';
+		std::cout << inst.name << std::endl;
 
-	void logInstruction(const MemAddress &pc, const Instruction &inst);
+		cycles = inst.cycles;
+		byteStep = inst.byteSize;
+		flagsAffected = inst.flagsAffected;
+	}
 
-	template<typename MemType, bool DecimalMode>
-	class Core
+	template<byte value, Status statusFlag>
+	constexpr static bool checkBit()
 	{
-		MemType &memory;
-		byte a, x, y, sp;
-		MemAddress pc;
-		std::bitset<7> status;
-		short cycles = 0;
-		short byteStep = 0;
+		return value & (1 << static_cast<short>(statusFlag));
+	}
 
-		void setInstruction(const Instruction &inst)
-		{
-			std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
-			std::cout << ' ' << std::setw(2) << (int)inst.opcode << ' ';
-			std::cout << inst.name << std::endl;
+	bool checkBit(const byte &reg, short bitNumber) const
+	{
+		return reg & (1 << bitNumber);
+	}
 
-			cycles = inst.cycles;
-			byteStep = inst.byteSize;
+	// status management
+	template<byte affectedFlags>
+	inline void handleFlags()
+	{
+		if constexpr (checkBit<affectedFlags, Status::NegativeResult>())
+		{
+			std::cout << "Negative Flag" << std::endl;
+			status[status_int(Status::NegativeResult)] = instructionResult < 0;
 		}
+		if constexpr (checkBit<affectedFlags, Status::ZeroResult>())
+		{
+			std::cout << "Zero Flag" << std::endl;
+			status[status_int(Status::NegativeResult)] = instructionResult == 0;
+		}
+	}
 
-		bool checkBit(const byte &reg, short bitNumber) const
-		{
-			return reg & (1 << bitNumber);
-		}
+	bool isStatus(Status flag) const
+	{
+		return status.test(static_cast<int>(flag));
+	}
+	short getCarry() const { return isStatus(Status::Carry) ? 1 : 0; }
 
-		// status management
-		bool isStatus(CPUStatus flag) const
-		{
-			return status.test(static_cast<int>(flag));
-		}
-		void setStatus(CPUStatus flag)
-		{
-			status.set(static_cast<int>(flag));
-		}
-		void clearStatus(CPUStatus flag)
-		{
-			status.reset(static_cast<int>(flag));
-		}
-		short getCarry() const { return isStatus(CPUStatus::Carry) ? 1 : 0; }
-		void updateStatusFlags();
+	// status flag logic
+	void updateFlagZero()
+	{
+		status[status_int(Status::ZeroResult)] = instructionResult == 0;
+	}
 
-		// Memory access
-		byte fetchByte()
-		{
-			return memory.memRead(pc + 1);
-		}
-		MemAddress readMemAddress(const MemAddress &address)
-		{
-			return MemAddress(memory.memRead(address), memory.memRead(address + 1));
-		}
-		MemAddress readNextMemAddress()
-		{
-			return readMemAddress(pc + 1);
-		}
+	void updateFlagNegative()
+	{
+		status[status_int(Status::NegativeResult)] = instructionResult < 0;
+	}
 
-		// Memory Addressing
-		byte memImmediate()
-		{
-			return fetchByte();
-		}
-		byte memRelative()
-		{
-			return fetchByte();
-		}
-		byte memIndirect()
-		{
-			MemAddress addr = readMemAddress(MemAddress{memZeroPage()});
-			return memory.memRead(addr);
-		}
-		byte memAbsolute()
-		{
-			return memory.memRead(readNextMemAddress());
-		}
-		byte memAbsoluteX()
-		{
-			MemAddress addr = readNextMemAddress();
-			if (addr.add(x)) ++cycles;
-			return memory.memRead(addr);
-		}
-		byte memAbsoluteY()
-		{
-			MemAddress addr = readNextMemAddress();
-			if (addr.add(y)) ++cycles;
-			return memory.memRead(addr);
-		}
-		byte memZeroPage()
-		{
-			return memory.memRead(fetchByte());
-		}
-		byte memZeroPageX()
-		{
-			byte val = fetchByte();
-			return memory.memRead(MemAddress{val}.addLow(x));
-		}
+	// Memory access
+	byte fetchByte()
+	{
+		return memory.memRead(pc + 1);
+	}
+	MemAddress readMemAddress(const MemAddress &address)
+	{
+		return MemAddress(memory.memRead(address), memory.memRead(address + 1));
+	}
+	MemAddress readNextMemAddress()
+	{
+		return readMemAddress(pc + 1);
+	}
 
-		// indexed addressing
-		byte memAbsuluteIndexed()
-		{
-			MemAddress addr = readNextMemAddress();
-			if (addr.add(x)) ++cycles;
-			return memory.memRead(addr);
-		}
-		byte memIndexedIndirect()
-		{
-			MemAddress addr = readMemAddress(MemAddress{memZeroPageX()});
-			return memory.memRead(addr);
-		}
-		byte memIndirectIndexed()
-		{
-			MemAddress addr = readMemAddress(MemAddress{fetchByte()});
-			if (addr.add(y)) ++cycles;
-			return memory.memRead(addr);
-		}
+	// Memory Addressing
+	byte memImmediate()
+	{
+		return fetchByte();
+	}
+	byte memRelative()
+	{
+		return fetchByte();
+	}
+	byte memIndirect()
+	{
+		MemAddress addr = readMemAddress(MemAddress{memZeroPage()});
+		return memory.memRead(addr);
+	}
+	byte memAbsolute()
+	{
+		return memory.memRead(readNextMemAddress());
+	}
+	byte memAbsoluteX()
+	{
+		MemAddress addr = readNextMemAddress();
+		if (addr.add(x)) ++cycles;
+		return memory.memRead(addr);
+	}
+	byte memAbsoluteY()
+	{
+		MemAddress addr = readNextMemAddress();
+		if (addr.add(y)) ++cycles;
+		return memory.memRead(addr);
+	}
+	byte memZeroPage()
+	{
+		return memory.memRead(fetchByte());
+	}
+	byte memZeroPageX()
+	{
+		byte val = fetchByte();
+		return memory.memRead(MemAddress{val}.addLow(x));
+	}
 
-		// Common math
-		void addWithCarry(const signed_byte &a, const signed_byte &b)
+	// indexed addressing
+	byte memAbsuluteIndexed()
+	{
+		MemAddress addr = readNextMemAddress();
+		if (addr.add(x)) ++cycles;
+		return memory.memRead(addr);
+	}
+	byte memIndexedIndirect()
+	{
+		MemAddress addr = readMemAddress(MemAddress{memZeroPageX()});
+		return memory.memRead(addr);
+	}
+	byte memIndirectIndexed()
+	{
+		MemAddress addr = readMemAddress(MemAddress{fetchByte()});
+		if (addr.add(y)) ++cycles;
+		return memory.memRead(addr);
+	}
+
+	// Common math
+	void addWithCarry(const signed_byte &a, const signed_byte &b)
+	{
+		if constexpr(DecimalMode)
 		{
-			if constexpr(DecimalMode)
-			{
-				// TODO: Decimal mode for other systems
-			}
-			else
-			{
-				const signed_byte c = a + b;
-				// uint16_t sum = a + data + getCarry();
-				// if (sum > 0xff)
-				// {
-				// 	setStatus(CPUStatus::Carry);
-				// }
-				// else if (sum > 127 || sum < -128)
-				// {
-				// 	setStatus(CPUStatus::Overflow);
-				// }
-				// a = sum & 0xff; // take only 8-bits of 16-bit result
-			}
+			// TODO: Decimal mode for other systems
 		}
+		else
+		{
+			const signed_byte c = a + b;
+			// uint16_t sum = a + data + getCarry();
+			// if (sum > 0xff)
+			// {
+			// 	setStatus(CPUStatus::Carry);
+			// }
+			// else if (sum > 127 || sum < -128)
+			// {
+			// 	setStatus(CPUStatus::Overflow);
+			// }
+			// a = sum & 0xff; // take only 8-bits of 16-bit result
+		}
+	}
 
-		// interrupts
-		void interruptReset();
+	// interrupts
+	void interruptReset();
 
-	public:
-		Core(MemType &memory);
+public:
+	Core(MemType &memory);
 
-		void reset() { interruptReset(); }
-		bool step();
-	};
+	void reset() { interruptReset(); }
+	bool step();
+};
+
 };
 
 #endif /* CORE6502_H */

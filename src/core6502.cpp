@@ -8,6 +8,10 @@ template<typename MemType, bool DecimalMode>
 Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
 {
 	x = y = a = 0;
+	cycles = 0;
+	byteStep = 0;
+	flagsAffected = 0;
+	instructionResult = 0;
 
 	for (MemAddress addr = 0x4000; addr <= 0x400F; ++addr)
 	{
@@ -27,6 +31,7 @@ bool Core<MemType, DecimalMode>::step()
 
 	switch (opcode)
 	{
+		/*
 		case ADC_IMMED:
 		{
 			setInstruction(ADC_IMMED);
@@ -135,12 +140,6 @@ bool Core<MemType, DecimalMode>::step()
 			sp = x;
 			break;
 		}
-		case LDX_IMMED:
-		{
-			setInstruction(LDX_IMMED);
-			x = memImmediate();
-			break;
-		}
 		case LDA_ABS:
 		{
 			setInstruction(LDA_ABS);
@@ -153,30 +152,32 @@ bool Core<MemType, DecimalMode>::step()
 			setStatus(CPUStatus::InterruptDisable);
 			break;
 		}
+		*/
+		case LDX_IMMED:
+		{
+			setInstruction(LDX_IMMED);
+			x = memImmediate();
+
+			handleFlags<LDX_IMMED.flagsAffected>();
+			break;
+		}
 		case CLD:
 		{
 			setInstruction(CLD);
-			clearStatus(CPUStatus::DecimalMode);
+			status[status_int(Status::DecimalMode)] = false;
 			break;
 		}
 		default:
 		{
-			std::cout << "Invalid opcode \"" << std::setw(2) << (int)opcode << "\", stopping." << std::endl;
+			std::cout << std::hex << "Invalid opcode \"" << std::setw(2)
+					  << (int)opcode << "\", stopping." << std::endl;
 			keepGoing = false;
 			break;
 		}
 	}
-	updateStatusFlags();
 	pc += byteStep;
 
 	return keepGoing;
-}
-
-template<typename MemType, bool DecimalMode>
-void Core<MemType, DecimalMode>::updateStatusFlags()
-{
-	if (a == 0) setStatus(CPUStatus::ZeroResult);
-	if (checkBit(a, 7)) setStatus(CPUStatus::NegativeResult);
 }
 
 template<typename MemType, bool DecimalMode>
