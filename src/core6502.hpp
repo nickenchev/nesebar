@@ -58,15 +58,15 @@ class Core
 		flagsAffected = inst.flagsAffected;
 	}
 
+	bool checkBit(const byte &reg, short bitNumber) const
+	{
+		return reg & (1 << bitNumber);
+	}
+
 	template<byte value, Status statusFlag>
 	constexpr static bool checkBit()
 	{
 		return value & (1 << static_cast<short>(statusFlag));
-	}
-
-	bool checkBit(const byte &reg, short bitNumber) const
-	{
-		return reg & (1 << bitNumber);
 	}
 
 	// status management
