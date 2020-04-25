@@ -1,31 +1,31 @@
 #include "catch.hpp"
 
-#include "../src/mem_address.hpp"
+#include "../src/memaddress.hpp"
 
-TEST_CASE("mem_address initializations", "[mem_address]")
+TEST_CASE("MemAddress initializations", "[MemAddress]")
 {
-	mem_address addr;
+	MemAddress addr;
 	REQUIRE(addr.value == 0);
 
-	mem_address addr2{5, 11};
+	MemAddress addr2{5, 11};
 	REQUIRE(addr2.low() == 5);
 	REQUIRE(addr2.high() == 11);
 	REQUIRE(addr2.value == 2821);
 
-	mem_address addr3{2821};
+	MemAddress addr3{2821};
 	REQUIRE(addr3.low() == 5);
 	REQUIRE(addr3.high() == 11);
 	REQUIRE(addr3.value == 2821);
 
-	mem_address addr4 = 258;
+	MemAddress addr4 = 258;
 	REQUIRE(addr4.high() == 1);
 	REQUIRE(addr4.low() == 2);
 	REQUIRE(addr4.value == 258);
 }
 
-TEST_CASE("mem_address assignments", "[mem_address]")
+TEST_CASE("MemAddress assignments", "[MemAddress]")
 {
-	mem_address addr;
+	MemAddress addr;
 	addr.low() = 5;
 	addr.high() = 11;
 	REQUIRE(addr.low() == 5);
@@ -33,9 +33,9 @@ TEST_CASE("mem_address assignments", "[mem_address]")
 	REQUIRE(addr.value == 2821);
 }
 
-TEST_CASE("mem_address math", "[mem_address]")
+TEST_CASE("MemAddress math", "[MemAddress]")
 {
-	mem_address addr{250, 0};
+	MemAddress addr{250, 0};
 	addr.low() += 10;
 	REQUIRE(addr.low() == 4);
 	REQUIRE(addr.value == 4);
@@ -46,10 +46,10 @@ TEST_CASE("mem_address math", "[mem_address]")
 	REQUIRE(addr.high() == 1);
 
 	addr = 1;
-	mem_address addr2{4, 0};
-	mem_address addr3 = addr + addr2;
+	MemAddress addr2{4, 0};
+	MemAddress addr3 = addr + addr2;
 	REQUIRE(addr3.value == 5);
-	mem_address addr4 = addr3 + 90;
+	MemAddress addr4 = addr3 + 90;
 	REQUIRE(addr4.value == 95);
 	REQUIRE(addr4.addLow(161) == 0);
 

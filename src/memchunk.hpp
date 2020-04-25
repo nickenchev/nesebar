@@ -3,7 +3,7 @@
 
 #include <array>
 #include "common.hpp"
-#include "mem_address.hpp"
+#include "memaddress.hpp"
 
 template <typename T, unsigned int N>
 class MemChunk
@@ -11,7 +11,7 @@ class MemChunk
 	std::array<T, N> memory;
 
 public:
-	T &operator[](const mem_address &address)
+	T &operator[](const MemAddress &address)
 	{
 		return memory[address.value];
 	}

@@ -4,6 +4,23 @@
 #include "memchunk.hpp"
 #include "nescart.hpp"
 
+struct MappedMemAddress
+{
+	MemAddress address;
+	bool readOnly;
+
+	MappedMemAddress()
+	{
+		address = 0;
+		readOnly = false;
+	}
+	MappedMemAddress(const MemAddress &address, bool readOnly = false)
+	{
+		this->address = address;
+		this->readOnly = readOnly;
+	}
+};
+
 class NESMemory
 {
 	static constexpr unsigned int cpuMemSize = 65535;
@@ -18,15 +35,15 @@ public:
 	NESMemory(const NESCart &cart) : cart(cart)
 	{
 		// copy cart ROM into CPU memory directly
-		for (mem_address addr = 0; addr < cart.prgRom.size(); ++addr)
+		for (MemAddress addr = 0; addr < cart.prgRom.size(); ++addr)
 		{
 			memory[addr + 0x8000] = cart.prgRom[addr.value];
 		}
 	}
 
-	mem_address memMap(const mem_address &address) const
+	MappedMemAddress memMap(const MemAddress &address) const
 	{
-		mem_address mapped;
+		MappedMemAddress mapped;
 		if (address < 0x2000)
 		{
 			mapped = address % 0x800;
@@ -55,12 +72,12 @@ public:
 			{
 				case 0x8000:
 				{
-					mapped = address;
+					mapped = {address, true};
 					break;
 				}
 				case 0x4000:
 				{
-					mapped = address % 0x4000 + 0x8000;
+					mapped = {address % 0x4000 + 0x8000, true};
 					break;
 				}
 			}
@@ -69,14 +86,22 @@ public:
 		return mapped;
 	}
 
-	byte memRead(const mem_address &address)
+	byte memRead(const MemAddress &address)
 	{
-		return memory[memMap(address)];
+		return memory[memMap(address).address];
 	}
 
-	void memWrite(const mem_address &address, byte value)
+	void memWrite(const MemAddress &address, byte value)
 	{
-		memory[memMap(address)] = value;
+		MappedMemAddress mapped = memMap(address);
+		if (!mapped.readOnly)
+		{
+			memory[mapped.address] = value;
+		}
+		else
+		{
+			exit(EXIT_FAILURE);
+		}
 	}
 };
 

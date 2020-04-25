@@ -43,6 +43,11 @@ namespace mos6502
 		static constexpr Instruction ORA_IND_X(0x01, "ORA", 2, 6);
 		static constexpr Instruction ORA_IND_Y(0x11, "ORA", 2, 5);
 
+		static constexpr Instruction TXS(0x9a, "TXS", 1, 2); // Done
+
+		static constexpr Instruction LDX_IMMED(0xa2, "LDX", 2, 2); // Done
+		static constexpr Instruction LDA_ABS(0xad, "LDA", 3, 4); // Done
+
 		static constexpr Instruction CLD(0xd8, "CLD", 1, 1);
 		static constexpr Instruction SEI(0x78, "SEI", 1, 2);
 	};

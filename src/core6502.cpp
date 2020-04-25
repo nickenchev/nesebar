@@ -9,7 +9,7 @@ Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
 {
 	x = y = a = 0;
 
-	for (mem_address addr = 0x4000; addr <= 0x400F; ++addr)
+	for (MemAddress addr = 0x4000; addr <= 0x400F; ++addr)
 	{
 		memory.memWrite(addr, 0);
 	}
@@ -23,7 +23,7 @@ bool Core<MemType, DecimalMode>::step()
 	using namespace mos6502::OpCodes;
 
 	bool keepGoing = true;
-	byte opcode = readByte(pc);
+	byte opcode = fetchByte();
 
 	switch (opcode)
 	{
@@ -127,6 +127,24 @@ bool Core<MemType, DecimalMode>::step()
 		{
 			setInstruction(ORA_ABS_X);
 			a = a | memAbsoluteX();
+			break;
+		}
+		case TXS:
+		{
+			setInstruction(TXS);
+			sp = x;
+			break;
+		}
+		case LDX_IMMED:
+		{
+			setInstruction(LDX_IMMED);
+			x = memImmediate();
+			break;
+		}
+		case LDA_ABS:
+		{
+			setInstruction(LDA_ABS);
+			a = memAbsolute();
 			break;
 		}
 		case SEI:

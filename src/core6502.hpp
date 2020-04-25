@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "common.hpp"
-#include "mem_address.hpp"
+#include "memaddress.hpp"
 #include "opcodes.hpp"
 #include "instruction.hpp"
 
@@ -25,14 +25,14 @@ namespace mos6502
 		NegativeResult = 6
 	};
 
-	void logInstruction(const mem_address &pc, const Instruction &inst);
+	void logInstruction(const MemAddress &pc, const Instruction &inst);
 
 	template<typename MemType, bool DecimalMode>
 	class Core
 	{
 		MemType &memory;
 		byte a, x, y, sp;
-		mem_address pc;
+		MemAddress pc;
 		std::bitset<7> status;
 		short cycles = 0;
 		short byteStep = 0;
@@ -45,6 +45,11 @@ namespace mos6502
 
 			cycles = inst.cycles;
 			byteStep = inst.byteSize;
+		}
+
+		bool checkBit(const byte &reg, short bitNumber) const
+		{
+			return reg & (1 << bitNumber);
 		}
 
 		// status management
@@ -60,37 +65,35 @@ namespace mos6502
 		{
 			status.reset(static_cast<int>(flag));
 		}
-		bool checkBit(const byte &reg, short bitNumber) const
-		{
-			return reg & (1 << bitNumber);
-		}
 		short getCarry() const { return isStatus(CPUStatus::Carry) ? 1 : 0; }
 		void updateStatusFlags();
 
 		// Memory access
-		byte readByte(const mem_address &address)
+		byte fetchByte()
 		{
-			return memory.memRead(address);
+			return memory.memRead(pc + 1);
 		}
-		byte readNextByte() { return readByte(pc + 1); }
-		mem_address readMemAddress(const mem_address &address)
+		MemAddress readMemAddress(const MemAddress &address)
 		{
-			return mem_address(memory.memRead(address), memory.memRead(address + 1));
+			return MemAddress(memory.memRead(address), memory.memRead(address + 1));
 		}
-		mem_address readNextMemAddress() { return readMemAddress(pc + 1); }
+		MemAddress readNextMemAddress()
+		{
+			return readMemAddress(pc + 1);
+		}
 
 		// Memory Addressing
 		byte memImmediate()
 		{
-			return readNextByte();
+			return fetchByte();
 		}
-		char memRelative()
+		byte memRelative()
 		{
-			return readNextByte();
+			return fetchByte();
 		}
 		byte memIndirect()
 		{
-			mem_address addr = readMemAddress(mem_address{memZeroPage()});
+			MemAddress addr = readMemAddress(MemAddress{memZeroPage()});
 			return memory.memRead(addr);
 		}
 		byte memAbsolute()
@@ -99,41 +102,41 @@ namespace mos6502
 		}
 		byte memAbsoluteX()
 		{
-			mem_address addr = readNextMemAddress();
+			MemAddress addr = readNextMemAddress();
 			if (addr.add(x)) ++cycles;
 			return memory.memRead(addr);
 		}
 		byte memAbsoluteY()
 		{
-			mem_address addr = readNextMemAddress();
+			MemAddress addr = readNextMemAddress();
 			if (addr.add(y)) ++cycles;
 			return memory.memRead(addr);
 		}
 		byte memZeroPage()
 		{
-			return memory.memRead(readNextByte());
+			return memory.memRead(fetchByte());
 		}
 		byte memZeroPageX()
 		{
-			byte val = readNextByte();
-			return memory.memRead(mem_address{val}.addLow(x));
+			byte val = fetchByte();
+			return memory.memRead(MemAddress{val}.addLow(x));
 		}
 
 		// indexed addressing
 		byte memAbsuluteIndexed()
 		{
-			mem_address addr = readNextMemAddress();
+			MemAddress addr = readNextMemAddress();
 			if (addr.add(x)) ++cycles;
 			return memory.memRead(addr);
 		}
 		byte memIndexedIndirect()
 		{
-			mem_address addr = readMemAddress(mem_address{memZeroPageX()});
+			MemAddress addr = readMemAddress(MemAddress{memZeroPageX()});
 			return memory.memRead(addr);
 		}
 		byte memIndirectIndexed()
 		{
-			mem_address addr = readMemAddress(mem_address{readNextByte()});
+			MemAddress addr = readMemAddress(MemAddress{fetchByte()});
 			if (addr.add(y)) ++cycles;
 			return memory.memRead(addr);
 		}
