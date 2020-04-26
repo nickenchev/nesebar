@@ -257,6 +257,9 @@ class Core
 		short extraCycles = 1;
 		signed_byte branch = static_cast<signed_byte>(fetchByte());
 
+		std::cout << std::hex << " #$" << static_cast<int>(branch)
+				  << " ($" << (pc + branch).value << ") ";
+
 		if (isStatus(flag) == checkStatus)
 		{
 			if (pc.addSigned(branch)) extraCycles++;

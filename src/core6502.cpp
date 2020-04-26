@@ -138,6 +138,13 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<BCS>();
 			break;
 		}
+		case BNE::value:
+		{
+			beginInstruction<BNE>();
+			branchIf(Status::ZeroResult, false);
+			endInstruction<BNE>();
+			break;
+		}
 		case CLD::value:
 		{
 			beginInstruction<CLD>();
@@ -149,6 +156,13 @@ bool Core<MemType, DecimalMode>::step()
 		{
 			beginInstruction<NOP>();
 			endInstruction<NOP>();
+			break;
+		}
+		case BEQ::value:
+		{
+			beginInstruction<BEQ>();
+			branchIf(Status::ZeroResult, true);
+			endInstruction<BEQ>();
 			break;
 		}
 		default:

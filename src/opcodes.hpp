@@ -57,8 +57,10 @@ namespace mos6502 { namespace opcodes
 	}
 
 	struct BCS : Opcode<0xb0, 2, 2, None> { static inline Asm name{"BCS"}; };
+	struct BNE : Opcode<0xd0, 2, 2, None> { static inline Asm name{"BNE"}; };
 	struct CLD : Opcode<0xd8, 1, 1, None> { static inline Asm name{"CLD"}; };
 	struct NOP : Opcode<0xea, 1, 2, None> { static inline Asm name{"NOP"}; };
+	struct BEQ : Opcode<0xf0, 2, 2, None> { static inline Asm name{"BEQ"}; };
 };
 };
 
