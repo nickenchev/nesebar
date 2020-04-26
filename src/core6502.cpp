@@ -1,6 +1,9 @@
+#include <iostream>
 #include <string>
+#include <vector>
 #include "core6502.hpp"
 #include "nesmemory.hpp"
+#include "opcodes.hpp"
 
 using namespace mos6502;
 
@@ -10,8 +13,7 @@ Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
 	x = y = a = 0;
 	cycles = 0;
 	byteStep = 0;
-	flagsAffected = 0;
-	instructionResult = 0;
+	opcodeResult = 0;
 
 	for (MemAddress addr = 0x4000; addr <= 0x400F; ++addr)
 	{
@@ -24,166 +26,83 @@ Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
 template<typename MemType, bool DecimalMode>
 bool Core<MemType, DecimalMode>::step()
 {
-	using namespace mos6502::OpCodes;
+	using namespace mos6502::opcodes;
 
 	bool keepGoing = true;
 	byte opcode = fetchByte();
 
 	switch (opcode)
 	{
-		/*
-		case ADC_IMMED:
+		case SEI::value:
 		{
-			setInstruction(ADC_IMMED);
-			addWithCarry(a, memAbsolute());
+			beginInstruction<SEI>();
+			status[status_int(Status::InterruptDisable)] = true;
+			endInstruction<SEI>();
 			break;
 		}
-		case ADC_ZERO:
+		case STA::Absolute::value:
 		{
-			setInstruction(ADC_ZERO);
-			addWithCarry(a, memZeroPage());
+			beginInstruction<STA::Absolute>();
+			memory.memWrite(memAbsolute(), a);
+			endInstruction<STA::Absolute>();
 			break;
 		}
-		case ADC_ZERO_X:
+		case BPL::value:
 		{
-			setInstruction(ADC_ZERO_X);
-			addWithCarry(a, memZeroPageX());
+			beginInstruction<BPL>();
+			if (!isStatus(Status::NegativeResult))
+			{
+				incPC(fetchByte());
+				addCycles(1);
+			}
+			endInstruction<BPL>();
 			break;
 		}
-		case ADC_ABS:
+		case TXS::value:
 		{
-			setInstruction(ADC_ABS);
-			addWithCarry(a, memAbsolute());
+			beginInstruction<TXS>();
+			setSP(x);
+			endInstruction<TXS>();
 			break;
 		}
-		case ADC_ABS_X:
+		case LDX::Immediate::value:
 		{
-			setInstruction(ADC_ABS_X);
-			addWithCarry(a, memAbsoluteX());
-			break;
-		}
-		case ADC_ABS_Y:
-		{
-			setInstruction(ADC_ABS_Y);
-			addWithCarry(a, memAbsoluteY());
-			break;
-		}
-		case ADC_IND_X:
-		{
-			setInstruction(ADC_IND_X);
-			addWithCarry(a, memIndexedIndirect());
-			break;
-		}
-		case ADC_IND_Y:
-		{
-			setInstruction(ADC_IND_Y);
-			addWithCarry(a, memIndirectIndexed());
-			break;
-		}
-		case BRK:
-		{
-			setInstruction(BRK);
-			setStatus(CPUStatus::BreakCommand);
-			break;
-		}
-		case ORA_IND_X:
-		{
-			setInstruction(ORA_IND_X);
-			a = a | memIndexedIndirect();
-			break;
-		}
-		case ORA_ZERO:
-		{
-			setInstruction(ORA_ZERO);
-			a = a | memZeroPage();
-			break;
-		}
-		case ORA_IMMED:
-		{
-			setInstruction(ORA_IMMED);
-			a = a | memImmediate();
-			break;
-		}
-		case ORA_ABS:
-		{
-			setInstruction(ORA_ABS);
-			a = a | memAbsolute();
-			break;
-		}
-		case ORA_IND_Y:
-		{
-			setInstruction(ORA_IND_Y);
-			a = a | memIndirectIndexed();
-			break;
-		}
-		case ORA_ZERO_X:
-		{
-			setInstruction(ORA_ZERO_X);
-			a = a | memZeroPageX();
-			break;
-		}
-		case ORA_ABS_Y:
-		{
-			setInstruction(ORA_ABS_Y);
-			a = a | memAbsoluteY();
-			break;
-		}
-		case ORA_ABS_X:
-		{
-			setInstruction(ORA_ABS_X);
-			a = a | memAbsoluteX();
-			break;
-		}
-		case TXS:
-		{
-			setInstruction(TXS);
-			sp = x;
-			break;
-		}
-		case SEI:
-		{
-			setInstruction(SEI);
-			setStatus(CPUStatus::InterruptDisable);
-			break;
-		}
-		*/
-		case TXS:
-		{
-			setInstruction(TXS);
-			sp = x;
-			handleFlags<TXS.flagsAffected>();
-			break;
-		}
-		case LDX_IMMED:
-		{
-			setInstruction(LDX_IMMED);
+			beginInstruction<LDX::Immediate>();
 			x = memImmediate();
-			handleFlags<LDX_IMMED.flagsAffected>();
+			endInstruction<LDX::Immediate>();
 			break;
 		}
-		case LDA_ABS:
+		case LDA::Immediate::value:
 		{
-			setInstruction(LDA_ABS);
-			a = memAbsolute();
-			handleFlags<LDA_ABS.flagsAffected>();
+			beginInstruction<LDA::Immediate>();
+			setA(memImmediate());
+			endInstruction<LDA::Immediate>();
 			break;
 		}
-		case CLD:
+		case LDA::Absolute::value:
 		{
-			setInstruction(CLD);
+			beginInstruction<LDA::Absolute>();
+			setA(memAbsolute());
+			endInstruction<LDA::Absolute>();
+			break;
+		}
+		case CLD::value:
+		{
+			beginInstruction<CLD>();
 			status[status_int(Status::DecimalMode)] = false;
+			endInstruction<CLD>();
 			break;
 		}
 		default:
 		{
-			std::cout << std::hex << "Invalid opcode \"" << std::setw(2)
-					  << (int)opcode << "\", stopping." << std::endl;
+			std::cout << std::endl << std::hex << "Invalid opcode \""
+					  << std::setw(2) << static_cast<int>(opcode)
+					  << "\", stopping." << std::endl;
 			keepGoing = false;
 			break;
 		}
 	}
-	pc += byteStep;
-
+	std::cout << std::endl;
 	return keepGoing;
 }
 

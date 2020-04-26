@@ -9,8 +9,6 @@
 
 #include "common.hpp"
 #include "memaddress.hpp"
-#include "opcodes.hpp"
-#include "instruction.hpp"
 
 namespace mos6502
 {
@@ -33,29 +31,46 @@ constexpr auto status_int(const Status status)
 }
 
 
-void logInstruction(const MemAddress &pc, const Instruction &inst);
-
-template<typename MemType, bool DecimalMode>
+template<typename Memory, bool DecimalMode>
 class Core
 {
-	MemType &memory;
+	Memory &memory;
 	byte a, x, y, sp;
 	MemAddress pc;
 	std::bitset<7> status;
 	short cycles;
 	short byteStep;
-	byte instructionResult;
-	byte flagsAffected;
+	byte opcodeResult;
 
-	constexpr inline void setInstruction(const Instruction &inst)
+	inline void setA(byte value)
+	{
+		a = value;
+		opcodeResult = value;
+	}
+	inline void setSP(byte value) {
+		sp = value;
+		opcodeResult = value;
+	}
+	inline void incPC(byte value)
+	{
+		pc += value;
+	}
+
+	template<typename T>
+	constexpr inline void beginInstruction()
 	{
 		std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
-		std::cout << ' ' << std::setw(2) << (int)inst.opcode << ' ';
-		std::cout << inst.name << std::endl;
+		std::cout << ": " << std::setw(2) << (int)T::value << ' ';
+		std::cout << T::name;
+	}
 
-		cycles = inst.cycles;
-		byteStep = inst.byteSize;
-		flagsAffected = inst.flagsAffected;
+	template<typename T>
+	constexpr inline void endInstruction() 
+	{
+		cycles = T::cycles;
+		byteStep = T::byteSize;
+
+		handleFlags<T::flagsAffected>(opcodeResult);
 	}
 
 	bool checkBit(const byte &reg, short bitNumber) const
@@ -71,59 +86,62 @@ class Core
 
 	// status management
 	template<byte affectedFlags>
-	inline void handleFlags()
+	inline void handleFlags(byte instructionResult)
 	{
-		if constexpr (checkBit<affectedFlags, Status::NegativeResult>())
+		if constexpr (affectedFlags != 0)
 		{
-			std::cout << "Negative Flag" << std::endl;
-			status[status_int(Status::NegativeResult)] = instructionResult < 0;
-		}
-		if constexpr (checkBit<affectedFlags, Status::ZeroResult>())
-		{
-			std::cout << "Zero Flag" << std::endl;
-			status[status_int(Status::NegativeResult)] = instructionResult == 0;
+			if constexpr (checkBit<affectedFlags, Status::NegativeResult>())
+			{
+				status[status_int(Status::NegativeResult)] = instructionResult < 0;
+			}
+			if constexpr (checkBit<affectedFlags, Status::ZeroResult>())
+			{
+				status[status_int(Status::NegativeResult)] = instructionResult == 0;
+			}
 		}
 	}
 
+	void addCycles(short numCycles)
+	{
+		this->cycles += numCycles;
+	}
 	bool isStatus(Status flag) const
 	{
-		return status.test(static_cast<int>(flag));
+		return status[status_int(flag)];
 	}
 	short getCarry() const { return isStatus(Status::Carry) ? 1 : 0; }
-
-	// status flag logic
-	void updateFlagZero()
-	{
-		status[status_int(Status::ZeroResult)] = instructionResult == 0;
-	}
-
-	void updateFlagNegative()
-	{
-		status[status_int(Status::NegativeResult)] = instructionResult < 0;
-	}
 
 	// Memory access
 	byte fetchByte()
 	{
-		return memory.memRead(pc + 1);
+		byte val = memory.memRead(pc);
+		incPC(1);
+		return val;
 	}
+	MemAddress fetchNextMemAddress()
+	{
+		MemAddress addr = readMemAddress(pc);
+		incPC(2);
+		return addr;
+	}
+
 	MemAddress readMemAddress(const MemAddress &address)
 	{
 		return MemAddress(memory.memRead(address), memory.memRead(address + 1));
-	}
-	MemAddress readNextMemAddress()
-	{
-		return readMemAddress(pc + 1);
 	}
 
 	// Memory Addressing
 	byte memImmediate()
 	{
-		return fetchByte();
+		byte data = fetchByte();
+		std::cout << " #" << std::hex << static_cast<int>(data);
+		return data;
 	}
 	byte memRelative()
 	{
-		return fetchByte();
+		byte data = fetchByte();
+		std::cout << std::hex << static_cast<int>(data);
+		return data;
 	}
 	byte memIndirect()
 	{
@@ -132,17 +150,19 @@ class Core
 	}
 	byte memAbsolute()
 	{
-		return memory.memRead(readNextMemAddress());
+		byte data = memory.memRead(fetchNextMemAddress());
+		std::cout << " $" << std::hex << static_cast<int>(data);
+		return data;
 	}
 	byte memAbsoluteX()
 	{
-		MemAddress addr = readNextMemAddress();
+		MemAddress addr = fetchNextMemAddress();
 		if (addr.add(x)) ++cycles;
 		return memory.memRead(addr);
 	}
 	byte memAbsoluteY()
 	{
-		MemAddress addr = readNextMemAddress();
+		MemAddress addr = fetchNextMemAddress();
 		if (addr.add(y)) ++cycles;
 		return memory.memRead(addr);
 	}
@@ -159,7 +179,7 @@ class Core
 	// indexed addressing
 	byte memAbsuluteIndexed()
 	{
-		MemAddress addr = readNextMemAddress();
+		MemAddress addr = fetchNextMemAddress();
 		if (addr.add(x)) ++cycles;
 		return memory.memRead(addr);
 	}
@@ -202,7 +222,7 @@ class Core
 	void interruptReset();
 
 public:
-	Core(MemType &memory);
+	Core(Memory &memory);
 
 	void reset() { interruptReset(); }
 	bool step();
