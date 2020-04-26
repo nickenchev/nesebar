@@ -3,59 +3,43 @@
 
 #include <tuple>
 #include <map>
-#include "instruction.hpp"
+#include "opcode.hpp"
 
-namespace mos6502 { namespace OpCodes
+namespace mos6502 { namespace opcodes
 {
 
-constexpr auto pair(const Instruction &inst)
-{
-	return std::make_pair(inst, &inst);
-}
-// Bit No.       7   6   5   4   3   2   1   0
-//               S   V       B   D   I   Z   C
-/*
-	static constexpr Instruction ADC_IMMED(0x69, "ADC", 2, 2);
-	static constexpr Instruction ADC_ZERO(0x65, "ADC", 2, 3);
-	static constexpr Instruction ADC_ZERO_X(0x75, "ADC", 2, 4);
-	static constexpr Instruction ADC_ABS(0x6d, "ADC", 3, 4);
-	static constexpr Instruction ADC_ABS_X(0x7d, "ADC", 3, 4);
-	static constexpr Instruction ADC_ABS_Y(0x79, "ADC", 3, 4);
-	static constexpr Instruction ADC_IND_X(0x61, "ADC", 2, 6);
-	static constexpr Instruction ADC_IND_Y(0x71, "ADC", 2, 5);
+	/*
+	  7   6   5   4   3   2   1   0
+	  N   V       B   D   I   Z   C
+	*/
+	static constexpr byte None{0};
+	static constexpr byte NZ{0b10000010};
+	static constexpr byte I{0b00000100};
 
-	static constexpr Instruction AND_IMMED(0x29, "AND", 2, 2);
-	static constexpr Instruction AND_ZERO(0x25, "AND", 2, 3);
-	static constexpr Instruction AND_ZERO_X(0x35, "AND", 2, 4);
-	static constexpr Instruction AND_ABS(0x2d, "AND", 3, 4);
-	static constexpr Instruction AND_ABS_X(0x3d, "AND", 3, 4);
-	static constexpr Instruction AND_ABS_Y(0x39, "AND", 3, 4);
-	static constexpr Instruction AND_IND_X(0x21, "AND", 2, 6);
-	static constexpr Instruction AND_IND_Y(0x31, "AND", 2, 5);
+	struct SEI : Opcode<0x78, 1, 2, I> { static inline Asm name{"SEI"}; };
 
-	static constexpr Instruction BRK(0x00, "BRK", 1, 7);
+	namespace STA
+	{
+		static constexpr const char *groupName = "STA";
+		struct Absolute: Opcode<0x8d, 3, 4, None> { static inline Asm name{groupName}; };
+	}
 
-	static constexpr Instruction ORA_IMMED(0x09, "ORA", 2, 2);
-	static constexpr Instruction ORA_ZERO(0x05, "ORA", 2, 3);
-	static constexpr Instruction ORA_ZERO_X(0x15, "ORA", 2, 4);
-	static constexpr Instruction ORA_ABS(0x0d, "ORA", 3, 4);
-	static constexpr Instruction ORA_ABS_X(0x1d, "ORA", 3, 4);
-	static constexpr Instruction ORA_ABS_Y(0x19, "ORA", 3, 4);
-	static constexpr Instruction ORA_IND_X(0x01, "ORA", 2, 6);
-	static constexpr Instruction ORA_IND_Y(0x11, "ORA", 2, 5);
+	struct BPL : Opcode<0x10, 2, 2, None> { static inline Asm name{"BPL"}; };
+	struct TXS : Opcode<0x9a, 1, 2, None> { static inline Asm name{"TXS"}; };
+	namespace LDX
+	{
+		static constexpr const char *groupName = "LDX";
+		struct Immediate: Opcode<0xa2, 2, 2, NZ> { static inline Asm name{groupName}; };
+	}
 
-	static constexpr Instruction TXS(0x9a, "TXS", 1, 2); // Done
+	namespace LDA
+	{
+		static constexpr const char *groupName = "LDA";
+		struct Immediate: Opcode<0xa9, 2, 2, NZ> { static inline Asm name{groupName}; };
+		struct Absolute: Opcode<0xad, 3, 2, NZ> { static inline Asm name{groupName}; };
+	}
 
-
-	static constexpr Instruction SEI(0x78, "SEI", 1, 2);
-*/
-
-static constexpr Instruction TXS(0x9a, "TXS", 1, 2, 0);
-static constexpr Instruction BPL(0x10, "BPL", 2, 2, 0);
-static constexpr Instruction LDX_IMMED(0xa2, "LDX #", 2, 2, 0b10000010);
-static constexpr Instruction LDA_ABS(0xad, "LDA $", 3, 4, 0b10000010);
-static constexpr Instruction CLD(0xd8, "CLD", 1, 1, 0b00001000);
-
+	struct CLD : Opcode<0xd8, 1, 1, None> { static inline Asm name{"CLD"}; };
 };
 };
 
