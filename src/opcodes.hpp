@@ -16,6 +16,8 @@ namespace mos6502 { namespace opcodes
 	static constexpr byte NZ{0b10000010};
 	static constexpr byte I{0b00000100};
 
+	struct BPL : Opcode<0x10, 2, 2, None> { static inline Asm name{"BPL"}; };
+	struct JMP : Opcode<0x4c, 3, 3, None> { static inline Asm name{"JMP"}; };
 	struct SEI : Opcode<0x78, 1, 2, I> { static inline Asm name{"SEI"}; };
 
 	namespace STA
@@ -24,8 +26,14 @@ namespace mos6502 { namespace opcodes
 		struct Absolute: Opcode<0x8d, 3, 4, None> { static inline Asm name{groupName}; };
 	}
 
-	struct BPL : Opcode<0x10, 2, 2, None> { static inline Asm name{"BPL"}; };
+	namespace STX
+	{
+		static constexpr const char *groupName = "STX";
+		struct ZeroPage : Opcode<0x86, 2, 3, None> { static inline Asm name{groupName}; };
+	}
+
 	struct TXS : Opcode<0x9a, 1, 2, None> { static inline Asm name{"TXS"}; };
+
 	namespace LDX
 	{
 		static constexpr const char *groupName = "LDX";

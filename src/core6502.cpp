@@ -36,6 +36,28 @@ bool Core<MemType, DecimalMode>::step()
 
 	switch (opcode)
 	{
+		case BPL::value:
+		{
+			beginInstruction<BPL>();
+			if (!isStatus(Status::NegativeResult))
+			{
+				short extraCycles = 1;
+				signed_byte branch = static_cast<signed_byte>(fetchByte());
+
+				// page cross requires extra cycle
+				if (pc.addSigned(branch)) extraCycles++;
+				addCycles(extraCycles);
+			}
+			endInstruction<BPL>();
+			break;
+		}
+		case JMP::value:
+		{
+			beginInstruction<JMP>();
+			pc = addressAbsolute();
+			endInstruction<JMP>();
+			break;
+		}
 		case SEI::value:
 		{
 			beginInstruction<SEI>();
@@ -50,19 +72,11 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<STA::Absolute>();
 			break;
 		}
-		case BPL::value:
+		case STX::ZeroPage::value:
 		{
-			beginInstruction<BPL>();
-			if (!isStatus(Status::NegativeResult))
-			{
-				short extraCycles = 1;
-				signed_byte branch = static_cast<signed_byte>(fetchByte());
-
-				// check if PC change crosses page
-				if (pc.add<signed_byte>(branch)) extraCycles++;
-				addCycles(extraCycles);
-			}
-			endInstruction<BPL>();
+			beginInstruction<STX::ZeroPage>();
+			writeZeroPage(fetchByte(), x);
+			endInstruction<STX::ZeroPage>();
 			break;
 		}
 		case TXS::value:
@@ -118,6 +132,7 @@ void Core<MemType, DecimalMode>::interruptReset()
 {
 	sp = 0xfd;
 	pc = readMemAddress(0xfffc);
+	pc = 0xc000;
 }
 
 template class mos6502::Core<NESMemory, false>;

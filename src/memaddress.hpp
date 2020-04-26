@@ -28,8 +28,13 @@ union MemAddress
 		return *this;
 	}
 
-	template<typename T>
-	bool add(T inc)
+	bool add(byte inc)
+	{
+		byte page = high();
+		value += inc;
+		return high() != page;
+	}
+	bool addSigned(signed_byte inc)
 	{
 		byte page = high();
 		value += inc;

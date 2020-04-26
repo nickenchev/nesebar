@@ -139,8 +139,14 @@ class Core
 	}
 	byte memIndirect()
 	{
-		MemAddress addr = readMemAddress(MemAddress{memZeroPage()});
+		MemAddress addr = readMemAddress(MemAddress{readZeroPage()});
 		return memory.memRead(addr);
+	}
+	MemAddress addressAbsolute()
+	{
+		MemAddress addr = fetchNextMemAddress();
+		std::cout << " $" << std::hex << static_cast<uint16_t>(addr.value);
+		return addr;
 	}
 	byte memAbsolute()
 	{
@@ -162,10 +168,19 @@ class Core
 		if (addr.add(y)) ++cycles;
 		return memory.memRead(addr);
 	}
-	byte memZeroPage()
+	byte readZeroPage()
 	{
-		return memory.memRead(fetchByte());
+		byte data = memory.memRead(fetchByte());
+		std::cout << " $" << std::hex << data;
+		return data;
 	}
+	void writeZeroPage(byte address, byte value)
+	{
+		std::cout << " $" << std::hex << static_cast<uint16_t>(address)
+				  << " = " << static_cast<int>(value);
+		memory.memWrite(MemAddress(0, address), value);
+	}
+
 	byte memZeroPageX()
 	{
 		byte val = fetchByte();
