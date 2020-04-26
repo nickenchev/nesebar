@@ -67,6 +67,19 @@ class Core
 		handleFlags<T::flagsAffected>(opcodeResult);
 	}
 
+	// stack
+	void stackPush(byte data)
+	{
+		memory.memWrite(sp, data);
+		sp--;
+	}
+	byte stackPop()
+	{
+		byte data = memory.memRead(sp);
+		sp++;
+		return data;
+	}
+
 	bool checkBit(const byte &reg, short bitNumber) const
 	{
 		return reg & (1 << bitNumber);
