@@ -30,7 +30,6 @@ constexpr auto status_int(const Status status)
 	return static_cast<short>(status);
 }
 
-
 template<typename Memory, bool DecimalMode>
 class Core
 {
@@ -38,9 +37,20 @@ class Core
 	byte a, x, y, sp;
 	MemAddress pc;
 	std::bitset<7> status;
-	short cycles;
+	short cycles, totalCycles;
 	short byteStep;
 	byte opcodeResult;
+
+	void logInfo()
+	{
+		std::cout << std::setw(2) << std::hex
+				  << "A:" << static_cast<int>(a)
+				  << "\tX:" << static_cast<int>(x)
+				  << "\tY:" << static_cast<int>(y)
+				  << "\tPC:" << (pc.value)
+				  << "\tSP:" << static_cast<int>(sp)
+				  << std::dec << "\tCycles:" << totalCycles << "\t\t";
+	}
 
 	inline void setA(byte value)
 	{
@@ -65,6 +75,7 @@ class Core
 	constexpr inline void endInstruction() 
 	{
 		handleFlags<T::flagsAffected>(opcodeResult);
+		totalCycles += cycles;
 	}
 
 	// stack

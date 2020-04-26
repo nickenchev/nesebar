@@ -49,6 +49,7 @@ namespace mos6502 { namespace opcodes
 	}
 
 	struct CLD : Opcode<0xd8, 1, 1, None> { static inline Asm name{"CLD"}; };
+	struct NOP : Opcode<0xea, 1, 2, None> { static inline Asm name{"NOP"}; };
 };
 };
 

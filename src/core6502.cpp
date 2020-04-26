@@ -30,6 +30,8 @@ bool Core<MemType, DecimalMode>::step()
 
 	bool keepGoing = true;
 
+	logInfo();
+
 	std::cout << '$' << std::hex << std::setfill('0')
 				<< std::setw(4) << pc.value << ": ";
 	byte opcode = fetchByte();
@@ -122,6 +124,12 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<CLD>();
 			break;
 		}
+		case NOP::value:
+		{
+			beginInstruction<NOP>();
+			endInstruction<NOP>();
+			break;
+		}
 		default:
 		{
 			std::cout << std::endl << std::hex << "Unsupported opcode \""
@@ -141,6 +149,7 @@ void Core<MemType, DecimalMode>::interruptReset()
 	sp = 0xff;
 	pc = readMemAddress(0xfffc);
 	pc = 0xc000;
+	totalCycles = 7;
 }
 
 template class mos6502::Core<NESMemory, false>;
