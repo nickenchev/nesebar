@@ -17,6 +17,7 @@ namespace mos6502 { namespace opcodes
 	static constexpr byte I{0b00000100};
 
 	struct BPL : Opcode<0x10, 2, 2, None> { static inline Asm name{"BPL"}; };
+	struct JSR : Opcode<0x20, 3, 6, None> { static inline Asm name{"JSR"}; };
 	struct JMP : Opcode<0x4c, 3, 3, None> { static inline Asm name{"JMP"}; };
 	struct SEI : Opcode<0x78, 1, 2, I> { static inline Asm name{"SEI"}; };
 

@@ -51,6 +51,12 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<BPL>();
 			break;
 		}
+		case JSR::value:
+		{
+			beginInstruction<JSR>();
+			endInstruction<JSR>();
+			break;
+		}
 		case JMP::value:
 		{
 			beginInstruction<JMP>();
@@ -130,7 +136,7 @@ bool Core<MemType, DecimalMode>::step()
 template<typename MemType, bool DecimalMode>
 void Core<MemType, DecimalMode>::interruptReset()
 {
-	sp = 0xfd;
+	sp = 0xff;
 	pc = readMemAddress(0xfffc);
 	pc = 0xc000;
 }
