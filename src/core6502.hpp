@@ -79,6 +79,17 @@ class Core
 		sp++;
 		return data;
 	}
+	void stackPushAddress(MemAddress address)
+	{
+		stackPush(pc.high());
+		stackPush(pc.low());
+	}
+	MemAddress stackPopAddress()
+	{
+		byte low = stackPop();
+		byte high = stackPop();
+		return MemAddress(low, high);
+	}
 
 	bool checkBit(const byte &reg, short bitNumber) const
 	{

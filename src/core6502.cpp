@@ -54,6 +54,8 @@ bool Core<MemType, DecimalMode>::step()
 		case JSR::value:
 		{
 			beginInstruction<JSR>();
+			stackPushAddress(pc);
+			pc = addressAbsolute();
 			endInstruction<JSR>();
 			break;
 		}
