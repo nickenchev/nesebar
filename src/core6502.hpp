@@ -250,6 +250,19 @@ class Core
 		if (addr.add(y)) ++cycles;
 		return memory.memRead(addr);
 	}
+	
+	// branching
+	inline void branchIf(Status flag, bool checkStatus)
+	{
+		short extraCycles = 1;
+		signed_byte branch = static_cast<signed_byte>(fetchByte());
+
+		if (isStatus(flag) == checkStatus)
+		{
+			if (pc.addSigned(branch)) extraCycles++;
+			addCycles(extraCycles);
+		}
+	}
 
 	// Common math
 	void addWithCarry(const signed_byte &a, const signed_byte &b)

@@ -34,7 +34,7 @@ bool Core<MemType, DecimalMode>::step()
 	logInfo();
 
 	std::cout << '$' << std::hex << std::setfill('0')
-				<< std::setw(4) << pc.value << ": ";
+			  << std::setw(4) << pc.value << ": ";
 	byte opcode = fetchByte();
 
 	switch (opcode)
@@ -42,16 +42,15 @@ bool Core<MemType, DecimalMode>::step()
 		case BPL::value:
 		{
 			beginInstruction<BPL>();
-			if (!isStatus(Status::NegativeResult))
-			{
-				short extraCycles = 1;
-				signed_byte branch = static_cast<signed_byte>(fetchByte());
-
-				// page cross requires extra cycle
-				if (pc.addSigned(branch)) extraCycles++;
-				addCycles(extraCycles);
-			}
+			branchIf(Status::NegativeResult, false);
 			endInstruction<BPL>();
+			break;
+		}
+		case CLC::value:
+		{
+			beginInstruction<CLC>();
+			updateStatus(Status::Carry, false);
+			endInstruction<CLC>();
 			break;
 		}
 		case JSR::value:
@@ -123,6 +122,13 @@ bool Core<MemType, DecimalMode>::step()
 			beginInstruction<LDA::Absolute>();
 			setA(memAbsolute());
 			endInstruction<LDA::Absolute>();
+			break;
+		}
+		case BCS::value:
+		{
+			beginInstruction<BCS>();
+			branchIf(Status::Carry, true);
+			endInstruction<BCS>();
 			break;
 		}
 		case CLD::value:

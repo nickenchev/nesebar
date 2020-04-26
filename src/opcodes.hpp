@@ -13,7 +13,7 @@ namespace mos6502 { namespace opcodes
 	  N   V       B   D   I   Z   C
 	*/
 	static constexpr byte None{0};
-	static constexpr byte N{0b10000010};
+	static constexpr byte N{0b10000000};
 	static constexpr byte V{0b00100000};
 	static constexpr byte B{0b00010000};
 	static constexpr byte D{0b00001000};
@@ -22,6 +22,7 @@ namespace mos6502 { namespace opcodes
 	static constexpr byte C{0b00000001};
 
 	struct BPL : Opcode<0x10, 2, 2, None> { static inline Asm name{"BPL"}; };
+	struct CLC : Opcode<0x18, 1, 2, C> { static inline Asm name{"CLC"}; };
 	struct JSR : Opcode<0x20, 3, 6, None> { static inline Asm name{"JSR"}; };
 	struct SEC : Opcode<0x38, 1, 2, C> { static inline Asm name{"SEC"}; };
 	struct JMP : Opcode<0x4c, 3, 3, None> { static inline Asm name{"JMP"}; };
@@ -54,6 +55,7 @@ namespace mos6502 { namespace opcodes
 		struct Absolute : Opcode<0xad, 3, 2, N|Z> { static inline Asm name{groupName}; };
 	}
 
+	struct BCS : Opcode<0xb0, 2, 2, None> { static inline Asm name{"BCS"}; };
 	struct CLD : Opcode<0xd8, 1, 1, None> { static inline Asm name{"CLD"}; };
 	struct NOP : Opcode<0xea, 1, 2, None> { static inline Asm name{"NOP"}; };
 };
