@@ -40,6 +40,7 @@ namespace mos6502 { namespace opcodes
 		struct ZeroPage : Opcode<0x86, 2, 3, None> { static inline Asm name{groupName}; };
 	}
 
+	struct BCC : Opcode<0x90, 2, 2, None> { static inline Asm name{"BCC"}; };
 	struct TXS : Opcode<0x9a, 1, 2, None> { static inline Asm name{"TXS"}; };
 
 	namespace LDX

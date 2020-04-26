@@ -96,6 +96,13 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<STX::ZeroPage>();
 			break;
 		}
+		case BCC::value:
+		{
+			beginInstruction<BCC>();
+			branchIf(Status::Carry, false);
+			endInstruction<BCC>();
+			break;
+		}
 		case TXS::value:
 		{
 			beginInstruction<TXS>();
