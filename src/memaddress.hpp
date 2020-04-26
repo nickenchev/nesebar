@@ -27,7 +27,9 @@ union MemAddress
 		low() += lowInc;
 		return *this;
 	}
-	bool add(byte inc)
+
+	template<typename T>
+	bool add(T inc)
 	{
 		byte page = high();
 		value += inc;

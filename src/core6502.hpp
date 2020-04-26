@@ -51,25 +51,19 @@ class Core
 		sp = value;
 		opcodeResult = value;
 	}
-	inline void incPC(byte value)
-	{
-		pc += value;
-	}
 
 	template<typename T>
 	constexpr inline void beginInstruction()
 	{
-		std::cout << std::hex << std::setfill('0') << std::setw(4) << pc.value;
-		std::cout << ": " << std::setw(2) << (int)T::value << ' ';
-		std::cout << T::name;
+		cycles = T::cycles;
+		byteStep = T::byteSize;
+
+		std::cout << std::setw(2) << (int)T::value << ' ' << T::name;
 	}
 
 	template<typename T>
 	constexpr inline void endInstruction() 
 	{
-		cycles = T::cycles;
-		byteStep = T::byteSize;
-
 		handleFlags<T::flagsAffected>(opcodeResult);
 	}
 
@@ -96,7 +90,7 @@ class Core
 			}
 			if constexpr (checkBit<affectedFlags, Status::ZeroResult>())
 			{
-				status[status_int(Status::NegativeResult)] = instructionResult == 0;
+				status[status_int(Status::ZeroResult)] = instructionResult == 0;
 			}
 		}
 	}
@@ -115,13 +109,13 @@ class Core
 	byte fetchByte()
 	{
 		byte val = memory.memRead(pc);
-		incPC(1);
+		pc.add(1);
 		return val;
 	}
 	MemAddress fetchNextMemAddress()
 	{
 		MemAddress addr = readMemAddress(pc);
-		incPC(2);
+		pc.add(2);
 		return addr;
 	}
 
@@ -150,8 +144,10 @@ class Core
 	}
 	byte memAbsolute()
 	{
-		byte data = memory.memRead(fetchNextMemAddress());
-		std::cout << " $" << std::hex << static_cast<int>(data);
+		MemAddress addr = fetchNextMemAddress();
+		byte data = memory.memRead(addr);
+		std::cout << " $" << std::hex << static_cast<uint16_t>(addr.value)
+				  << " = " << static_cast<int>(data);
 		return data;
 	}
 	byte memAbsoluteX()

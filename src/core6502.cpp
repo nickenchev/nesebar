@@ -29,6 +29,9 @@ bool Core<MemType, DecimalMode>::step()
 	using namespace mos6502::opcodes;
 
 	bool keepGoing = true;
+
+	std::cout << '$' << std::hex << std::setfill('0')
+				<< std::setw(4) << pc.value << ": ";
 	byte opcode = fetchByte();
 
 	switch (opcode)
@@ -52,8 +55,12 @@ bool Core<MemType, DecimalMode>::step()
 			beginInstruction<BPL>();
 			if (!isStatus(Status::NegativeResult))
 			{
-				incPC(fetchByte());
-				addCycles(1);
+				short extraCycles = 1;
+				signed_byte branch = static_cast<signed_byte>(fetchByte());
+
+				// check if PC change crosses page
+				if (pc.add<signed_byte>(branch)) extraCycles++;
+				addCycles(extraCycles);
 			}
 			endInstruction<BPL>();
 			break;
@@ -95,7 +102,7 @@ bool Core<MemType, DecimalMode>::step()
 		}
 		default:
 		{
-			std::cout << std::endl << std::hex << "Invalid opcode \""
+			std::cout << std::endl << std::hex << "Unsupported opcode \""
 					  << std::setw(2) << static_cast<int>(opcode)
 					  << "\", stopping." << std::endl;
 			keepGoing = false;

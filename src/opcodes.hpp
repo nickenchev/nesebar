@@ -35,8 +35,8 @@ namespace mos6502 { namespace opcodes
 	namespace LDA
 	{
 		static constexpr const char *groupName = "LDA";
-		struct Immediate: Opcode<0xa9, 2, 2, NZ> { static inline Asm name{groupName}; };
-		struct Absolute: Opcode<0xad, 3, 2, NZ> { static inline Asm name{groupName}; };
+		struct Immediate : Opcode<0xa9, 2, 2, NZ> { static inline Asm name{groupName}; };
+		struct Absolute : Opcode<0xad, 3, 2, NZ> { static inline Asm name{groupName}; };
 	}
 
 	struct CLD : Opcode<0xd8, 1, 1, None> { static inline Asm name{"CLD"}; };
