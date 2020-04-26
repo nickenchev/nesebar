@@ -10,7 +10,8 @@ using namespace mos6502;
 template<typename MemType, bool DecimalMode>
 Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
 {
-	x = y = a = 0;
+	x = y = a = p = sp = 0;
+	pc = 0;
 	cycles = 0;
 	byteStep = 0;
 	opcodeResult = 0;
@@ -61,6 +62,13 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<JSR>();
 			break;
 		}
+		case SEC::value:
+		{
+			beginInstruction<SEC>();
+			updateStatus(Status::Carry, true);
+			endInstruction<SEC>();
+			break;
+		}
 		case JMP::value:
 		{
 			beginInstruction<JMP>();
@@ -71,7 +79,7 @@ bool Core<MemType, DecimalMode>::step()
 		case SEI::value:
 		{
 			beginInstruction<SEI>();
-			status[status_int(Status::InterruptDisable)] = true;
+			updateStatus(Status::InterruptDisable, true);
 			endInstruction<SEI>();
 			break;
 		}
@@ -120,7 +128,7 @@ bool Core<MemType, DecimalMode>::step()
 		case CLD::value:
 		{
 			beginInstruction<CLD>();
-			status[status_int(Status::DecimalMode)] = false;
+			updateStatus(Status::DecimalMode, false);
 			endInstruction<CLD>();
 			break;
 		}
@@ -149,6 +157,8 @@ void Core<MemType, DecimalMode>::interruptReset()
 	sp = 0xff;
 	pc = readMemAddress(0xfffc);
 	pc = 0xc000;
+	stackPushAddress(pc);
+	stackPush(p);
 	totalCycles = 7;
 }
 

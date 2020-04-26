@@ -34,9 +34,8 @@ template<typename Memory, bool DecimalMode>
 class Core
 {
 	Memory &memory;
-	byte a, x, y, sp;
+	byte a, x, y, sp, p;
 	MemAddress pc;
-	std::bitset<7> status;
 	short cycles, totalCycles;
 	short byteStep;
 	byte opcodeResult;
@@ -47,8 +46,8 @@ class Core
 				  << "A:" << static_cast<int>(a)
 				  << "\tX:" << static_cast<int>(x)
 				  << "\tY:" << static_cast<int>(y)
-				  << "\tPC:" << (pc.value)
 				  << "\tSP:" << static_cast<int>(sp)
+				  << "\tP:" << std::bitset<8>(p)
 				  << std::dec << "\tCycles:" << totalCycles << "\t\t";
 	}
 
@@ -81,13 +80,11 @@ class Core
 	// stack
 	void stackPush(byte data)
 	{
-		memory.memWrite(sp, data);
-		sp--;
+		memory.memWrite(sp--, data);
 	}
 	byte stackPop()
 	{
-		byte data = memory.memRead(sp);
-		sp++;
+		byte data = memory.memRead(++sp);
 		return data;
 	}
 	void stackPushAddress(MemAddress address)
@@ -106,6 +103,24 @@ class Core
 	{
 		return reg & (1 << bitNumber);
 	}
+	bool isStatus(Status flag) const
+	{
+		return checkBit(p, status_int(flag));
+	}
+
+	void updateStatus(Status flag, bool state)
+	{
+		if (state)
+		{
+			// set bit
+			p |= 1 << status_int(flag);
+		}
+		else
+		{
+			// clear bit
+			p &= ~(1 << status_int(flag));
+		}
+	}
 
 	template<byte value, Status statusFlag>
 	constexpr static bool checkBit()
@@ -121,11 +136,11 @@ class Core
 		{
 			if constexpr (checkBit<affectedFlags, Status::NegativeResult>())
 			{
-				status[status_int(Status::NegativeResult)] = instructionResult < 0;
+				updateStatus(Status::NegativeResult, instructionResult < 0);
 			}
 			if constexpr (checkBit<affectedFlags, Status::ZeroResult>())
 			{
-				status[status_int(Status::ZeroResult)] = instructionResult == 0;
+				updateStatus(Status::ZeroResult, instructionResult == 0);
 			}
 		}
 	}
@@ -134,11 +149,6 @@ class Core
 	{
 		this->cycles += numCycles;
 	}
-	bool isStatus(Status flag) const
-	{
-		return status[status_int(flag)];
-	}
-	short getCarry() const { return isStatus(Status::Carry) ? 1 : 0; }
 
 	// Memory access
 	byte fetchByte()
