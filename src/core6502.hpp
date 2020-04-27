@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "common.hpp"
+#include "flags.hpp"
 #include "memaddress.hpp"
 
 namespace mos6502
@@ -44,14 +45,14 @@ class Core
 
 	void logInfo()
 	{
-		std::cout << std::setw(2) << std::hex
-				  << "A:" << static_cast<int>(a)
-				  << "\tX:" << static_cast<int>(x)
-				  << "\tY:" << static_cast<int>(y)
-				  << "\tSP:" << static_cast<int>(sp)
+		std::cout << std::hex << std::uppercase
+				  << "A:" << std::setw(2) << static_cast<int>(a)
+				  << "\tX:" << std::setw(2) << static_cast<int>(x)
+				  << "\tY:" << std::setw(2) << static_cast<int>(y)
+				  << "\tSP:" << std::setw(2) << static_cast<int>(sp)
 				  << "\tP:" << std::bitset<8>(p)
-				  << std::hex << std::setw(2) << " (" << static_cast<int>(p) << ')'
-				  << std::dec << "\tCycles:" << totalCycles << "\t\t";
+				  << std::hex << "=" << std::setw(2) << static_cast<int>(p)
+				  << std::dec << "\tCycles:" << totalCycles << "\t";
 	}
 
 	inline void setA(byte value)
@@ -59,9 +60,14 @@ class Core
 		a = value;
 		opcodeResult = value;
 	}
-	inline void setSP(byte value) {
+	inline void setSP(byte value)
+	{
 		sp = value;
 		opcodeResult = value;
+	}
+	inline void setP(byte value)
+	{
+		p = value;
 	}
 
 	template<typename T>
@@ -191,13 +197,15 @@ class Core
 	byte memImmediate()
 	{
 		byte data = fetchByte();
-		std::cout << " #" << std::hex << static_cast<int>(data);
+		std::cout << " #" << std::hex << std::setw(2)
+				  << static_cast<int>(data);
 		return data;
 	}
 	byte memRelative()
 	{
 		byte data = fetchByte();
-		std::cout << std::hex << static_cast<int>(data);
+		std::cout << std::hex << std::setw(2)
+				  << static_cast<int>(data);
 		return data;
 	}
 	byte memIndirect()
@@ -208,7 +216,8 @@ class Core
 	MemAddress addressAbsolute()
 	{
 		MemAddress addr = fetchNextMemAddress();
-		std::cout << " $" << std::hex << static_cast<uint16_t>(addr.value);
+		std::cout << " $" << std::hex << std::setw(2)
+				  << static_cast<uint16_t>(addr.value);
 		return addr;
 	}
 	byte memAbsolute()
