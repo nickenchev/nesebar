@@ -10,6 +10,12 @@ namespace mos6502 { namespace opcodes
 {
 	using namespace status_bits;
 
+	namespace ORA
+	{
+		static constexpr const char *groupName = "ORA";
+		struct Immediate : Opcode<0x09, 2, 2, N|Z> { static inline Asm name{groupName}; };
+	}
+
 	struct PHP : Opcode<0x08, 1, 3, None> { static inline Asm name{"PHP"}; };
 	struct PHA : Opcode<0x48, 1, 3, None> { static inline Asm name{"PHA"}; };
 	struct PLP : Opcode<0x28, 1, 4, None> { static inline Asm name{"PLP"}; };

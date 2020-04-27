@@ -8,7 +8,6 @@
 	N   V       B   D   I   Z   C
 */
 
-
 namespace mos6502
 {
 	namespace status_bits

@@ -41,7 +41,7 @@ class Core
 	MemAddress pc;
 	short cycles, totalCycles;
 	short byteStep;
-	byte opcodeResult;
+	byte oper1, oper2, opcodeResult;
 
 	void logInfo()
 	{
@@ -53,6 +53,12 @@ class Core
 				  << "\tP:" << std::bitset<8>(p)
 				  << std::hex << "=" << std::setw(2) << static_cast<int>(p)
 				  << std::dec << "\tCycles:" << totalCycles << "\t";
+	}
+
+	inline void setOperands(byte oper1, byte oper2)
+	{
+		this->oper1 = oper1;
+		this->oper2 = oper2;
 	}
 
 	inline void setA(byte value)
@@ -83,9 +89,9 @@ class Core
 	}
 
 	template<typename T>
-	constexpr inline void endInstruction() 
+	constexpr inline void endInstruction(byte operand1 = 0, byte operand2 = 0)
 	{
-		handleFlags<T::flagsAffected>();
+		handleFlags<T::flagsAffected>(operand1, operand2);
 		totalCycles += cycles;
 	}
 
@@ -145,17 +151,22 @@ class Core
 
 	// status management
 	template<byte affectedFlags>
-	inline void handleFlags()
+	constexpr inline void handleFlags(byte operand1, byte operand2)
 	{
 		if constexpr (affectedFlags != 0)
 		{
 			if constexpr (checkBit<affectedFlags, Status::NegativeResult>())
 			{
-				updateStatus(Status::NegativeResult, checkBit(opcodeResult, status_int(Status::NegativeResult)));
+				updateStatus(Status::NegativeResult,
+							 checkBit(opcodeResult,
+									  status_int(Status::NegativeResult)));
 			}
 			if constexpr (checkBit<affectedFlags, Status::Overflow>())
 			{
-				exit(1);
+				// overflow only occurs if operands have different signs
+				constexpr byte signBit = 0b10000000;
+				const bool isOverflow = (~(oper1 ^ oper2)) & (oper1 ^ opcodeResult) & signBit;
+				updateStatus(Status::Overflow, isOverflow);
 			}
 			if constexpr (checkBit<affectedFlags, Status::Unused>())
 			{

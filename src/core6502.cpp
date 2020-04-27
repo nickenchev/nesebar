@@ -38,10 +38,17 @@ bool Core<MemType, DecimalMode>::step()
 
 	std::cout << '$' << std::hex << std::setfill('0')
 			  << std::setw(4) << pc.value << ": ";
-	byte opcode = fetchByte();
 
+	const byte opcode = fetchByte();
 	switch (opcode)
 	{
+		case ORA::Immediate::value:
+		{
+			beginInstruction<ORA::Immediate>();
+			setA(a | memImmediate());
+			endInstruction<ORA::Immediate>();
+			break;
+		}
 		case PHP::value:
 		{
 			beginInstruction<PHP>();
@@ -220,8 +227,10 @@ bool Core<MemType, DecimalMode>::step()
 		case CMP::Immediate::value:
 		{
 			beginInstruction<CMP::Immediate>();
-			opcodeResult = a - memImmediate();
-			endInstruction<CMP::Immediate>();
+			byte data = memImmediate();
+			opcodeResult = a - data;
+			updateStatus(Status::Carry, data <= a);
+			endInstruction<CMP::Immediate>(a, data);
 			break;
 		}
 		case BMI::value:
