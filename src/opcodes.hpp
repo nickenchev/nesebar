@@ -8,6 +8,7 @@
 
 namespace mos6502 { namespace opcodes
 {
+	using namespace status_bits;
 
 	struct PHP : Opcode<0x08, 1, 3, None> { static inline Asm name{"PHP"}; };
 	struct PHA : Opcode<0x48, 1, 3, None> { static inline Asm name{"PHA"}; };
