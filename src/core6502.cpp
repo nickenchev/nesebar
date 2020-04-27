@@ -261,11 +261,10 @@ template<typename MemType, bool DecimalMode>
 void Core<MemType, DecimalMode>::interruptReset()
 {
 	opcodeResult = 0;
-	sp -= 3;
-
-	p = 0x24;
+	sp = -3; // cycle 0: sp = 0, then gets decremented 3 times, look more into this
+	p = 0x24; // TODO: Properly configure the status flags
 	pc = readMemAddress(0xfffc);
-	pc = 0xc000;
+	pc = 0xc000; // TODO: This is only for nestest.nes "auto mode"
 
 	totalCycles = 7;
 }
