@@ -254,6 +254,13 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<CLD>();
 			break;
 		}
+		case CLV::value:
+		{
+			beginInstruction<CLV>();
+			updateStatus(Status::Overflow, false);
+			endInstruction<CLV>();
+			break;
+		}
 		case NOP::value:
 		{
 			beginInstruction<NOP>();

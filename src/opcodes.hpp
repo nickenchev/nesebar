@@ -31,11 +31,12 @@ namespace mos6502 { namespace opcodes
 	struct BVS : Opcode<0x70, 2, 2, None> { static inline Asm name{"BVS"}; };
 
 	// cpu flags
-	struct CLC : Opcode<0x18, 1, 2, C> { static inline Asm name{"CLC"}; };
+	struct CLC : Opcode<0x18, 1, 2, C, C> { static inline Asm name{"CLC"}; };
 	struct CLD : Opcode<0xd8, 1, 2, None> { static inline Asm name{"CLD"}; };
-	struct SEC : Opcode<0x38, 1, 2, C> { static inline Asm name{"SEC"}; };
+	struct SEC : Opcode<0x38, 1, 2, C, C> { static inline Asm name{"SEC"}; };
 	struct SED : Opcode<0xf8, 1, 2, D> { static inline Asm name{"SED"}; };
-	struct SEI : Opcode<0x78, 1, 2, I> { static inline Asm name{"SEI"}; };
+	struct SEI : Opcode<0x78, 1, 2, I, I> { static inline Asm name{"SEI"}; };
+	struct CLV : Opcode<0xb8, 1, 2, V, V> { static inline Asm name{"CLV"}; };
 	
 	// jumping
 	struct JSR : Opcode<0x20, 3, 6, None> { static inline Asm name{"JSR"}; };
@@ -45,8 +46,9 @@ namespace mos6502 { namespace opcodes
 	namespace BIT
 	{
 		static constexpr const char *groupName = "BIT";
-		struct ZeroPage: Opcode<0x24, 2, 3, Z> { static inline Asm name{groupName}; };
-		struct Absolute: Opcode<0x2c, 3, 4, Z> { static inline Asm name{groupName}; };
+		static constexpr byte allFlags = N|V|Z;
+		static constexpr byte manualFlags = N|V;
+		struct ZeroPage: Opcode<0x24, 2, 3, allFlags, manualFlags> { static inline Asm name{groupName}; };
 	}
 
 	namespace AND
@@ -88,7 +90,9 @@ namespace mos6502 { namespace opcodes
 	namespace CMP
 	{
 		static constexpr const char *groupName = "CMP";
-		struct Immediate : Opcode<0xc9, 2, 2, N|Z|C> { static inline Asm name{groupName}; };
+		static constexpr byte allFlags = N|Z|C;
+		static constexpr byte manualFlags = C;
+		struct Immediate : Opcode<0xc9, 2, 2, allFlags, manualFlags> { static inline Asm name{groupName}; };
 	}
 
 	struct NOP : Opcode<0xea, 1, 2, None> { static inline Asm name{"NOP"}; };

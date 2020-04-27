@@ -9,13 +9,14 @@ namespace mos6502
 
 	using Asm = const std::string;
 
-	template<short Value, short ByteSize, short Cycles, byte FlagsAffected>
+	template<short Value, short ByteSize, short Cycles, byte AutoFlags, byte ManualFlags=0>
 	struct Opcode
 	{
 		static constexpr short value = Value;
 		static constexpr short byteSize = ByteSize;
 		static constexpr short cycles = Cycles;
-		static constexpr byte flagsAffected = FlagsAffected;
+		static constexpr byte autoFlags = AutoFlags;
+		static constexpr byte manualFlags = ManualFlags;
 	};
 };
 

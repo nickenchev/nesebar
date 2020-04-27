@@ -41,6 +41,7 @@ class Core
 	MemAddress pc;
 	short cycles, totalCycles;
 	short byteStep;
+	byte flagsChanged;
 	byte oper1, oper2, opcodeResult;
 
 	void logInfo()
@@ -91,7 +92,7 @@ class Core
 	template<typename T>
 	constexpr inline void endInstruction(byte operand1 = 0, byte operand2 = 0)
 	{
-		handleFlags<T::flagsAffected>(operand1, operand2);
+		handleFlags<T::autoFlags ^ T::manualFlags>(operand1, operand2);
 		totalCycles += cycles;
 	}
 
@@ -150,33 +151,33 @@ class Core
 	}
 
 	// status management
-	template<byte affectedFlags>
+	template<byte autoFlags>
 	constexpr inline void handleFlags(byte operand1, byte operand2)
 	{
-		if constexpr (affectedFlags != 0)
+		if constexpr (autoFlags != 0)
 		{
-			if constexpr (checkBit<affectedFlags, Status::NegativeResult>())
+			if constexpr (checkBit<autoFlags, Status::NegativeResult>())
 			{
 				updateStatus(Status::NegativeResult,
 							 checkBit(opcodeResult,
 									  status_int(Status::NegativeResult)));
 			}
-			if constexpr (checkBit<affectedFlags, Status::Overflow>())
+			if constexpr (checkBit<autoFlags, Status::Overflow>())
 			{
 				// overflow only occurs if operands have different signs
 				constexpr byte signBit = 0b10000000;
 				const bool isOverflow = (~(oper1 ^ oper2)) & (oper1 ^ opcodeResult) & signBit;
 				updateStatus(Status::Overflow, isOverflow);
 			}
-			if constexpr (checkBit<affectedFlags, Status::Unused>())
+			if constexpr (checkBit<autoFlags, Status::Unused>())
 			{
 				exit(1);
 			}
-			if constexpr (checkBit<affectedFlags, Status::BreakCommand>())
+			if constexpr (checkBit<autoFlags, Status::BreakCommand>())
 			{
 				exit(1);
 			}
-			if constexpr (checkBit<affectedFlags, Status::ZeroResult>())
+			if constexpr (checkBit<autoFlags, Status::ZeroResult>())
 			{
 				updateStatus(Status::ZeroResult, opcodeResult == 0);
 			}
