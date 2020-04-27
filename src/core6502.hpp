@@ -33,6 +33,8 @@ constexpr auto status_int(const Status status)
 template<typename Memory, bool DecimalMode>
 class Core
 {
+	static constexpr unsigned int stackStart = 0x0100;
+
 	Memory &memory;
 	byte a, x, y, sp, p;
 	MemAddress pc;
@@ -70,21 +72,26 @@ class Core
 		std::cout << std::setw(2) << (int)T::value << ' ' << T::name;
 	}
 
+	inline void setResult(byte result)
+	{
+		opcodeResult = result;
+	}
+
 	template<typename T>
 	constexpr inline void endInstruction() 
 	{
-		handleFlags<T::flagsAffected>(opcodeResult);
+		handleFlags<T::flagsAffected>();
 		totalCycles += cycles;
 	}
 
 	// stack
 	void stackPush(byte data)
 	{
-		memory.memWrite(sp--, data);
+		memory.memWrite(stackStart + sp--, data);
 	}
 	byte stackPop()
 	{
-		byte data = memory.memRead(++sp);
+		byte data = memory.memRead(stackStart + ++sp);
 		return data;
 	}
 	void stackPushAddress(MemAddress address)
@@ -99,10 +106,6 @@ class Core
 		return MemAddress(low, high);
 	}
 
-	bool checkBit(const byte &reg, short bitNumber) const
-	{
-		return reg & (1 << bitNumber);
-	}
 	bool isStatus(Status flag) const
 	{
 		return checkBit(p, status_int(flag));
@@ -122,6 +125,11 @@ class Core
 		}
 	}
 
+	bool checkBit(const byte &operand, short bitNumber) const
+	{
+		return operand & (1 << bitNumber);
+	}
+
 	template<byte value, Status statusFlag>
 	constexpr static bool checkBit()
 	{
@@ -130,17 +138,17 @@ class Core
 
 	// status management
 	template<byte affectedFlags>
-	inline void handleFlags(byte instructionResult)
+	inline void handleFlags()
 	{
 		if constexpr (affectedFlags != 0)
 		{
 			if constexpr (checkBit<affectedFlags, Status::NegativeResult>())
 			{
-				updateStatus(Status::NegativeResult, instructionResult < 0);
+				updateStatus(Status::NegativeResult, checkBit(opcodeResult, status_int(Status::NegativeResult)));
 			}
 			if constexpr (checkBit<affectedFlags, Status::ZeroResult>())
 			{
-				updateStatus(Status::ZeroResult, instructionResult == 0);
+				updateStatus(Status::ZeroResult, opcodeResult == 0);
 			}
 		}
 	}
@@ -215,15 +223,17 @@ class Core
 	}
 	byte readZeroPage()
 	{
-		byte data = memory.memRead(fetchByte());
-		std::cout << " $" << std::hex << data;
+		byte addr = fetchByte();
+		byte data = memory.memRead(addr);
+		std::cout << " $" << std::hex << std::setw(2) << static_cast<int>(addr)
+				  << " = " << static_cast<int>(data);
 		return data;
 	}
 	void writeZeroPage(byte address, byte value)
 	{
-		std::cout << " $" << std::hex << static_cast<uint16_t>(address)
+		std::cout << " $" << std::setw(2) << std::hex << static_cast<uint16_t>(address)
 				  << " = " << static_cast<int>(value);
-		memory.memWrite(MemAddress(0, address), value);
+		memory.memWrite(MemAddress(address), value);
 	}
 
 	byte memZeroPageX()

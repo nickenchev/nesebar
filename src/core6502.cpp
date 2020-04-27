@@ -10,18 +10,21 @@ using namespace mos6502;
 template<typename MemType, bool DecimalMode>
 Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
 {
-	x = y = a = p = sp = 0;
+	p = 0x34;
+	a = x = y = 0;
+	sp = 0xfd;
 	pc = 0;
-	cycles = 0;
-	byteStep = 0;
-	opcodeResult = 0;
 
-	for (MemAddress addr = 0x4000; addr <= 0x400F; ++addr)
+	memory.memWrite(0x4017, 0); // frame IRQ enable
+	memory.memWrite(0x4015, 0); // disable all channels
+	for (MemAddress addr = 0x4000; addr <= 0x400f; ++addr)
 	{
 		memory.memWrite(addr, 0);
 	}
-	memory.memWrite(0x4015, 0); // disable all channels
-	memory.memWrite(0x4017, 0); // frame IRQ enable
+	for (MemAddress addr = 0x4010; addr <= 0x4013; ++addr)
+	{
+		memory.memWrite(addr, 0);
+	}
 }
 
 template<typename MemType, bool DecimalMode>
@@ -61,6 +64,18 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<JSR>();
 			break;
 		}
+		case BIT::ZeroPage::value:
+		{
+			beginInstruction<BIT::ZeroPage>();
+			byte operand = readZeroPage();
+			updateStatus(Status::NegativeResult,
+						 checkBit(operand, status_int(Status::NegativeResult)));
+			updateStatus(Status::Overflow,
+						 checkBit(operand, status_int(Status::Overflow)));
+			opcodeResult = operand & a;
+			endInstruction<BIT::ZeroPage>();
+			break;
+		}
 		case SEC::value:
 		{
 			beginInstruction<SEC>();
@@ -75,6 +90,13 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<JMP>();
 			break;
 		}
+		case BVS::value:
+		{
+			beginInstruction<BVS>();
+			branchIf(Status::Overflow, true);
+			endInstruction<BVS>();
+			break;
+		}
 		case SEI::value:
 		{
 			beginInstruction<SEI>();
@@ -82,10 +104,17 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<SEI>();
 			break;
 		}
+		case STA::ZeroPage::value:
+		{
+			beginInstruction<STA::ZeroPage>();
+			writeZeroPage(fetchByte(), a);
+			endInstruction<STA::ZeroPage>();
+			break;
+		}
 		case STA::Absolute::value:
 		{
 			beginInstruction<STA::Absolute>();
-			memory.memWrite(memAbsolute(), a);
+			exit(1);
 			endInstruction<STA::Absolute>();
 			break;
 		}
@@ -181,11 +210,13 @@ bool Core<MemType, DecimalMode>::step()
 template<typename MemType, bool DecimalMode>
 void Core<MemType, DecimalMode>::interruptReset()
 {
-	sp = 0xff;
+	opcodeResult = 0;
+	//sp -= 3;
+
+	p = 0b00000010;
 	pc = readMemAddress(0xfffc);
 	pc = 0xc000;
-	stackPushAddress(pc);
-	stackPush(p);
+
 	totalCycles = 7;
 }
 

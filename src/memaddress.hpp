@@ -22,6 +22,7 @@ union MemAddress
 
 	byte &low() { return bytes[0]; }
 	byte &high() { return bytes[1]; }
+
 	MemAddress &addLow(byte lowInc)
 	{
 		low() += lowInc;

@@ -13,6 +13,7 @@ namespace mos6502 { namespace opcodes
 	  N   V       B   D   I   Z   C
 	*/
 	static constexpr byte None{0};
+	static constexpr byte Manual{0};
 	static constexpr byte N{0b10000000};
 	static constexpr byte V{0b00100000};
 	static constexpr byte B{0b00010000};
@@ -24,13 +25,23 @@ namespace mos6502 { namespace opcodes
 	struct BPL : Opcode<0x10, 2, 2, None> { static inline Asm name{"BPL"}; };
 	struct CLC : Opcode<0x18, 1, 2, C> { static inline Asm name{"CLC"}; };
 	struct JSR : Opcode<0x20, 3, 6, None> { static inline Asm name{"JSR"}; };
+
+	namespace BIT
+	{
+		static constexpr const char *groupName = "BIT";
+		struct ZeroPage: Opcode<0x24, 2, 3, Z> { static inline Asm name{groupName}; };
+		struct Absolute: Opcode<0x2c, 3, 4, Z> { static inline Asm name{groupName}; };
+	}
+
 	struct SEC : Opcode<0x38, 1, 2, C> { static inline Asm name{"SEC"}; };
 	struct JMP : Opcode<0x4c, 3, 3, None> { static inline Asm name{"JMP"}; };
+	struct BVS : Opcode<0x70, 2, 2, None> { static inline Asm name{"BVS"}; };
 	struct SEI : Opcode<0x78, 1, 2, I> { static inline Asm name{"SEI"}; };
 
 	namespace STA
 	{
 		static constexpr const char *groupName = "STA";
+		struct ZeroPage: Opcode<0x85, 2, 3, None> { static inline Asm name{groupName}; };
 		struct Absolute: Opcode<0x8d, 3, 4, None> { static inline Asm name{groupName}; };
 	}
 
