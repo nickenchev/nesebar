@@ -49,6 +49,20 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<PHP>();
 			break;
 		}
+		case PHA::value:
+		{
+			beginInstruction<PHA>();
+			stackPush(a);
+			endInstruction<PHA>();
+			break;
+		}
+		case PLP::value:
+		{
+			beginInstruction<PLP>();
+			setP(stackPop());
+			endInstruction<PLP>();
+			break;
+		}
 		case BPL::value:
 		{
 			beginInstruction<BPL>();
@@ -208,6 +222,13 @@ bool Core<MemType, DecimalMode>::step()
 			beginInstruction<CMP::Immediate>();
 			opcodeResult = a - memImmediate();
 			endInstruction<CMP::Immediate>();
+			break;
+		}
+		case BMI::value:
+		{
+			beginInstruction<BMI>();
+			branchIf(Status::NegativeResult, true);
+			endInstruction<BMI>();
 			break;
 		}
 		case BNE::value:
