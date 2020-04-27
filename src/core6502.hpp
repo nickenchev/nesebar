@@ -67,7 +67,10 @@ class Core
 	}
 	inline void setP(byte value)
 	{
-		p = value;
+		namespace sb = status_bits;
+		constexpr byte retain = sb::E|sb::B; // bits we don't want to affect (5, 4)
+		value &= ~retain; // transfer all bits except 5, 4
+		p = (p & retain) | value; // set p, keep bits 5, 4 if currently set
 	}
 
 	template<typename T>
