@@ -91,7 +91,9 @@ class Core
 	}
 	byte stackPop()
 	{
-		byte data = memory.memRead(stackStart + ++sp);
+		MemAddress addr = MemAddress(stackStart) + ++sp;
+		std::cout << " $" << std::hex << static_cast<uint16_t>(addr.value);
+		byte data = memory.memRead(addr);
 		return data;
 	}
 	void stackPushAddress(MemAddress address)
@@ -103,7 +105,8 @@ class Core
 	{
 		byte low = stackPop();
 		byte high = stackPop();
-		return MemAddress(low, high);
+		MemAddress addr(low, high);
+		return addr;
 	}
 
 	bool isStatus(Status flag) const

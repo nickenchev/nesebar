@@ -59,8 +59,9 @@ bool Core<MemType, DecimalMode>::step()
 		case JSR::value:
 		{
 			beginInstruction<JSR>();
+			MemAddress newPC = addressAbsolute();
 			stackPushAddress(pc);
-			pc = addressAbsolute();
+			pc = newPC;
 			endInstruction<JSR>();
 			break;
 		}
@@ -88,6 +89,20 @@ bool Core<MemType, DecimalMode>::step()
 			beginInstruction<JMP>();
 			pc = addressAbsolute();
 			endInstruction<JMP>();
+			break;
+		}
+		case BVC::value:
+		{
+			beginInstruction<BVC>();
+			branchIf(Status::Overflow, false);
+			endInstruction<BVC>();
+			break;
+		}
+		case RTS::value:
+		{
+			beginInstruction<RTS>();
+			pc = stackPopAddress();
+			endInstruction<RTS>();
 			break;
 		}
 		case BVS::value:

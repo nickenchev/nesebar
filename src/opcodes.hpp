@@ -35,6 +35,8 @@ namespace mos6502 { namespace opcodes
 
 	struct SEC : Opcode<0x38, 1, 2, C> { static inline Asm name{"SEC"}; };
 	struct JMP : Opcode<0x4c, 3, 3, None> { static inline Asm name{"JMP"}; };
+	struct BVC : Opcode<0x50, 2, 2, None> { static inline Asm name{"BVC"}; };
+	struct RTS : Opcode<0x60, 1, 6, None> { static inline Asm name{"RTS"}; };
 	struct BVS : Opcode<0x70, 2, 2, None> { static inline Asm name{"BVS"}; };
 	struct SEI : Opcode<0x78, 1, 2, I> { static inline Asm name{"SEI"}; };
 
