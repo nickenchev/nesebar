@@ -12,7 +12,7 @@ Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
 {
 	p = 0x34;
 	a = x = y = 0;
-	sp = 0xfd;
+	sp = 0;
 	pc = 0;
 
 	memory.memWrite(0x4017, 0); // frame IRQ enable
@@ -261,7 +261,7 @@ template<typename MemType, bool DecimalMode>
 void Core<MemType, DecimalMode>::interruptReset()
 {
 	opcodeResult = 0;
-	//sp -= 3;
+	sp -= 3;
 
 	p = 0x24;
 	pc = readMemAddress(0xfffc);
