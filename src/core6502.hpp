@@ -50,6 +50,7 @@ class Core
 				  << "\tY:" << static_cast<int>(y)
 				  << "\tSP:" << static_cast<int>(sp)
 				  << "\tP:" << std::bitset<8>(p)
+				  << std::hex << std::setw(2) << " (" << static_cast<int>(p) << ')'
 				  << std::dec << "\tCycles:" << totalCycles << "\t\t";
 	}
 
@@ -72,11 +73,6 @@ class Core
 		std::cout << std::setw(2) << (int)T::value << ' ' << T::name;
 	}
 
-	inline void setResult(byte result)
-	{
-		opcodeResult = result;
-	}
-
 	template<typename T>
 	constexpr inline void endInstruction() 
 	{
@@ -92,7 +88,6 @@ class Core
 	byte stackPop()
 	{
 		MemAddress addr = MemAddress(stackStart) + ++sp;
-		std::cout << " $" << std::hex << static_cast<uint16_t>(addr.value);
 		byte data = memory.memRead(addr);
 		return data;
 	}
@@ -148,6 +143,18 @@ class Core
 			if constexpr (checkBit<affectedFlags, Status::NegativeResult>())
 			{
 				updateStatus(Status::NegativeResult, checkBit(opcodeResult, status_int(Status::NegativeResult)));
+			}
+			if constexpr (checkBit<affectedFlags, Status::Overflow>())
+			{
+				exit(1);
+			}
+			if constexpr (checkBit<affectedFlags, Status::Unused>())
+			{
+				exit(1);
+			}
+			if constexpr (checkBit<affectedFlags, Status::BreakCommand>())
+			{
+				exit(1);
 			}
 			if constexpr (checkBit<affectedFlags, Status::ZeroResult>())
 			{

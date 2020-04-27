@@ -42,6 +42,13 @@ bool Core<MemType, DecimalMode>::step()
 
 	switch (opcode)
 	{
+		case PHP::value:
+		{
+			beginInstruction<PHP>();
+			stackPush(p);
+			endInstruction<PHP>();
+			break;
+		}
 		case BPL::value:
 		{
 			beginInstruction<BPL>();
@@ -59,9 +66,9 @@ bool Core<MemType, DecimalMode>::step()
 		case JSR::value:
 		{
 			beginInstruction<JSR>();
-			MemAddress newPC = addressAbsolute();
+			MemAddress jumpAddr = addressAbsolute();
 			stackPushAddress(pc);
-			pc = newPC;
+			pc = jumpAddr;
 			endInstruction<JSR>();
 			break;
 		}
@@ -75,6 +82,13 @@ bool Core<MemType, DecimalMode>::step()
 						 checkBit(operand, status_int(Status::Overflow)));
 			opcodeResult = operand & a;
 			endInstruction<BIT::ZeroPage>();
+			break;
+		}
+		case AND::Immediate::value:
+		{
+			beginInstruction<AND::Immediate>();
+			setA(a & memImmediate());
+			endInstruction<AND::Immediate>();
 			break;
 		}
 		case SEC::value:
@@ -103,6 +117,13 @@ bool Core<MemType, DecimalMode>::step()
 			beginInstruction<RTS>();
 			pc = stackPopAddress();
 			endInstruction<RTS>();
+			break;
+		}
+		case PLA::value:
+		{
+			beginInstruction<PLA>();
+			setA(stackPop());
+			endInstruction<PLA>();
 			break;
 		}
 		case BVS::value:
@@ -182,6 +203,13 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<BCS>();
 			break;
 		}
+		case CMP::Immediate::value:
+		{
+			beginInstruction<CMP::Immediate>();
+			opcodeResult = a - memImmediate();
+			endInstruction<CMP::Immediate>();
+			break;
+		}
 		case BNE::value:
 		{
 			beginInstruction<BNE>();
@@ -209,6 +237,13 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<BEQ>();
 			break;
 		}
+		case SED::value:
+		{
+			beginInstruction<SED>();
+			updateStatus(Status::DecimalMode, true);
+			endInstruction<SED>();
+			break;
+		}
 		default:
 		{
 			std::cout << std::endl << std::hex << "Unsupported opcode \""
@@ -228,7 +263,7 @@ void Core<MemType, DecimalMode>::interruptReset()
 	opcodeResult = 0;
 	//sp -= 3;
 
-	p = 0b00000010;
+	p = 0x24;
 	pc = readMemAddress(0xfffc);
 	pc = 0xc000;
 
