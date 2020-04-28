@@ -50,6 +50,21 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ADC::Immediate>(operand, data);
 			break;
 		}
+		case SBC::Immediate::value:
+		{
+			beginInstruction<SBC::Immediate>();
+			byte operand = state.a;
+			byte data = memory.memImmediate();
+			byte borrow = !static_cast<int>(isStatus(Status::Carry));
+			state.setA(operand - data - borrow);
+
+			// figure out if there is carry from subtraction
+			signed_byte diff = operand - data - isStatus(Status::Carry);
+			updateStatus(Status::Carry, diff < 0);
+
+			endInstruction<SBC::Immediate>();
+			break;
+		}
 		case ORA::Immediate::value:
 		{
 			beginInstruction<ORA::Immediate>();

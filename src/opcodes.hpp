@@ -17,6 +17,15 @@ namespace mos6502 { namespace opcodes
 		static constexpr byte manual = C;
 		struct Immediate : Opcode<0x69, 2, 2, flags, manual> { static inline Asm name{group}; };
 	}
+
+	namespace SBC
+	{
+		static constexpr const char *group = "SBC";
+		static constexpr byte flags = N|Z|C|V;
+		static constexpr byte manual = C;
+		struct Immediate : Opcode<0xe9, 2, 2, flags, manual> { static inline Asm name{group}; };
+	}
+
 	namespace ORA
 	{
 		static constexpr const char *groupName = "ORA";
