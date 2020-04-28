@@ -2,48 +2,23 @@
 #define NESMEMORY_H
 
 #include "memchunk.hpp"
+#include "mappedaddress.hpp"
 #include "nescart.hpp"
-
-struct MappedMemAddress
-{
-	MemAddress address;
-	bool readOnly;
-
-	MappedMemAddress()
-	{
-		address = 0;
-		readOnly = false;
-	}
-	MappedMemAddress(const MemAddress &address, bool readOnly = false)
-	{
-		this->address = address;
-		this->readOnly = readOnly;
-	}
-};
 
 class NESMemory
 {
-	static constexpr unsigned int cpuMemSize = 65535;
 	static constexpr unsigned int ppuRegistersSize = 8;
 	static constexpr unsigned int ppuSize = 8184;
 	static constexpr unsigned int apuIORegistersSize = 24;
 
 	const NESCart &cart;
-	MemChunk<byte, cpuMemSize> memory;
 
 public:
-	NESMemory(const NESCart &cart) : cart(cart)
-	{
-		// copy cart ROM into CPU memory directly
-		for (MemAddress addr = 0; addr < cart.prgRom.size(); ++addr)
-		{
-			memory[addr + 0x8000] = cart.prgRom[addr.value];
-		}
-	}
+	NESMemory(const NESCart &cart) : cart(cart) {}
 
-	MappedMemAddress memMap(const MemAddress &address) const
+	MappedAddress mapAddress(const MemAddress &address) const
 	{
-		MappedMemAddress mapped;
+		MappedAddress mapped;
 		if (address < 0x2000)
 		{
 			mapped = address % 0x800;
@@ -86,23 +61,6 @@ public:
 		return mapped;
 	}
 
-	byte memRead(const MemAddress &address)
-	{
-		return memory[memMap(address).address];
-	}
-
-	void memWrite(const MemAddress &address, byte value)
-	{
-		MappedMemAddress mapped = memMap(address);
-		if (!mapped.readOnly)
-		{
-			memory[mapped.address] = value;
-		}
-		else
-		{
-			exit(EXIT_FAILURE);
-		}
-	}
 };
 
 #endif /* NESMEMORY_H */

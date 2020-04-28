@@ -9,7 +9,9 @@
 
 #include "common.hpp"
 #include "flags.hpp"
+#include "mem6502.hpp"
 #include "memaddress.hpp"
+#include "state.hpp"
 
 namespace mos6502
 {
@@ -31,64 +33,37 @@ constexpr auto status_int(const Status status)
 	return static_cast<short>(status);
 }
 
-template<typename Memory, bool DecimalMode>
+template<typename Memory, typename Mapping, bool DecimalMode>
 class Core
 {
 	static constexpr unsigned int stackStart = 0x0100;
 
-	Memory &memory;
-	byte a, x, y, sp, p;
-	MemAddress pc;
-	short cycles, totalCycles;
-	short byteStep;
-	byte flagsChanged;
-	byte opcodeResult;
+	State state;
+	Memory memory;
+	const Mapping &mapping;
 
 	void logInfo()
 	{
 		std::cout << std::hex << std::uppercase
-				  << "A:" << std::setw(2) << static_cast<int>(a)
-				  << "\tX:" << std::setw(2) << static_cast<int>(x)
-				  << "\tY:" << std::setw(2) << static_cast<int>(y)
-				  << "\tSP:" << std::setw(2) << static_cast<int>(sp)
-				  << "\tP:" << std::bitset<8>(p)
-				  << std::hex << "=" << std::setw(2) << static_cast<int>(p)
-				  << std::dec << "\tCycles:" << totalCycles << "\t";
+				  << "A:" << std::setw(2) << static_cast<int>(state.a)
+				  << "\tX:" << std::setw(2) << static_cast<int>(state.x)
+				  << "\tY:" << std::setw(2) << static_cast<int>(state.y)
+				  << "\tSP:" << std::setw(2) << static_cast<int>(state.sp)
+				  << "\tP:" << std::bitset<8>(state.p)
+				  << std::hex << "=" << std::setw(2) << static_cast<int>(state.p)
+				  << std::dec << "\tCycles:" << state.totalCycles << "\t";
 	}
 
-	inline void setA(byte value)
+	inline byte nextOpcode()
 	{
-		a = value;
-		opcodeResult = value;
-	}
-	inline void setSP(byte value)
-	{
-		sp = value;
-		opcodeResult = value;
-	}
-	inline void setX(byte value)
-	{
-		x = value;
-		opcodeResult = value;
-	}
-	inline void setY(byte value)
-	{
-		y = value;
-		opcodeResult = value;
-	}
-	inline void setP(byte value)
-	{
-		namespace sb = status_bits;
-		constexpr byte retain = sb::E|sb::B; // bits we don't want to affect (5, 4)
-		value &= ~retain; // transfer all bits except 5, 4
-		p = (p & retain) | value; // set p, keep bits 5, 4 if currently set
+		return memory.fetchByte();
 	}
 
 	template<typename T>
 	constexpr inline void beginInstruction()
 	{
-		cycles = T::cycles;
-		byteStep = T::byteSize;
+		state.cycles = T::cycles;
+		state.byteStep = T::byteSize;
 
 		std::cout << std::setw(2) << (int)T::value << ' ' << T::name;
 	}
@@ -97,24 +72,24 @@ class Core
 	constexpr inline void endInstruction(byte operand1 = 0, byte operand2 = 0)
 	{
 		handleFlags<T::autoFlags ^ T::manualFlags>(operand1, operand2);
-		totalCycles += cycles;
+		state.totalCycles += state.cycles;
 	}
 
 	// stack
 	void stackPush(byte data)
 	{
-		memory.memWrite(stackStart + sp--, data);
+		memory.write(stackStart + state.sp--, data);
 	}
 	byte stackPop()
 	{
-		MemAddress addr = MemAddress(stackStart) + ++sp;
-		byte data = memory.memRead(addr);
+		MemAddress addr = MemAddress(stackStart) + ++state.sp;
+		byte data = memory.read(addr);
 		return data;
 	}
 	void stackPushAddress(MemAddress address)
 	{
-		stackPush(pc.high());
-		stackPush(pc.low());
+		stackPush(state.pc.high());
+		stackPush(state.pc.low());
 	}
 	MemAddress stackPopAddress()
 	{
@@ -126,20 +101,20 @@ class Core
 
 	bool isStatus(Status flag) const
 	{
-		return checkBit(p, status_int(flag));
+		return checkBit(state.p, status_int(flag));
 	}
 
-	void updateStatus(Status flag, bool state)
+	void updateStatus(Status flag, bool flagState)
 	{
-		if (state)
+		if (flagState)
 		{
 			// set bit
-			p |= 1 << status_int(flag);
+			state.p |= 1 << status_int(flag);
 		}
 		else
 		{
 			// clear bit
-			p &= ~(1 << status_int(flag));
+			state.p &= ~(1 << status_int(flag));
 		}
 	}
 
@@ -163,7 +138,7 @@ class Core
 			if constexpr (checkBit<autoFlags, Status::NegativeResult>())
 			{
 				updateStatus(Status::NegativeResult,
-							 checkBit(opcodeResult,
+							 checkBit(state.opcodeResult,
 									  status_int(Status::NegativeResult)));
 			}
 			if constexpr (checkBit<autoFlags, Status::Overflow>())
@@ -171,7 +146,7 @@ class Core
 				// overflow only occurs if operands have different signs
 				constexpr byte signBit = 0b10000000;
 				const bool isOverflow = (~(operand1 ^ operand2))
-					& (operand1 ^ opcodeResult) & signBit;
+					& (operand1 ^ state.opcodeResult) & signBit;
 				updateStatus(Status::Overflow, isOverflow);
 			}
 			if constexpr (checkBit<autoFlags, Status::Carry>())
@@ -189,126 +164,20 @@ class Core
 			}
 			if constexpr (checkBit<autoFlags, Status::ZeroResult>())
 			{
-				updateStatus(Status::ZeroResult, opcodeResult == 0);
+				updateStatus(Status::ZeroResult, state.opcodeResult == 0);
 			}
 		}
 	}
 
 	void addCycles(short numCycles)
 	{
-		this->cycles += numCycles;
-	}
-
-	// Memory access
-	byte fetchByte()
-	{
-		byte val = memory.memRead(pc);
-		pc.add(1);
-		return val;
-	}
-	MemAddress fetchNextMemAddress()
-	{
-		MemAddress addr = readMemAddress(pc);
-		pc.add(2);
-		return addr;
-	}
-
-	MemAddress readMemAddress(const MemAddress &address)
-	{
-		return MemAddress(memory.memRead(address), memory.memRead(address + 1));
-	}
-
-	// Memory Addressing
-	byte memImmediate()
-	{
-		byte data = fetchByte();
-		std::cout << " #" << std::hex << std::setw(2)
-				  << static_cast<int>(data);
-		return data;
-	}
-	byte memRelative()
-	{
-		byte data = fetchByte();
-		std::cout << std::hex << std::setw(2)
-				  << static_cast<int>(data);
-		return data;
-	}
-	byte memIndirect()
-	{
-		MemAddress addr = readMemAddress(MemAddress{memZeroPage()});
-		return memory.memRead(addr);
-	}
-	MemAddress addressAbsolute()
-	{
-		MemAddress addr = fetchNextMemAddress();
-		std::cout << " $" << std::hex << std::setw(2)
-				  << static_cast<uint16_t>(addr.value);
-		return addr;
-	}
-	byte memAbsolute()
-	{
-		MemAddress addr = fetchNextMemAddress();
-		byte data = memory.memRead(addr);
-		std::cout << " $" << std::hex << static_cast<uint16_t>(addr.value)
-				  << " = " << static_cast<int>(data);
-		return data;
-	}
-	byte memAbsoluteX()
-	{
-		MemAddress addr = fetchNextMemAddress();
-		if (addr.add(x)) ++cycles;
-		return memory.memRead(addr);
-	}
-	byte memAbsoluteY()
-	{
-		MemAddress addr = fetchNextMemAddress();
-		if (addr.add(y)) ++cycles;
-		return memory.memRead(addr);
-	}
-	byte memZeroPage()
-	{
-		byte addr = fetchByte();
-		byte data = memory.memRead(addr);
-		std::cout << " $" << std::hex << std::setw(2) << static_cast<int>(addr)
-				  << " = " << static_cast<int>(data);
-		return data;
-	}
-	void writeZeroPage(byte address, byte value)
-	{
-		std::cout << " $" << std::setw(2) << std::hex << static_cast<uint16_t>(address)
-				  << " = " << static_cast<int>(value);
-		memory.memWrite(MemAddress(address), value);
-	}
-
-	byte memZeroPageX()
-	{
-		byte val = fetchByte();
-		return memory.memRead(MemAddress{val}.addLow(x));
-	}
-
-	// indexed addressing
-	byte memAbsuluteIndexed()
-	{
-		MemAddress addr = fetchNextMemAddress();
-		if (addr.add(x)) ++cycles;
-		return memory.memRead(addr);
-	}
-	byte memIndexedIndirect()
-	{
-		MemAddress addr = readMemAddress(MemAddress{memZeroPageX()});
-		return memory.memRead(addr);
-	}
-	byte memIndirectIndexed()
-	{
-		MemAddress addr = readMemAddress(MemAddress{fetchByte()});
-		if (addr.add(y)) ++cycles;
-		return memory.memRead(addr);
+		state.cycles += numCycles;
 	}
 
 	// compare
 	inline void compare(byte &reg, const byte &data)
 	{
-		opcodeResult = reg - data;
+		state.opcodeResult = reg - data;
 		updateStatus(Status::Carry, data <= reg);
 	}
 	
@@ -316,14 +185,11 @@ class Core
 	inline void branchIf(Status flag, bool checkStatus)
 	{
 		short extraCycles = 1;
-		signed_byte branch = static_cast<signed_byte>(fetchByte());
-
-		std::cout << std::hex << " #$" << static_cast<int>(branch)
-				  << " ($" << (pc + branch).value << ") ";
+		signed_byte branch = static_cast<signed_byte>(memory.memRelative());
 
 		if (isStatus(flag) == checkStatus)
 		{
-			if (pc.addSigned(branch)) extraCycles++;
+			if (state.pc.addSigned(branch)) extraCycles++;
 			addCycles(extraCycles);
 		}
 	}
@@ -355,8 +221,9 @@ class Core
 	void interruptReset();
 
 public:
-	Core(Memory &memory);
+	Core(const Mapping &mapping);
 
+	Memory &getMemory() { return memory; }
 	void reset() { interruptReset(); }
 	bool step();
 };

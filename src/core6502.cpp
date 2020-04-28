@@ -7,28 +7,24 @@
 
 using namespace mos6502;
 
-template<typename MemType, bool DecimalMode>
-Core<MemType, DecimalMode>::Core(MemType &memory) : memory(memory)
+template<typename Memory, typename Mapping, bool DecimalMode>
+Core<Memory, Mapping, DecimalMode>::Core(const Mapping &mapping) : memory(state, mapping), mapping(mapping)
 {
-	p = 0x34;
-	a = x = y = 0;
-	sp = 0;
-	pc = 0;
+	memory.write(0x4017, 0); // frame IRQ enable
+	memory.write(0x4015, 0); // disable all channels
 
-	memory.memWrite(0x4017, 0); // frame IRQ enable
-	memory.memWrite(0x4015, 0); // disable all channels
 	for (MemAddress addr = 0x4000; addr <= 0x400f; ++addr)
 	{
-		memory.memWrite(addr, 0);
+		memory.write(addr, 0);
 	}
 	for (MemAddress addr = 0x4010; addr <= 0x4013; ++addr)
 	{
-		memory.memWrite(addr, 0);
+		memory.write(addr, 0);
 	}
 }
 
-template<typename MemType, bool DecimalMode>
-bool Core<MemType, DecimalMode>::step()
+template<typename Memory, typename Mapping, bool DecimalMode>
+bool Core<Memory, Mapping, DecimalMode>::step()
 {
 	using namespace mos6502::opcodes;
 
@@ -37,53 +33,53 @@ bool Core<MemType, DecimalMode>::step()
 	logInfo();
 
 	std::cout << '$' << std::hex << std::setfill('0')
-			  << std::setw(4) << pc.value << ": ";
+			  << std::setw(4) << state.pc.value << ": ";
 
-	const byte opcode = fetchByte();
+	const byte opcode = nextOpcode();
 	switch (opcode)
 	{
 		case ADC::Immediate::value:
 		{
 			beginInstruction<ADC::Immediate>();
-			byte operand = a;
-			byte data = memImmediate();
+			byte operand = state.a;
+			byte data = memory.memImmediate();
 			byte carry = static_cast<int>(isStatus(Status::Carry));
-			setA(operand + data + carry);
+			state.setA(operand + data + carry);
 			endInstruction<ADC::Immediate>(operand, data);
 			break;
 		}
 		case ORA::Immediate::value:
 		{
 			beginInstruction<ORA::Immediate>();
-			setA(a | memImmediate());
+			state.setA(state.a | memory.memImmediate());
 			endInstruction<ORA::Immediate>();
 			break;
 		}
 		case EOR::Immediate::value:
 		{
 			beginInstruction<EOR::Immediate>();
-			setA(a ^ memImmediate());
+			state.setA(state.a ^ memory.memImmediate());
 			endInstruction<EOR::Immediate>();
 			break;
 		}
 		case PHP::value:
 		{
 			beginInstruction<PHP>();
-			stackPush(p);
+			stackPush(state.p);
 			endInstruction<PHP>();
 			break;
 		}
 		case PHA::value:
 		{
 			beginInstruction<PHA>();
-			stackPush(a);
+			stackPush(state.a);
 			endInstruction<PHA>();
 			break;
 		}
 		case PLP::value:
 		{
 			beginInstruction<PLP>();
-			setP(stackPop());
+			state.setP(stackPop());
 			endInstruction<PLP>();
 			break;
 		}
@@ -104,28 +100,28 @@ bool Core<MemType, DecimalMode>::step()
 		case JSR::value:
 		{
 			beginInstruction<JSR>();
-			MemAddress jumpAddr = addressAbsolute();
-			stackPushAddress(pc);
-			pc = jumpAddr;
+			MemAddress jumpAddr = memory.addressAbsolute();
+			stackPushAddress(state.pc);
+			state.pc = jumpAddr;
 			endInstruction<JSR>();
 			break;
 		}
 		case BIT::ZeroPage::value:
 		{
 			beginInstruction<BIT::ZeroPage>();
-			byte operand = memZeroPage();
+			byte operand = memory.memZeroPage();
 			updateStatus(Status::NegativeResult,
 						 checkBit(operand, status_int(Status::NegativeResult)));
 			updateStatus(Status::Overflow,
 						 checkBit(operand, status_int(Status::Overflow)));
-			opcodeResult = operand & a;
+			state.opcodeResult = operand & state.a;
 			endInstruction<BIT::ZeroPage>();
 			break;
 		}
 		case AND::Immediate::value:
 		{
 			beginInstruction<AND::Immediate>();
-			setA(a & memImmediate());
+			state.setA(state.a & memory.memImmediate());
 			endInstruction<AND::Immediate>();
 			break;
 		}
@@ -139,7 +135,7 @@ bool Core<MemType, DecimalMode>::step()
 		case JMP::value:
 		{
 			beginInstruction<JMP>();
-			pc = addressAbsolute();
+			state.pc = memory.addressAbsolute();
 			endInstruction<JMP>();
 			break;
 		}
@@ -153,14 +149,14 @@ bool Core<MemType, DecimalMode>::step()
 		case RTS::value:
 		{
 			beginInstruction<RTS>();
-			pc = stackPopAddress();
+			state.pc = stackPopAddress();
 			endInstruction<RTS>();
 			break;
 		}
 		case PLA::value:
 		{
 			beginInstruction<PLA>();
-			setA(stackPop());
+			state.setA(stackPop());
 			endInstruction<PLA>();
 			break;
 		}
@@ -181,7 +177,7 @@ bool Core<MemType, DecimalMode>::step()
 		case STA::ZeroPage::value:
 		{
 			beginInstruction<STA::ZeroPage>();
-			writeZeroPage(fetchByte(), a);
+			memory.writeZeroPage(memory.fetchByte(), state.a);
 			endInstruction<STA::ZeroPage>();
 			break;
 		}
@@ -195,7 +191,7 @@ bool Core<MemType, DecimalMode>::step()
 		case STX::ZeroPage::value:
 		{
 			beginInstruction<STX::ZeroPage>();
-			writeZeroPage(fetchByte(), x);
+			memory.writeZeroPage(memory.fetchByte(), state.x);
 			endInstruction<STX::ZeroPage>();
 			break;
 		}
@@ -209,35 +205,35 @@ bool Core<MemType, DecimalMode>::step()
 		case TXS::value:
 		{
 			beginInstruction<TXS>();
-			setSP(x);
+			state.setSP(state.x);
 			endInstruction<TXS>();
 			break;
 		}
 		case LDX::Immediate::value:
 		{
 			beginInstruction<LDX::Immediate>();
-			setX(memImmediate());
+			state.setX(memory.memImmediate());
 			endInstruction<LDX::Immediate>();
 			break;
 		}
 		case LDY::Immediate::value:
 		{
 			beginInstruction<LDY::Immediate>();
-			setY(memImmediate());
+			state.setY(memory.memImmediate());
 			endInstruction<LDY::Immediate>();
 			break;
 		}
 		case LDA::Immediate::value:
 		{
 			beginInstruction<LDA::Immediate>();
-			setA(memImmediate());
+			state.setA(memory.memImmediate());
 			endInstruction<LDA::Immediate>();
 			break;
 		}
 		case LDA::Absolute::value:
 		{
 			beginInstruction<LDA::Absolute>();
-			setA(memAbsolute());
+			state.setA(memory.memAbsolute());
 			endInstruction<LDA::Absolute>();
 			break;
 		}
@@ -252,63 +248,63 @@ bool Core<MemType, DecimalMode>::step()
 		{
 			using OP = CMP::Immediate;
 			beginInstruction<OP>();
-			byte data = memImmediate();
-			compare(a, data);
-			endInstruction<OP>(a, data);
+			byte data =memory. memImmediate();
+			compare(state.a, data);
+			endInstruction<OP>(state.a, data);
 			break;
 		}
 		case CPX::Immediate::value:
 		{
 			using OP = CPX::Immediate;
 			beginInstruction<OP>();
-			byte data = memImmediate();
-			compare(x, data);
-			endInstruction<OP>(x, data);
+			byte data = memory.memImmediate();
+			compare(state.x, data);
+			endInstruction<OP>(state.x, data);
 			break;
 		}
 		case CPX::ZeroPage::value:
 		{
 			using OP = CPX::ZeroPage;
 			beginInstruction<OP>();
-			byte data = memZeroPage();
-			compare(x, data);
-			endInstruction<OP>(x, data);
+			byte data = memory.memZeroPage();
+			compare(state.x, data);
+			endInstruction<OP>(state.x, data);
 			break;
 		}
 		case CPX::Absolute::value:
 		{
 			using OP = CPX::Absolute;
 			beginInstruction<OP>();
-			byte data = memAbsolute();
-			compare(x, data);
-			endInstruction<OP>(x, data);
+			byte data = memory.memAbsolute();
+			compare(state.x, data);
+			endInstruction<OP>(state.x, data);
 			break;
 		}
 		case CPY::Immediate::value:
 		{
 			using OP = CPX::Immediate;
 			beginInstruction<OP>();
-			byte data = memImmediate();
-			compare(y, data);
-			endInstruction<OP>(y, data);
+			byte data = memory.memImmediate();
+			compare(state.y, data);
+			endInstruction<OP>(state.y, data);
 			break;
 		}
 		case CPY::ZeroPage::value:
 		{
 			using OP = CPY::ZeroPage;
 			beginInstruction<OP>();
-			byte data = memZeroPage();
-			compare(y, data);
-			endInstruction<OP>(y, data);
+			byte data = memory.memZeroPage();
+			compare(state.y, data);
+			endInstruction<OP>(state.y, data);
 			break;
 		}
 		case CPY::Absolute::value:
 		{
 			using OP = CPY::Absolute;
 			beginInstruction<OP>();
-			byte data = memAbsolute();
-			compare(y, data);
-			endInstruction<OP>(y, data);
+			byte data = memory.memAbsolute();
+			compare(state.y, data);
+			endInstruction<OP>(state.y, data);
 			break;
 		}
 		case BMI::value:
@@ -372,16 +368,16 @@ bool Core<MemType, DecimalMode>::step()
 	return keepGoing;
 }
 
-template<typename MemType, bool DecimalMode>
-void Core<MemType, DecimalMode>::interruptReset()
+template<typename Memory, typename Mapping, bool DecimalMode>
+void Core<Memory, Mapping, DecimalMode>::interruptReset()
 {
-	opcodeResult = 0;
-	sp = -3; // cycle 0: sp = 0, then gets decremented 3 times, look more into this
-	p = 0x24; // TODO: Properly configure the status flags
-	pc = readMemAddress(0xfffc);
-	pc = 0xc000; // TODO: This is only for nestest.nes "auto mode"
+	state.opcodeResult = 0;
+	state.sp = -3; // cycle 0: sp = 0, then gets decremented 3 times, look more into this
+	state.p = 0x24; // TODO: Properly configure the status flags
+	state.pc = memory.readMemAddress(0xfffc);
+	state.pc = 0xc000; // TODO: This is only for nestest.nes "auto mode"
 
-	totalCycles = 7;
+	state.totalCycles = 7;
 }
 
-template class mos6502::Core<NESMemory, false>;
+template class mos6502::Core<Mem6502<NESMemory>, NESMemory, false>;

@@ -1,19 +1,22 @@
 #ifndef NES_H
 #define NES_H
 
-#include "nesmemory.hpp"
 #include "core6502.hpp"
+#include "mem6502.hpp"
+#include "nesmemory.hpp"
 
 class NESCart;
 
 class NES
 {
+	using Memory = mos6502::Mem6502<NESMemory>;
+
 	const NESCart &cart;
-	NESMemory memory;
-	mos6502::Core<NESMemory, false> cpu;
+	const NESMemory mapping;
+	mos6502::Core<Memory, NESMemory, false> cpu;
 
 public:
-	NES(const NESCart &cart) : cart(cart), memory(cart), cpu(memory) { }
+	NES(const NESCart &cart);
 	void run();
 };
 
