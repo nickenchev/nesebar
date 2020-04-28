@@ -65,6 +65,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<SBC::Immediate>();
 			break;
 		}
+		case INY::value:
+		{
+			beginInstruction<INY>();
+			state.setY(state.y + 1);
+			endInstruction<INY>();
+			break;
+		}
 		case ORA::Immediate::value:
 		{
 			beginInstruction<ORA::Immediate>();

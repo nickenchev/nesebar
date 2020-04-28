@@ -10,6 +10,7 @@ namespace mos6502 { namespace opcodes
 {
 	using namespace status_bits;
 
+	// arithmetic 
 	namespace ADC
 	{
 		static constexpr const char *group = "ADC";
@@ -26,6 +27,10 @@ namespace mos6502 { namespace opcodes
 		struct Immediate : Opcode<0xe9, 2, 2, flags, manual> { static inline Asm name{group}; };
 	}
 
+	struct INY : Opcode<0xc8, 1, 2, N|Z> { static inline Asm name{"INY"}; };
+
+
+	// binary operators
 	namespace ORA
 	{
 		static constexpr const char *groupName = "ORA";
