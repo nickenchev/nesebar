@@ -24,14 +24,11 @@ Core<Memory, Mapping, DecimalMode>::Core(const Mapping &mapping) : memory(state,
 }
 
 template<typename Memory, typename Mapping, bool DecimalMode>
-bool Core<Memory, Mapping, DecimalMode>::step()
+void Core<Memory, Mapping, DecimalMode>::step()
 {
 	using namespace mos6502::opcodes;
 
-	bool keepGoing = true;
-
 	logInfo();
-
 	std::cout << '$' << std::hex << std::setfill('0')
 			  << std::setw(4) << state.pc.value << ": ";
 
@@ -45,6 +42,7 @@ bool Core<Memory, Mapping, DecimalMode>::step()
 			byte data = memory.memImmediate();
 			byte carry = static_cast<int>(isStatus(Status::Carry));
 			state.setA(operand + data + carry);
+
 			endInstruction<ADC::Immediate>(operand, data);
 			break;
 		}
@@ -360,12 +358,11 @@ bool Core<Memory, Mapping, DecimalMode>::step()
 			std::cout << std::endl << std::hex << "Unsupported opcode \""
 					  << std::setw(2) << static_cast<int>(opcode)
 					  << "\", stopping." << std::endl;
-			keepGoing = false;
+			exit(1);
 			break;
 		}
 	}
 	std::cout << std::endl;
-	return keepGoing;
 }
 
 template<typename Memory, typename Mapping, bool DecimalMode>

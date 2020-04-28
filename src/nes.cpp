@@ -14,7 +14,10 @@ NES::NES(const NESCart &cart) : cart(cart), mapping(cart), cpu(mapping)
 void NES::run()
 {
 	cpu.reset();
-	while (cpu.step())
+
+	bool keepRunning = true;
+	while (keepRunning)
 	{
+		cpu.step();
 	}
 }

@@ -225,7 +225,7 @@ public:
 
 	Memory &getMemory() { return memory; }
 	void reset() { interruptReset(); }
-	bool step();
+	void step();
 };
 
 };
