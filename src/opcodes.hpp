@@ -45,9 +45,9 @@ namespace mos6502 { namespace opcodes
 
 	// cpu flags
 	struct CLC : Opcode<0x18, 1, 2, C, C> { static inline Asm name{"CLC"}; };
-	struct CLD : Opcode<0xd8, 1, 2, None> { static inline Asm name{"CLD"}; };
+	struct CLD : Opcode<0xd8, 1, 2, D, D> { static inline Asm name{"CLD"}; };
 	struct SEC : Opcode<0x38, 1, 2, C, C> { static inline Asm name{"SEC"}; };
-	struct SED : Opcode<0xf8, 1, 2, D> { static inline Asm name{"SED"}; };
+	struct SED : Opcode<0xf8, 1, 2, D, D> { static inline Asm name{"SED"}; };
 	struct SEI : Opcode<0x78, 1, 2, I, I> { static inline Asm name{"SEI"}; };
 	struct CLV : Opcode<0xb8, 1, 2, V, V> { static inline Asm name{"CLV"}; };
 	
