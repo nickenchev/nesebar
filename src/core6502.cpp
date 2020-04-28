@@ -49,6 +49,13 @@ bool Core<MemType, DecimalMode>::step()
 			endInstruction<ORA::Immediate>();
 			break;
 		}
+		case EOR::Immediate::value:
+		{
+			beginInstruction<EOR::Immediate>();
+			setA(a ^ memImmediate());
+			endInstruction<EOR::Immediate>();
+			break;
+		}
 		case PHP::value:
 		{
 			beginInstruction<PHP>();
