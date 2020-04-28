@@ -42,7 +42,7 @@ class Core
 	short cycles, totalCycles;
 	short byteStep;
 	byte flagsChanged;
-	byte oper1, oper2, opcodeResult;
+	byte opcodeResult;
 
 	void logInfo()
 	{
@@ -54,12 +54,6 @@ class Core
 				  << "\tP:" << std::bitset<8>(p)
 				  << std::hex << "=" << std::setw(2) << static_cast<int>(p)
 				  << std::dec << "\tCycles:" << totalCycles << "\t";
-	}
-
-	inline void setOperands(byte oper1, byte oper2)
-	{
-		this->oper1 = oper1;
-		this->oper2 = oper2;
 	}
 
 	inline void setA(byte value)
@@ -166,8 +160,13 @@ class Core
 			{
 				// overflow only occurs if operands have different signs
 				constexpr byte signBit = 0b10000000;
-				const bool isOverflow = (~(oper1 ^ oper2)) & (oper1 ^ opcodeResult) & signBit;
+				const bool isOverflow = (~(operand1 ^ operand2)) & (operand1 ^ opcodeResult) & signBit;
 				updateStatus(Status::Overflow, isOverflow);
+			}
+			if constexpr (checkBit<autoFlags, Status::Carry>())
+			{
+				uint16_t sum = operand1 + operand2 + isStatus(Status::Carry);
+				updateStatus(Status::Carry, sum > 0xff);
 			}
 			if constexpr (checkBit<autoFlags, Status::Unused>())
 			{

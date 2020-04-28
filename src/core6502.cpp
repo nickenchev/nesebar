@@ -42,6 +42,16 @@ bool Core<MemType, DecimalMode>::step()
 	const byte opcode = fetchByte();
 	switch (opcode)
 	{
+		case ADC::Immediate::value:
+		{
+			beginInstruction<ADC::Immediate>();
+			byte operand = a;
+			byte data = memImmediate();
+			byte carry = static_cast<int>(isStatus(Status::Carry));
+			setA(operand + data + carry);
+			endInstruction<ADC::Immediate>(operand, data);
+			break;
+		}
 		case ORA::Immediate::value:
 		{
 			beginInstruction<ORA::Immediate>();

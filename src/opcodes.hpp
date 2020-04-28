@@ -10,10 +10,22 @@ namespace mos6502 { namespace opcodes
 {
 	using namespace status_bits;
 
+	namespace ADC
+	{
+		static constexpr const char *groupName = "ADC";
+		static constexpr byte flags = N|Z|C|V;
+		struct Immediate : Opcode<0x69, 2, 2, flags> { static inline Asm name{groupName}; };
+	}
 	namespace ORA
 	{
 		static constexpr const char *groupName = "ORA";
 		struct Immediate : Opcode<0x09, 2, 2, N|Z> { static inline Asm name{groupName}; };
+	}
+
+	namespace EOR
+	{
+		static constexpr const char *groupName = "EOR";
+		struct Immediate : Opcode<0x49, 2, 2, N|Z> { static inline Asm name{groupName}; };
 	}
 
 	struct PHP : Opcode<0x08, 1, 3, None> { static inline Asm name{"PHP"}; };
