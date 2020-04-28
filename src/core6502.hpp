@@ -66,6 +66,16 @@ class Core
 		sp = value;
 		opcodeResult = value;
 	}
+	inline void setX(byte value)
+	{
+		x = value;
+		opcodeResult = value;
+	}
+	inline void setY(byte value)
+	{
+		y = value;
+		opcodeResult = value;
+	}
 	inline void setP(byte value)
 	{
 		namespace sb = status_bits;
@@ -160,7 +170,8 @@ class Core
 			{
 				// overflow only occurs if operands have different signs
 				constexpr byte signBit = 0b10000000;
-				const bool isOverflow = (~(operand1 ^ operand2)) & (operand1 ^ opcodeResult) & signBit;
+				const bool isOverflow = (~(operand1 ^ operand2))
+					& (operand1 ^ opcodeResult) & signBit;
 				updateStatus(Status::Overflow, isOverflow);
 			}
 			if constexpr (checkBit<autoFlags, Status::Carry>())
@@ -224,7 +235,7 @@ class Core
 	}
 	byte memIndirect()
 	{
-		MemAddress addr = readMemAddress(MemAddress{readZeroPage()});
+		MemAddress addr = readMemAddress(MemAddress{memZeroPage()});
 		return memory.memRead(addr);
 	}
 	MemAddress addressAbsolute()
@@ -254,7 +265,7 @@ class Core
 		if (addr.add(y)) ++cycles;
 		return memory.memRead(addr);
 	}
-	byte readZeroPage()
+	byte memZeroPage()
 	{
 		byte addr = fetchByte();
 		byte data = memory.memRead(addr);
@@ -292,6 +303,13 @@ class Core
 		MemAddress addr = readMemAddress(MemAddress{fetchByte()});
 		if (addr.add(y)) ++cycles;
 		return memory.memRead(addr);
+	}
+
+	// compare
+	inline void compare(byte &reg, const byte &data)
+	{
+		opcodeResult = reg - data;
+		updateStatus(Status::Carry, data <= reg);
 	}
 	
 	// branching

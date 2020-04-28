@@ -113,7 +113,7 @@ bool Core<MemType, DecimalMode>::step()
 		case BIT::ZeroPage::value:
 		{
 			beginInstruction<BIT::ZeroPage>();
-			byte operand = readZeroPage();
+			byte operand = memZeroPage();
 			updateStatus(Status::NegativeResult,
 						 checkBit(operand, status_int(Status::NegativeResult)));
 			updateStatus(Status::Overflow,
@@ -216,8 +216,15 @@ bool Core<MemType, DecimalMode>::step()
 		case LDX::Immediate::value:
 		{
 			beginInstruction<LDX::Immediate>();
-			x = memImmediate();
+			setX(memImmediate());
 			endInstruction<LDX::Immediate>();
+			break;
+		}
+		case LDY::Immediate::value:
+		{
+			beginInstruction<LDY::Immediate>();
+			setY(memImmediate());
+			endInstruction<LDY::Immediate>();
 			break;
 		}
 		case LDA::Immediate::value:
@@ -243,11 +250,65 @@ bool Core<MemType, DecimalMode>::step()
 		}
 		case CMP::Immediate::value:
 		{
-			beginInstruction<CMP::Immediate>();
+			using OP = CMP::Immediate;
+			beginInstruction<OP>();
 			byte data = memImmediate();
-			opcodeResult = a - data;
-			updateStatus(Status::Carry, data <= a);
-			endInstruction<CMP::Immediate>(a, data);
+			compare(a, data);
+			endInstruction<OP>(a, data);
+			break;
+		}
+		case CPX::Immediate::value:
+		{
+			using OP = CPX::Immediate;
+			beginInstruction<OP>();
+			byte data = memImmediate();
+			compare(x, data);
+			endInstruction<OP>(x, data);
+			break;
+		}
+		case CPX::ZeroPage::value:
+		{
+			using OP = CPX::ZeroPage;
+			beginInstruction<OP>();
+			byte data = memZeroPage();
+			compare(x, data);
+			endInstruction<OP>(x, data);
+			break;
+		}
+		case CPX::Absolute::value:
+		{
+			using OP = CPX::Absolute;
+			beginInstruction<OP>();
+			byte data = memAbsolute();
+			compare(x, data);
+			endInstruction<OP>(x, data);
+			break;
+		}
+		case CPY::Immediate::value:
+		{
+			using OP = CPX::Immediate;
+			beginInstruction<OP>();
+			byte data = memImmediate();
+			compare(y, data);
+			endInstruction<OP>(y, data);
+			break;
+		}
+		case CPY::ZeroPage::value:
+		{
+			using OP = CPY::ZeroPage;
+			beginInstruction<OP>();
+			byte data = memZeroPage();
+			compare(y, data);
+			endInstruction<OP>(y, data);
+			break;
+		}
+		case CPY::Absolute::value:
+		{
+			using OP = CPY::Absolute;
+			beginInstruction<OP>();
+			byte data = memAbsolute();
+			compare(y, data);
+			endInstruction<OP>(y, data);
 			break;
 		}
 		case BMI::value:
