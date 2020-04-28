@@ -43,6 +43,10 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			byte carry = static_cast<int>(isStatus(Status::Carry));
 			state.setA(operand + data + carry);
 
+			// figure out if there is carry from addition
+			uint16_t sum = operand + data + isStatus(Status::Carry);
+			updateStatus(Status::Carry, sum > 0xff);
+
 			endInstruction<ADC::Immediate>(operand, data);
 			break;
 		}

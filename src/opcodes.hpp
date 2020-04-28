@@ -12,9 +12,10 @@ namespace mos6502 { namespace opcodes
 
 	namespace ADC
 	{
-		static constexpr const char *groupName = "ADC";
+		static constexpr const char *group = "ADC";
 		static constexpr byte flags = N|Z|C|V;
-		struct Immediate : Opcode<0x69, 2, 2, flags> { static inline Asm name{groupName}; };
+		static constexpr byte manual = C;
+		struct Immediate : Opcode<0x69, 2, 2, flags, manual> { static inline Asm name{group}; };
 	}
 	namespace ORA
 	{
