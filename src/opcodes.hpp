@@ -111,6 +111,7 @@ namespace mos6502 { namespace opcodes
 	{
 		static constexpr const char *group = "STX";
 		struct ZeroPage : Opcode<0x86, 2, 3, None> { static inline Asm name{group}; };
+		struct ZeroPageY : Opcode<0x96, 2, 4, None> { static inline Asm name{group}; };
 		struct Absolute : Opcode<0x8e, 3, 4, None> { static inline Asm name{group}; };
 	}
 
@@ -118,8 +119,12 @@ namespace mos6502 { namespace opcodes
 
 	namespace LDX
 	{
-		static constexpr const char *groupName = "LDX";
-		struct Immediate: Opcode<0xa2, 2, 2, N|Z> { static inline Asm name{groupName}; };
+		static constexpr const char *group = "LDX";
+		struct Immediate: Opcode<0xa2, 2, 2, N|Z> { static inline Asm name{group}; };
+		struct ZeroPage: Opcode<0xa6, 2, 3, N|Z> { static inline Asm name{group}; };
+		struct ZeroPageY: Opcode<0xb6, 2, 4, N|Z> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0xae, 3, 4, N|Z> { static inline Asm name{group}; };
+		struct AbsoluteY: Opcode<0xbe, 3, 4, N|Z> { static inline Asm name{group}; };
 	}
 
 	namespace LDY
@@ -130,17 +135,17 @@ namespace mos6502 { namespace opcodes
 
 	namespace LDA
 	{
-		static constexpr const char *groupName = "LDA";
-		struct Immediate : Opcode<0xa9, 2, 2, N|Z> { static inline Asm name{groupName}; };
-		struct Absolute : Opcode<0xad, 3, 2, N|Z> { static inline Asm name{groupName}; };
+		static constexpr const char *group = "LDA";
+		struct Immediate : Opcode<0xa9, 2, 2, N|Z> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0xad, 3, 4, N|Z> { static inline Asm name{group}; };
 	}
 
 	namespace CMP
 	{
 		static constexpr const char *group = "CMP";
-		static constexpr byte allFlags = N|Z|C;
-		static constexpr byte manualFlags = C;
-		struct Immediate : Opcode<0xc9, 2, 2, allFlags, manualFlags> { static inline Asm name{group}; };
+		static constexpr byte flags = N|Z|C;
+		static constexpr byte manual = C;
+		struct Immediate : Opcode<0xc9, 2, 2, flags, manual> { static inline Asm name{group}; };
 	}
 
 	namespace CPX
