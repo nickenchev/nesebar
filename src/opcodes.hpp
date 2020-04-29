@@ -23,7 +23,7 @@ namespace mos6502 { namespace opcodes
 	{
 		static constexpr const char *group = "SBC";
 		static constexpr byte flags = N|Z|C|V;
-		static constexpr byte manual = C;
+		static constexpr byte manual = C|V;
 		struct Immediate : Opcode<0xe9, 2, 2, flags, manual> { static inline Asm name{group}; };
 	}
 

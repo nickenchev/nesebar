@@ -53,16 +53,21 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case SBC::Immediate::value:
 		{
 			beginInstruction<SBC::Immediate>();
-			byte operand = state.a;
-			byte data = memory.memImmediate();
-			byte borrow = !static_cast<int>(isStatus(Status::Carry));
-			state.setA(operand - data - borrow);
+			byte minuhend = state.a;
+			byte subtrahend = memory.memImmediate();
+			byte carry = static_cast<int>(isStatus(Status::Carry));
+
+			state.setA(minuhend - subtrahend - (1 - carry));
+			int16_t diff = minuhend - subtrahend - (1 - carry);
 
 			// figure out if there is carry from subtraction
-			signed_byte diff = operand - data - isStatus(Status::Carry);
-			updateStatus(Status::Carry, diff < 0);
+			updateStatus(Status::Carry, static_cast<signed_byte>(state.a) >= 0);
 
-			endInstruction<SBC::Immediate>();
+			constexpr byte signBit = 0b10000000;
+			const bool isOverflow = (minuhend ^ subtrahend) & (minuhend ^ state.opcodeResult) & signBit;
+			updateStatus(Status::Overflow, isOverflow);
+
+			endInstruction<SBC::Immediate>(minuhend, subtrahend);
 			break;
 		}
 		case INY::value:

@@ -145,8 +145,7 @@ class Core
 			{
 				// overflow only occurs if operands have different signs
 				constexpr byte signBit = 0b10000000;
-				const bool isOverflow = (~(operand1 ^ operand2))
-					& (operand1 ^ state.opcodeResult) & signBit;
+				const bool isOverflow = (~(operand1 ^ operand2)) & (operand1 ^ state.opcodeResult) & signBit;
 				updateStatus(Status::Overflow, isOverflow);
 			}
 			if constexpr (checkBit<autoFlags, Status::Carry>())
