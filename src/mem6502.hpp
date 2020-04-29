@@ -91,8 +91,7 @@ namespace mos6502
 		MemAddress addressAbsolute()
 		{
 			MemAddress addr = fetchNextMemAddress();
-			std::cout << " $" << std::hex << std::setw(2)
-					<< static_cast<uint16_t>(addr.value);
+			std::cout << " $" << std::hex << std::setw(4) << static_cast<uint16_t>(addr.value);
 			return addr;
 		}
 		byte memAbsolute()
@@ -105,8 +104,8 @@ namespace mos6502
 		}
 		void writeAbsolute(byte value)
 		{
-			const MemAddress address = memAbsolute();
-			memory[address] = value;
+			const MemAddress address = addressAbsolute();
+			write(address, value);
 		}
 		byte memAbsoluteX()
 		{
@@ -128,18 +127,22 @@ namespace mos6502
 					<< " = " << static_cast<int>(data);
 			return data;
 		}
+		byte memZeroPageX()
+		{
+			byte val = fetchByte();
+			return read(MemAddress{val}.addLow(cpuState.x));
+		}
+		byte memZeroPageY()
+		{
+			byte val = fetchByte();
+			return read(MemAddress{val}.addLow(cpuState.y));
+		}
 		void writeZeroPage(byte address, byte value)
 		{
 			std::cout << " $" << std::setw(2) << std::hex << static_cast<uint16_t>(address)
 					<< " = " << static_cast<int>(value);
 
 			write(MemAddress(address), value);
-		}
-
-		byte memZeroPageX()
-		{
-			byte val = fetchByte();
-			return read(MemAddress{val}.addLow(cpuState.x));
 		}
 
 		// indexed addressing
