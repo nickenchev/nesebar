@@ -198,6 +198,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<SEI>();
 			break;
 		}
+		case STY::ZeroPage::value:
+		{
+			beginInstruction<STY::ZeroPage>();
+			memory.writeZeroPage(memory.fetchByte(), state.y);
+			endInstruction<STY::ZeroPage>();
+			break;
+		}
 		case STA::ZeroPage::value:
 		{
 			beginInstruction<STA::ZeroPage>();
