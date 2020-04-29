@@ -186,7 +186,8 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<JSR>();
 			MemAddress jumpAddr = memory.addressAbsolute();
-			stackPushAddress(state.pc);
+			MemAddress returnAddress = state.pc - 1;
+			stackPushAddress(returnAddress);
 			state.pc = jumpAddr;
 			endInstruction<JSR>();
 			break;
@@ -234,7 +235,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case RTS::value:
 		{
 			beginInstruction<RTS>();
-			state.pc = stackPopAddress();
+			state.pc = stackPopAddress() + 1;
 			endInstruction<RTS>();
 			break;
 		}
@@ -276,7 +277,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case STA::Absolute::value:
 		{
 			beginInstruction<STA::Absolute>();
-			exit(1);
+			memory.writeAbsolute(state.a);
 			endInstruction<STA::Absolute>();
 			break;
 		}
@@ -315,6 +316,34 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<LDX::Immediate>();
 			break;
 		}
+		case LDX::ZeroPage::value:
+		{
+			beginInstruction<LDX::ZeroPage>();
+			state.setX(memory.memZeroPage());
+			endInstruction<LDX::ZeroPage>();
+			break;
+		}
+		case LDX::ZeroPageY::value:
+		{
+			beginInstruction<LDX::ZeroPageY>();
+			state.setX(memory.memZeroPageY());
+			endInstruction<LDX::ZeroPageY>();
+			break;
+		}
+		case LDX::Absolute::value:
+		{
+			beginInstruction<LDX::Absolute>();
+			state.setX(memory.memAbsolute());
+			endInstruction<LDX::Absolute>();
+			break;
+		}
+		case LDX::AbsoluteY::value:
+		{
+			beginInstruction<LDX::AbsoluteY>();
+			state.setX(memory.memAbsoluteY());
+			endInstruction<LDX::AbsoluteY>();
+			break;
+		}
 		case LDY::Immediate::value:
 		{
 			beginInstruction<LDY::Immediate>();
@@ -347,7 +376,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::Immediate;
 			beginInstruction<OP>();
-			byte data =memory. memImmediate();
+			const byte data = memory. memImmediate();
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;
@@ -356,7 +385,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPX::Immediate;
 			beginInstruction<OP>();
-			byte data = memory.memImmediate();
+			const byte data = memory.memImmediate();
 			compare(state.x, data);
 			endInstruction<OP>(state.x, data);
 			break;
@@ -365,7 +394,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPX::ZeroPage;
 			beginInstruction<OP>();
-			byte data = memory.memZeroPage();
+			const byte data = memory.memZeroPage();
 			compare(state.x, data);
 			endInstruction<OP>(state.x, data);
 			break;

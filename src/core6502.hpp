@@ -86,10 +86,10 @@ class Core
 		byte data = memory.read(addr);
 		return data;
 	}
-	void stackPushAddress(MemAddress address)
+	void stackPushAddress(MemAddress &address)
 	{
-		stackPush(state.pc.high());
-		stackPush(state.pc.low());
+		stackPush(address.high());
+		stackPush(address.low());
 	}
 	MemAddress stackPopAddress()
 	{
