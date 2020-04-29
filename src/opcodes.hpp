@@ -72,10 +72,10 @@ namespace mos6502 { namespace opcodes
 
 	namespace BIT
 	{
-		static constexpr const char *groupName = "BIT";
-		static constexpr byte allFlags = N|V|Z;
-		static constexpr byte manualFlags = N|V;
-		struct ZeroPage: Opcode<0x24, 2, 3, allFlags, manualFlags> { static inline Asm name{groupName}; };
+		static constexpr const char *group = "BIT";
+		static constexpr byte all = N|V|Z;
+		static constexpr byte flags = N|V;
+		struct ZeroPage: Opcode<0x24, 2, 3, all, flags> { static inline Asm name{group}; };
 	}
 
 	namespace AND
@@ -86,11 +86,17 @@ namespace mos6502 { namespace opcodes
 
 	struct PLA : Opcode<0x68, 1, 4, N|Z> { static inline Asm name{"PLA"}; };
 
+	namespace STY
+	{
+		static constexpr const char *group = "STY";
+		struct ZeroPage: Opcode<0x84, 2, 3, None> { static inline Asm name{group}; };
+	}
+
 	namespace STA
 	{
-		static constexpr const char *groupName = "STA";
-		struct ZeroPage: Opcode<0x85, 2, 3, None> { static inline Asm name{groupName}; };
-		struct Absolute: Opcode<0x8d, 3, 4, None> { static inline Asm name{groupName}; };
+		static constexpr const char *group = "STA";
+		struct ZeroPage: Opcode<0x85, 2, 3, None> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0x8d, 3, 4, None> { static inline Asm name{group}; };
 	}
 
 	namespace STX
