@@ -48,9 +48,9 @@ class Core
 				  << "A:" << std::setw(2) << static_cast<int>(state.a)
 				  << "\tX:" << std::setw(2) << static_cast<int>(state.x)
 				  << "\tY:" << std::setw(2) << static_cast<int>(state.y)
-				  << "\tSP:" << std::setw(2) << static_cast<int>(state.sp)
 				  << "\tP:" << std::bitset<8>(state.p)
 				  << std::hex << "=" << std::setw(2) << static_cast<int>(state.p)
+				  << "\tSP:" << std::setw(2) << static_cast<int>(state.sp)
 				  << std::dec << "\tCycles:" << state.totalCycles << "\t";
 	}
 

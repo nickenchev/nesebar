@@ -99,9 +99,14 @@ namespace mos6502
 		{
 			MemAddress addr = fetchNextMemAddress();
 			byte data = read(addr);
-			std::cout << " $" << std::hex << static_cast<uint16_t>(addr.value)
-					<< " = " << static_cast<int>(data);
+			std::cout << " $" << std::hex << std::setw(4) << static_cast<uint16_t>(addr.value)
+				<< " = " << std::setw(2) << static_cast<int>(data);
 			return data;
+		}
+		void writeAbsolute(byte value)
+		{
+			const MemAddress address = memAbsolute();
+			memory[address] = value;
 		}
 		byte memAbsoluteX()
 		{

@@ -70,11 +70,67 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<SBC::Immediate>(minuhend, subtrahend);
 			break;
 		}
+		case INX::value:
+		{
+			beginInstruction<INX>();
+			state.setX(state.x + 1);
+			endInstruction<INX>();
+			break;
+		}
 		case INY::value:
 		{
 			beginInstruction<INY>();
 			state.setY(state.y + 1);
 			endInstruction<INY>();
+			break;
+		}
+		case DEX::value:
+		{
+			beginInstruction<DEX>();
+			state.setX(state.x - 1);
+			endInstruction<DEX>();
+			break;
+		}
+		case DEY::value:
+		{
+			beginInstruction<DEY>();
+			state.setY(state.y - 1);
+			endInstruction<DEY>();
+			break;
+		}
+		case TAX::value:
+		{
+			beginInstruction<TAX>();
+			state.setX(state.a);
+			endInstruction<TAX>();
+			break;
+		}
+		case TAY::value:
+		{
+			beginInstruction<TAY>();
+			state.setY(state.a);
+			endInstruction<TAY>();
+			break;
+		}
+		case TXA::value:
+		{
+			beginInstruction<TXA>();
+			state.setA(state.x);
+			endInstruction<TXA>();
+			break;
+		}
+		case TYA::value:
+		{
+			beginInstruction<TYA>();
+			state.setA(state.y);
+			endInstruction<TYA>();
+			break;
+		}
+		case TSX::value:
+		{
+			beginInstruction<TSX>();
+			state.setX(state.sp);
+			endInstruction<TSX>();
 			break;
 		}
 		case ORA::Immediate::value:
@@ -229,6 +285,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<STX::ZeroPage>();
 			memory.writeZeroPage(memory.fetchByte(), state.x);
 			endInstruction<STX::ZeroPage>();
+			break;
+		}
+		case STX::Absolute::value:
+		{
+			beginInstruction<STX::Absolute>();
+			memory.writeAbsolute(state.x);
+			endInstruction<STX::Absolute>();
 			break;
 		}
 		case BCC::value:

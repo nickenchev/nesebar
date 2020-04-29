@@ -27,8 +27,16 @@ namespace mos6502 { namespace opcodes
 		struct Immediate : Opcode<0xe9, 2, 2, flags, manual> { static inline Asm name{group}; };
 	}
 
+	// register related
+	struct INX : Opcode<0xe8, 1, 2, N|Z> { static inline Asm name{"INX"}; };
 	struct INY : Opcode<0xc8, 1, 2, N|Z> { static inline Asm name{"INY"}; };
-
+	struct DEX : Opcode<0xca, 1, 2, N|Z> { static inline Asm name{"DEX"}; };
+	struct DEY : Opcode<0x88, 1, 2, N|Z> { static inline Asm name{"DEY"}; };
+	struct TAX : Opcode<0xaa, 1, 2, N|Z> { static inline Asm name{"TAX"}; };
+	struct TAY : Opcode<0xa8, 1, 2, N|Z> { static inline Asm name{"TAY"}; };
+	struct TXA : Opcode<0x8a, 1, 2, N|Z> { static inline Asm name{"TXA"}; };
+	struct TYA : Opcode<0x98, 1, 2, N|Z> { static inline Asm name{"TYA"}; };
+	struct TSX : Opcode<0xba, 1, 2, N|Z> { static inline Asm name{"TSX"}; };
 
 	// binary operators
 	namespace ORA
@@ -101,8 +109,9 @@ namespace mos6502 { namespace opcodes
 
 	namespace STX
 	{
-		static constexpr const char *groupName = "STX";
-		struct ZeroPage : Opcode<0x86, 2, 3, None> { static inline Asm name{groupName}; };
+		static constexpr const char *group = "STX";
+		struct ZeroPage : Opcode<0x86, 2, 3, None> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0x8e, 3, 4, None> { static inline Asm name{group}; };
 	}
 
 	struct TXS : Opcode<0x9a, 1, 2, None> { static inline Asm name{"TXS"}; };
