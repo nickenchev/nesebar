@@ -239,6 +239,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<RTS>();
 			break;
 		}
+		case RTI::value:
+		{
+			beginInstruction<RTI>();
+			state.setP(stackPop());
+			state.pc = stackPopAddress();
+			endInstruction<RTI>();
+			break;
+		}
 		case PLA::value:
 		{
 			beginInstruction<PLA>();

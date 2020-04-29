@@ -77,6 +77,7 @@ namespace mos6502 { namespace opcodes
 	struct JSR : Opcode<0x20, 3, 6, None> { static inline Asm name{"JSR"}; };
 	struct JMP : Opcode<0x4c, 3, 3, None> { static inline Asm name{"JMP"}; };
 	struct RTS : Opcode<0x60, 1, 6, None> { static inline Asm name{"RTS"}; };
+	struct RTI : Opcode<0x40, 1, 6, None> { static inline Asm name{"RTI"}; };
 
 	namespace BIT
 	{
