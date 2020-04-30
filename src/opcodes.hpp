@@ -51,6 +51,51 @@ namespace mos6502 { namespace opcodes
 		struct Immediate : Opcode<0x49, 2, 2, N|Z> { static inline Asm name{groupName}; };
 	}
 
+	namespace ASL
+	{
+		static constexpr const char *group = "ASL";
+		static constexpr byte flags = N|Z|C;
+		static constexpr byte manual = N|C;
+		struct Accumulator : Opcode<0x0a, 1, 2, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0x06, 2, 5, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX : Opcode<0x16, 2, 6, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0x0e, 3, 6, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Opcode<0x1e, 3, 7, flags, manual> { static inline Asm name{group}; };
+	}
+	namespace LSR
+	{
+		static constexpr const char *group = "LSR";
+		static constexpr byte flags = N|Z|C;
+		static constexpr byte manual = N|C;
+		struct Accumulator : Opcode<0x4a, 1, 2, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0x46, 2, 5, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX : Opcode<0x56, 2, 6, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0x4e, 3, 6, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Opcode<0x5e, 3, 7, flags, manual> { static inline Asm name{group}; };
+	}
+	namespace ROL
+	{
+		static constexpr const char *group = "ROL";
+		static constexpr byte flags = N|Z|C;
+		static constexpr byte manual = N|C;
+		struct Accumulator : Opcode<0x2a, 1, 2, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0x26, 2, 5, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX : Opcode<0x36, 2, 6, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0x2e, 3, 6, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Opcode<0x3e, 3, 7, flags, manual> { static inline Asm name{group}; };
+	}
+	namespace ROR
+	{
+		static constexpr const char *group = "ROR";
+		static constexpr byte flags = N|Z|C;
+		static constexpr byte manual = N|C;
+		struct Accumulator : Opcode<0x6a, 1, 2, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0x66, 2, 5, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX : Opcode<0x76, 2, 6, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0x6e, 3, 6, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Opcode<0x7e, 3, 7, flags, manual> { static inline Asm name{group}; };
+	}
+
 	struct PHP : Opcode<0x08, 1, 3, None> { static inline Asm name{"PHP"}; };
 	struct PHA : Opcode<0x48, 1, 3, None> { static inline Asm name{"PHA"}; };
 	struct PLP : Opcode<0x28, 1, 4, None> { static inline Asm name{"PLP"}; };

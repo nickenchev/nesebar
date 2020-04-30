@@ -75,6 +75,48 @@ class Core
 		state.totalCycles += state.cycles;
 	}
 
+	inline byte logicalShiftRight(byte value)
+	{
+		byte result = value >> 1;
+		updateStatus(Status::NegativeResult, false);
+		updateStatus(Status::Carry, checkBit(value, Status::Carry));
+		state.opcodeResult = result;
+		return result;
+	}
+	inline byte arithmeticShiftLeft(byte value)
+	{
+		byte result = value << 1;
+		updateStatus(Status::NegativeResult, checkBit(result, Status::NegativeResult));
+		updateStatus(Status::Carry, checkBit(value, Status::NegativeResult));
+
+		state.opcodeResult = result;
+		return result;
+	}
+	inline byte rotateLeft(byte value)
+	{
+		const bool carry = checkBit(state.p, Status::Carry);
+		byte result = value << 1;
+		if (carry) setBit(result, 0);
+
+		updateStatus(Status::Carry, checkBit(value, 7));
+		updateStatus(Status::NegativeResult, checkBit(value, 6));
+
+		state.opcodeResult = result;
+		return result;
+	}
+	inline byte rotateRight(byte value)
+	{
+		const bool carry = checkBit(state.p, Status::Carry);
+		byte result = value >> 1;
+		if (carry) setBit(result, 7);
+
+		updateStatus(Status::Carry, checkBit(value, 0));
+		updateStatus(Status::NegativeResult, carry);
+
+		state.opcodeResult = result;
+		return result;
+	}
+
 	// stack
 	void stackPush(byte data)
 	{
@@ -108,19 +150,29 @@ class Core
 	{
 		if (flagState)
 		{
-			// set bit
-			state.p |= 1 << status_int(flag);
+			setBit(state.p, status_int(flag));
 		}
 		else
 		{
-			// clear bit
-			state.p &= ~(1 << status_int(flag));
+			clearBit(state.p, status_int(flag));
 		}
 	}
 
+	bool checkBit(const byte &operand, Status flag) const
+	{
+		return checkBit(operand, status_int(flag));
+	}
 	bool checkBit(const byte &operand, short bitNumber) const
 	{
 		return operand & (1 << bitNumber);
+	}
+	constexpr void setBit(byte &operand, short bitNumber) const
+	{
+		operand |= 1 << bitNumber;
+	}
+	constexpr void clearBit(byte &operand, short bitNumber) const
+	{
+		operand &= ~(1 << bitNumber);
 	}
 
 	template<byte value, Status statusFlag>

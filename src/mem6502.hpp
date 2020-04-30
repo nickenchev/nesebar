@@ -10,6 +10,18 @@
 
 namespace mos6502
 {
+	struct MemAccess
+	{
+		MemAddress address;
+		byte value;
+
+		MemAccess(MemAddress address, byte value)
+		{
+			this->address = address;
+			this->value = value;
+		}
+	};
+
 	template<typename Mapping>
 	class Mem6502
 	{
@@ -85,7 +97,7 @@ namespace mos6502
 		}
 		byte memIndirect()
 		{
-			MemAddress addr = readMemAddress(MemAddress{memZeroPage()});
+			MemAddress addr = readMemAddress(MemAddress{fetchZeroPage()});
 			return read(addr);
 		}
 		MemAddress addressAbsolute()
@@ -119,13 +131,20 @@ namespace mos6502
 			if (addr.add(cpuState.y)) ++cpuState.cycles;
 			return read(addr);
 		}
-		byte memZeroPage()
+		MemAccess fetchZeroPage()
 		{
 			byte addr = fetchByte();
 			byte data = read(addr);
 			std::cout << " $" << std::hex << std::setw(2) << static_cast<int>(addr)
 					<< " = " << static_cast<int>(data);
-			return data;
+			return MemAccess(addr, data);
+		}
+		void writeZeroPage(byte address, byte value)
+		{
+			std::cout << " $" << std::setw(2) << std::hex << static_cast<uint16_t>(address)
+					<< " = " << static_cast<int>(value);
+
+			write(MemAddress(address), value);
 		}
 		byte memZeroPageX()
 		{
@@ -136,13 +155,6 @@ namespace mos6502
 		{
 			byte val = fetchByte();
 			return read(MemAddress{val}.addLow(cpuState.y));
-		}
-		void writeZeroPage(byte address, byte value)
-		{
-			std::cout << " $" << std::setw(2) << std::hex << static_cast<uint16_t>(address)
-					<< " = " << static_cast<int>(value);
-
-			write(MemAddress(address), value);
 		}
 
 		// indexed addressing

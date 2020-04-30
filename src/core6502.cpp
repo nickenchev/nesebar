@@ -147,6 +147,46 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<EOR::Immediate>();
 			break;
 		}
+		case ASL::Accumulator::value:
+		{
+			beginInstruction<ASL::Accumulator>();
+			state.a = arithmeticShiftLeft(state.a); // set opcodeResult once
+			endInstruction<ASL::Accumulator>();
+			break;
+		}
+		case LSR::Accumulator::value:
+		{
+			beginInstruction<LSR::Accumulator>();
+			state.a = logicalShiftRight(state.a); // set opcodeResult once
+			endInstruction<LSR::Accumulator>();
+			break;
+		}
+		case LSR::ZeroPage::value:
+		{
+			beginInstruction<LSR::ZeroPage>();
+			exit(1);
+			/*
+			MemAccess access = memory.fetchZeroPage();
+			byte result = logicalShiftRight(access.value);
+			state.opcodeResult = result;
+			memory.writeZeroPage(access.address.low(), result);
+			endInstruction<LSR::ZeroPage>();
+			*/
+		}
+		case ROL::Accumulator::value:
+		{
+			beginInstruction<ROL::Accumulator>();
+			state.a = rotateLeft(state.a); // set opcodeResult once
+			endInstruction<ROL::Accumulator>();
+			break;
+		}
+		case ROR::Accumulator::value:
+		{
+			beginInstruction<ROR::Accumulator>();
+			state.a = rotateRight(state.a); // set opcodeResult once
+			endInstruction<ROR::Accumulator>();
+			break;
+		}
 		case PHP::value:
 		{
 			beginInstruction<PHP>();
@@ -195,7 +235,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case BIT::ZeroPage::value:
 		{
 			beginInstruction<BIT::ZeroPage>();
-			byte operand = memory.memZeroPage();
+			byte operand = memory.fetchZeroPage().value;
 			updateStatus(Status::NegativeResult,
 						 checkBit(operand, status_int(Status::NegativeResult)));
 			updateStatus(Status::Overflow,
@@ -327,7 +367,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDX::ZeroPage::value:
 		{
 			beginInstruction<LDX::ZeroPage>();
-			state.setX(memory.memZeroPage());
+			state.setX(memory.fetchZeroPage().value);
 			endInstruction<LDX::ZeroPage>();
 			break;
 		}
@@ -402,7 +442,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPX::ZeroPage;
 			beginInstruction<OP>();
-			const byte data = memory.memZeroPage();
+			const byte data = memory.fetchZeroPage().value;
 			compare(state.x, data);
 			endInstruction<OP>(state.x, data);
 			break;
@@ -429,7 +469,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPY::ZeroPage;
 			beginInstruction<OP>();
-			byte data = memory.memZeroPage();
+			byte data = memory.fetchZeroPage().value;
 			compare(state.y, data);
 			endInstruction<OP>(state.y, data);
 			break;
