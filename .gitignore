@@ -1,6 +1,9 @@
 roms/
 .cquery_cached_index/
 .ccls-cache/
+.clangd/
+.kdev4/
+*.kdev4
 *~
 build/
 compile_commands.json
