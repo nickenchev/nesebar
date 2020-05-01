@@ -517,6 +517,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<OP>(state.a, data);
 			break;
 		}
+		case CMP::IndexedIndirect::value:
+		{
+			using OP = CMP::IndexedIndirect;
+			beginInstruction<OP>();
+			const byte data = memory. fetchIndexedIndirect();
+			compare(state.a, data);
+			endInstruction<OP>(state.a, data);
+			break;
+		}
 		case CPX::Immediate::value:
 		{
 			using OP = CPX::Immediate;

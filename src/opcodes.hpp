@@ -17,13 +17,13 @@ namespace mos6502 { namespace opcodes
 		static constexpr byte flags = N|Z|C|V;
 		static constexpr byte manual = C;
 		struct Immediate : Opcode<0x69, 2, 2, flags, manual> { static inline Asm name{group}; };
-		struct ZeroPage: Opcode<0x65, 2, 3, flags> { static inline Asm name{group}; };
-		struct ZeroPageX: Opcode<0x75, 2, 4, flags> { static inline Asm name{group}; };
-		struct Absolute: Opcode<0x6d, 3, 4, flags> { static inline Asm name{group}; };
-		struct AbsoluteX: Opcode<0x7d, 3, 4, flags> { static inline Asm name{group}; };
-		struct AbsoluteY: Opcode<0x79, 3, 4, flags> { static inline Asm name{group}; };
-		struct IndexedIndirect : Opcode<0x61, 2, 6, flags> { static inline Asm name{group}; };
-		struct IndirectIndexed : Opcode<0x71, 2, 5, flags> { static inline Asm name{group}; };
+		struct ZeroPage: Opcode<0x65, 2, 3, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0x75, 2, 4, flags, manual> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0x6d, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX: Opcode<0x7d, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteY: Opcode<0x79, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct IndexedIndirect : Opcode<0x61, 2, 6, flags, manual> { static inline Asm name{group}; };
+		struct IndirectIndexed : Opcode<0x71, 2, 5, flags, manual> { static inline Asm name{group}; };
 	}
 
 	namespace SBC
@@ -235,26 +235,33 @@ namespace mos6502 { namespace opcodes
 		static constexpr byte flags = N|Z|C;
 		static constexpr byte manual = C;
 		struct Immediate : Opcode<0xc9, 2, 2, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0xc5, 2, 3, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX : Opcode<0xd5, 2, 4, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0xcd, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Opcode<0xdd, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteY : Opcode<0xd9, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct IndexedIndirect : Opcode<0xc1, 2, 6, flags, manual> { static inline Asm name{group}; };
+		struct IndirectIndexed : Opcode<0xd1, 2, 5, flags, manual> { static inline Asm name{group}; };
 	}
 
 	namespace CPX
 	{
 		static constexpr const char *group = "CPX";
 		static constexpr byte flags = N|Z|C;
-		static constexpr byte manualFlags = C;
-		struct Immediate : Opcode<0xe0, 2, 2, flags, manualFlags> { static inline Asm name{group}; };
-		struct ZeroPage : Opcode<0xe4, 2, 3, flags, manualFlags> { static inline Asm name{group}; };
-		struct Absolute : Opcode<0xec, 3, 4, flags, manualFlags> { static inline Asm name{group}; };
+		static constexpr byte manual = C;
+		struct Immediate : Opcode<0xe0, 2, 2, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0xe4, 2, 3, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0xec, 3, 4, flags, manual> { static inline Asm name{group}; };
 	}
 
 	namespace CPY
 	{
 		static constexpr const char *group = "CPY";
 		static constexpr byte flags = N|Z|C;
-		static constexpr byte manualFlags = C;
-		struct Immediate : Opcode<0xc0, 2, 2, flags, manualFlags> { static inline Asm name{group}; };
-		struct ZeroPage : Opcode<0xc4, 2, 3, flags, manualFlags> { static inline Asm name{group}; };
-		struct Absolute : Opcode<0xcc, 3, 4, flags, manualFlags> { static inline Asm name{group}; };
+		static constexpr byte manual = C;
+		struct Immediate : Opcode<0xc0, 2, 2, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0xc4, 2, 3, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0xcc, 3, 4, flags, manual> { static inline Asm name{group}; };
 	}
 
 	struct NOP : Opcode<0xea, 1, 2, None> { static inline Asm name{"NOP"}; };
