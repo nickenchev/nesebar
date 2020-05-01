@@ -330,6 +330,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<STA::Absolute>();
 			break;
 		}
+		case STA::IndexedIndirect::value:
+		{
+			beginInstruction<STA::IndexedIndirect>();
+			memory.writeIndexedIndirect(state.a);
+			endInstruction<STA::IndexedIndirect>();
+			break;
+		}
 		case STX::ZeroPage::value:
 		{
 			beginInstruction<STX::ZeroPage>();

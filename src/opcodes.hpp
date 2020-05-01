@@ -150,7 +150,12 @@ namespace mos6502 { namespace opcodes
 	{
 		static constexpr const char *group = "STA";
 		struct ZeroPage: Opcode<0x85, 2, 3, None> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0x95, 2, 4, None> { static inline Asm name{group}; };
 		struct Absolute: Opcode<0x8d, 3, 4, None> { static inline Asm name{group}; };
+		struct AbsoluteX: Opcode<0x9d, 3, 5, None> { static inline Asm name{group}; };
+		struct AbsoluteY: Opcode<0x99, 3, 5, None> { static inline Asm name{group}; };
+		struct IndexedIndirect : Opcode<0x81, 2, 6, N|Z> { static inline Asm name{group}; };
+		struct IndirectIndexed : Opcode<0x01, 2, 6, N|Z> { static inline Asm name{group}; };
 	}
 
 	namespace STX

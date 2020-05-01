@@ -168,12 +168,21 @@ namespace mos6502
 		byte fetchIndexedIndirect()
 		{
 			byte zeroPageAddr = (fetchByte() + cpuState.x) % 256;
-			std::cout << " " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
+			std::cout << " @ " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
 			MemAddress indirect(read(zeroPageAddr), read((zeroPageAddr + 1) % 256));
 			std::cout << " " << std::setw(4) << std::hex << static_cast<int>(indirect.value);
 			byte value = read(indirect);
 			std::cout << " = " << std::setw(2) << std::hex << static_cast<int>(value);
 			return value;
+		}
+		void writeIndexedIndirect(byte value)
+		{
+			byte zeroPageAddr = (fetchByte() + cpuState.x) % 256;
+			std::cout << " @ " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
+			MemAddress indirect(read(zeroPageAddr), read((zeroPageAddr + 1) % 256));
+			std::cout << " = " << std::setw(4) << std::hex << static_cast<int>(indirect.value);
+			std::cout << " = " << std::setw(2) << std::hex << static_cast<int>(read(indirect));
+			write(indirect, value);
 		}
 		byte memIndirectIndexed()
 		{
