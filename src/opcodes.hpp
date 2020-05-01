@@ -32,6 +32,13 @@ namespace mos6502 { namespace opcodes
 		static constexpr byte flags = N|Z|C|V;
 		static constexpr byte manual = C|V;
 		struct Immediate : Opcode<0xe9, 2, 2, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPage: Opcode<0xe5, 2, 3, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0xf5, 2, 4, flags, manual> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0xed, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX: Opcode<0xfd, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteY: Opcode<0xf9, 3, 4, flags, manual> { static inline Asm name{group}; };
+		struct IndexedIndirect : Opcode<0xe1, 2, 6, flags, manual> { static inline Asm name{group}; };
+		struct IndirectIndexed : Opcode<0xf1, 2, 5, flags, manual> { static inline Asm name{group}; };
 	}
 
 	// register related
