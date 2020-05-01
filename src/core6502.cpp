@@ -155,6 +155,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<EOR::Immediate>();
 			break;
 		}
+		case EOR::IndexedIndirect::value:
+		{
+			beginInstruction<EOR::IndexedIndirect>();
+			state.setA(state.a ^ memory.fetchIndexedIndirect());
+			endInstruction<EOR::IndexedIndirect>();
+			break;
+		}
 		case ASL::Accumulator::value:
 		{
 			beginInstruction<ASL::Accumulator>();
@@ -259,6 +266,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<AND::Immediate>();
 			break;
 		}
+		case AND::IndexedIndirect::value:
+		{
+			beginInstruction<AND::IndexedIndirect>();
+			state.setA(state.a & memory.fetchIndexedIndirect());
+			endInstruction<AND::IndexedIndirect>();
+			break;
+		}
 		case SEC::value:
 		{
 			beginInstruction<SEC>();
@@ -355,7 +369,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<STA::IndexedIndirect>();
 			memory.writeIndexedIndirect(state.a);
-			endInstruction<STA::IndexedIndirect, false>();
+			endInstruction<STA::IndexedIndirect>();
+			break;
+		}
+		case STA::IndirectIndexed::value:
+		{
+			exit(1);
+			beginInstruction<STA::IndirectIndexed>();
+			endInstruction<STA::IndirectIndexed, false>();
 			break;
 		}
 		case STX::ZeroPage::value:
