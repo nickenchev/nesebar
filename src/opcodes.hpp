@@ -41,8 +41,15 @@ namespace mos6502 { namespace opcodes
 	// binary operators
 	namespace ORA
 	{
-		static constexpr const char *groupName = "ORA";
-		struct Immediate : Opcode<0x09, 2, 2, N|Z> { static inline Asm name{groupName}; };
+		static constexpr const char *group = "ORA";
+		struct Immediate : Opcode<0x09, 2, 2, N|Z> { static inline Asm name{group}; };
+		struct ZeroPage: Opcode<0x05, 2, 3, None> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0x15, 2, 4, None> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0x0d, 3, 4, None> { static inline Asm name{group}; };
+		struct AbsoluteX: Opcode<0x1d, 3, 4, None> { static inline Asm name{group}; };
+		struct AbsoluteY: Opcode<0x19, 3, 4, None> { static inline Asm name{group}; };
+		struct IndexedIndirect : Opcode<0x01, 2, 6, N|Z> { static inline Asm name{group}; };
+		struct IndirectIndexed : Opcode<0x11, 2, 5, N|Z> { static inline Asm name{group}; };
 	}
 
 	namespace EOR
@@ -134,8 +141,16 @@ namespace mos6502 { namespace opcodes
 
 	namespace AND
 	{
-		static constexpr const char *groupName = "AND";
-		struct Immediate: Opcode<0x29, 2, 2, N|Z> { static inline Asm name{groupName}; };
+		static constexpr const char *group = "AND";
+		static constexpr byte all = N|Z;
+		struct Immediate: Opcode<0x29, 2, 2, all> { static inline Asm name{group}; };
+		struct ZeroPage: Opcode<0x25, 2, 3, all> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0x35, 2, 4, all> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0x2d, 3, 4, all> { static inline Asm name{group}; };
+		struct AbsoluteX: Opcode<0x3d, 3, 5, all> { static inline Asm name{group}; };
+		struct AbsoluteY: Opcode<0x39, 3, 5, all> { static inline Asm name{group}; };
+		struct IndexedIndirect : Opcode<0x21, 2, 6, all> { static inline Asm name{group}; };
+		struct IndirectIndexed : Opcode<0x31, 2, 5,all> { static inline Asm name{group}; };
 	}
 
 	struct PLA : Opcode<0x68, 1, 4, N|Z> { static inline Asm name{"PLA"}; };
@@ -154,8 +169,8 @@ namespace mos6502 { namespace opcodes
 		struct Absolute: Opcode<0x8d, 3, 4, None> { static inline Asm name{group}; };
 		struct AbsoluteX: Opcode<0x9d, 3, 5, None> { static inline Asm name{group}; };
 		struct AbsoluteY: Opcode<0x99, 3, 5, None> { static inline Asm name{group}; };
-		struct IndexedIndirect : Opcode<0x81, 2, 6, N|Z> { static inline Asm name{group}; };
-		struct IndirectIndexed : Opcode<0x01, 2, 6, N|Z> { static inline Asm name{group}; };
+		struct IndexedIndirect : Opcode<0x81, 2, 6, None> { static inline Asm name{group}; };
+		struct IndirectIndexed : Opcode<0x91, 2, 6, None> { static inline Asm name{group}; };
 	}
 
 	namespace STX
@@ -187,14 +202,15 @@ namespace mos6502 { namespace opcodes
 	namespace LDA
 	{
 		static constexpr const char *group = "LDA";
-		struct Immediate : Opcode<0xa9, 2, 2, N|Z> { static inline Asm name{group}; };
-		struct ZeroPage : Opcode<0xa5, 2, 3, N|Z> { static inline Asm name{group}; };
-		struct ZeroPageX : Opcode<0xb5, 2, 4, N|Z> { static inline Asm name{group}; };
-		struct Absolute : Opcode<0xad, 3, 4, N|Z> { static inline Asm name{group}; };
-		struct AbsoluteX : Opcode<0xbd, 3, 4, N|Z> { static inline Asm name{group}; };
-		struct AbsoluteY : Opcode<0xb9, 3, 4, N|Z> { static inline Asm name{group}; };
-		struct IndexedIndirect : Opcode<0xa1, 2, 6, N|Z> { static inline Asm name{group}; };
-		struct IndirectIndexed : Opcode<0xb1, 2, 5, N|Z> { static inline Asm name{group}; };
+		static constexpr byte flags = N|Z;
+		struct Immediate : Opcode<0xa9, 2, 2, flags> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0xa5, 2, 3, flags> { static inline Asm name{group}; };
+		struct ZeroPageX : Opcode<0xb5, 2, 4, flags> { static inline Asm name{group}; };
+		struct Absolute : Opcode<0xad, 3, 4, flags> { static inline Asm name{group}; };
+		struct AbsoluteX : Opcode<0xbd, 3, 4, flags> { static inline Asm name{group}; };
+		struct AbsoluteY : Opcode<0xb9, 3, 4, flags> { static inline Asm name{group}; };
+		struct IndexedIndirect : Opcode<0xa1, 2, 6, flags> { static inline Asm name{group}; };
+		struct IndirectIndexed : Opcode<0xb1, 2, 5, flags> { static inline Asm name{group}; };
 	}
 
 	namespace CMP
