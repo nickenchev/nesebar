@@ -39,9 +39,10 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case ADC::Immediate::value:
 		{
 			beginInstruction<ADC::Immediate>();
-			byte value = memory.fetchImmediate();
-			adc(value);
-			endInstruction<ADC::Immediate>(state.a, value);
+			byte aCopy = state.a;
+			byte data = memory.fetchImmediate();
+			adc(data);
+			endInstruction<ADC::Immediate>(aCopy, data);
 			break;
 		}
 		case SBC::Immediate::value:
