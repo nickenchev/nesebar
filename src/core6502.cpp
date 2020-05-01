@@ -442,6 +442,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<LDA::AbsoluteY>();
 			break;
 		}
+		case LDA::IndexedIndirect::value:
+		{
+			beginInstruction<LDA::IndexedIndirect>();
+			state.setA(memory.fetchIndexedIndirect());
+			endInstruction<LDA::IndexedIndirect>();
+			break;
+		}
 		case BCS::value:
 		{
 			beginInstruction<BCS>();
