@@ -260,6 +260,22 @@ class Core
 			updateStatus(Status::Carry, sum > 0xff);
 		}
 	}
+	inline void sbc(byte value)
+	{
+		byte minuhend = state.a;
+		byte subtrahend = value;
+		byte carry = static_cast<int>(isStatus(Status::Carry));
+
+		state.setA(minuhend - subtrahend - (1 - carry));
+		int16_t diff = minuhend - subtrahend - (1 - carry);
+
+		// figure out if there is carry from subtraction
+		updateStatus(Status::Carry, static_cast<signed_byte>(state.a) >= 0);
+
+		constexpr byte signBit = 0b10000000;
+		const bool isOverflow = (minuhend ^ subtrahend) & (minuhend ^ state.opcodeResult) & signBit;
+		updateStatus(Status::Overflow, isOverflow);
+	}
 
 	// interrupts
 	void interruptReset();
