@@ -123,14 +123,26 @@ namespace mos6502
 		byte fetchAbsoluteX()
 		{
 			MemAddress addr = fetchNextMemAddress();
-			if (addr.add(cpuState.x)) ++cpuState.cycles;
+			if (addr.add(cpuState.x)) ++cpuState.pageCrossCycles;
 			return read(addr);
+		}
+		void writeAbsoluteX(byte value)
+		{
+			MemAddress addr = fetchNextMemAddress();
+			if (addr.add(cpuState.x)) ++cpuState.pageCrossCycles;
+			write(addr, value);
 		}
 		byte fetchAbsoluteY()
 		{
 			MemAddress addr = fetchNextMemAddress();
-			if (addr.add(cpuState.y)) ++cpuState.cycles;
+			if (addr.add(cpuState.y)) ++cpuState.pageCrossCycles;
 			return read(addr);
+		}
+		void writeAbsoluteY(byte value)
+		{
+			MemAddress addr = fetchNextMemAddress();
+			if (addr.add(cpuState.y)) ++cpuState.pageCrossCycles;
+			write(addr, value);
 		}
 		MemAccess fetchZeroPage()
 		{
@@ -170,8 +182,10 @@ namespace mos6502
 			byte zeroPageAddr = (fetchByte() + cpuState.x) % 256;
 			std::cout << " @ " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
 			MemAddress indirect(read(zeroPageAddr), read((zeroPageAddr + 1) % 256));
+
 			std::cout << " " << std::setw(4) << std::hex << static_cast<int>(indirect.value);
 			byte value = read(indirect); // TODO: This read is pointless, only for debug
+
 			std::cout << " = " << std::setw(2) << std::hex << static_cast<int>(value);
 			return MemAccess(indirect, value);
 		}
@@ -183,10 +197,10 @@ namespace mos6502
 		{
 			write(getIndexedIndirectAddress().address, value);
 		}
-		byte emIndirectIndexed()
+		byte memIndirectIndexed()
 		{
 			MemAddress addr = readMemAddress(MemAddress{fetchByte()});
-			if (addr.add(cpuState.y)) ++cpuState.cycles;
+			if (addr.add(cpuState.y)) ++cpuState.pageCrossCycles;
 			return read(addr);
 		}
 	};

@@ -68,11 +68,12 @@ class Core
 		std::cout << std::setw(2) << (int)T::value << ' ' << T::name;
 	}
 
-	template<typename T>
+	template<typename T, bool addPageCrossCycles = true>
 	constexpr inline void endInstruction(byte operand1 = 0, byte operand2 = 0)
 	{
 		handleFlags<T::autoFlags ^ T::manualFlags>(operand1, operand2);
 		state.totalCycles += state.cycles;
+		if constexpr (addPageCrossCycles) state.totalCycles += state.pageCrossCycles;
 	}
 
 	inline byte logicalShiftRight(byte value)

@@ -2,6 +2,8 @@
 #define STATE6502_H
 
 #include "common.hpp"
+#include "memaddress.hpp"
+#include "opcodes.hpp"
 
 namespace mos6502
 {
@@ -9,7 +11,7 @@ namespace mos6502
 	{
 		byte a, x, y, sp, p;
 		MemAddress pc;
-		short cycles, totalCycles;
+		short cycles, pageCrossCycles, totalCycles;
 		short byteStep;
 		byte opcodeResult;
 
@@ -20,7 +22,7 @@ namespace mos6502
 			sp = 0;
 			pc = 0;
 
-			cycles = totalCycles = 0;
+			cycles = pageCrossCycles = totalCycles = 0;
 			byteStep = 0;
 		}
 
