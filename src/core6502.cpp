@@ -39,16 +39,9 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case ADC::Immediate::value:
 		{
 			beginInstruction<ADC::Immediate>();
-			byte operand = state.a;
-			byte data = memory.fetchImmediate();
-			byte carry = static_cast<int>(isStatus(Status::Carry));
-			state.setA(operand + data + carry);
-
-			// figure out if there is carry from addition
-			uint16_t sum = operand + data + isStatus(Status::Carry);
-			updateStatus(Status::Carry, sum > 0xff);
-
-			endInstruction<ADC::Immediate>(operand, data);
+			byte value = memory.fetchImmediate();
+			adc(value);
+			endInstruction<ADC::Immediate>(state.a, value);
 			break;
 		}
 		case SBC::Immediate::value:
