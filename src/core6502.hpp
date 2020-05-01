@@ -143,23 +143,6 @@ class Core
 		return addr;
 	}
 
-	bool isStatus(Status flag) const
-	{
-		return checkBit(state.p, status_int(flag));
-	}
-
-	void updateStatus(Status flag, bool flagState)
-	{
-		if (flagState)
-		{
-			setBit(state.p, status_int(flag));
-		}
-		else
-		{
-			clearBit(state.p, status_int(flag));
-		}
-	}
-
 	bool checkBit(const byte &operand, Status flag) const
 	{
 		return checkBit(operand, status_int(flag));
@@ -184,6 +167,23 @@ class Core
 	}
 
 	// status management
+	bool isStatus(Status flag) const
+	{
+		return checkBit(state.p, status_int(flag));
+	}
+
+	void updateStatus(Status flag, bool flagState)
+	{
+		if (flagState)
+		{
+			setBit(state.p, status_int(flag));
+		}
+		else
+		{
+			clearBit(state.p, status_int(flag));
+		}
+	}
+
 	template<byte autoFlags>
 	constexpr inline void handleFlags(byte operand1, byte operand2)
 	{
@@ -222,11 +222,6 @@ class Core
 		}
 	}
 
-	void addCycles(short numCycles)
-	{
-		state.cycles += numCycles;
-	}
-
 	// compare
 	inline void compare(byte &reg, const byte &data)
 	{
@@ -243,12 +238,12 @@ class Core
 		if (isStatus(flag) == checkStatus)
 		{
 			if (state.pc.addSigned(branch)) extraCycles++;
-			addCycles(extraCycles);
+			state.addCycles(extraCycles);
 		}
 	}
 
-	// Common math
-	void addWithCarry(const signed_byte &a, const signed_byte &b)
+	// arithmetic
+	inline void adc(byte value)
 	{
 		if constexpr(DecimalMode)
 		{
@@ -256,17 +251,13 @@ class Core
 		}
 		else
 		{
-			const signed_byte c = a + b;
-			// uint16_t sum = a + data + getCarry();
-			// if (sum > 0xff)
-			// {
-			// 	setStatus(CPUStatus::Carry);
-			// }
-			// else if (sum > 127 || sum < -128)
-			// {
-			// 	setStatus(CPUStatus::Overflow);
-			// }
-			// a = sum & 0xff; // take only 8-bits of 16-bit result
+			byte operand = state.a;
+			byte carry = static_cast<int>(isStatus(Status::Carry));
+			state.setA(operand + value + carry);
+
+			// figure out if there is carry from addition
+			uint16_t sum = operand + value + isStatus(Status::Carry);
+			updateStatus(Status::Carry, sum > 0xff);
 		}
 	}
 

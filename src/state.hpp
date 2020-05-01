@@ -53,6 +53,12 @@ namespace mos6502
 			value &= ~retain; // transfer all bits except 5, 4
 			p = (p & retain) | value; // set p, keep bits 5, 4 if currently set
 		}
+
+		inline void addCycles(short numCycles)
+		{
+			cycles += numCycles;
+		}
+
 	};
 }
 
