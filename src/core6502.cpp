@@ -45,6 +45,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ADC::Immediate>(aCopy, data);
 			break;
 		}
+		case ADC::IndexedIndirect::value:
+		{
+			beginInstruction<ADC::IndexedIndirect>();
+			byte aCopy = state.a;
+			byte value = memory.fetchIndexedIndirect();
+			adc(value);
+			endInstruction<ADC::IndexedIndirect>(aCopy, value);
+			break;
+		}
 		case SBC::Immediate::value:
 		{
 			beginInstruction<SBC::Immediate>();
