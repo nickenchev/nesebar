@@ -141,6 +141,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ORA::Immediate>();
 			break;
 		}
+        case ORA::IndexedIndirect::value:
+		{
+			beginInstruction<ORA::IndexedIndirect>();
+			state.setA(state.a | memory.fetchIndexedIndirect());
+			endInstruction<ORA::IndexedIndirect>();
+			break;
+		}
 		case EOR::Immediate::value:
 		{
 			beginInstruction<EOR::Immediate>();
@@ -330,11 +337,25 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<STA::Absolute>();
 			break;
 		}
+		case STA::AbsoluteX::value:
+		{
+			beginInstruction<STA::AbsoluteX>();
+			memory.writeAbsoluteX(state.a);
+			endInstruction<STA::AbsoluteX, false>();
+			break;
+		}
+		case STA::AbsoluteY::value:
+		{
+			beginInstruction<STA::AbsoluteY>();
+			memory.writeAbsoluteY(state.a);
+			endInstruction<STA::AbsoluteY, false>();
+			break;
+		}
 		case STA::IndexedIndirect::value:
 		{
 			beginInstruction<STA::IndexedIndirect>();
 			memory.writeIndexedIndirect(state.a);
-			endInstruction<STA::IndexedIndirect>();
+			endInstruction<STA::IndexedIndirect, false>();
 			break;
 		}
 		case STX::ZeroPage::value:
