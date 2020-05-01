@@ -183,7 +183,13 @@ namespace mos6502 { namespace opcodes
 	{
 		static constexpr const char *group = "LDA";
 		struct Immediate : Opcode<0xa9, 2, 2, N|Z> { static inline Asm name{group}; };
+		struct ZeroPage : Opcode<0xa5, 2, 3, N|Z> { static inline Asm name{group}; };
+		struct ZeroPageX : Opcode<0xb5, 2, 4, N|Z> { static inline Asm name{group}; };
 		struct Absolute : Opcode<0xad, 3, 4, N|Z> { static inline Asm name{group}; };
+		struct AbsoluteX : Opcode<0xbd, 3, 4, N|Z> { static inline Asm name{group}; };
+		struct AbsoluteY : Opcode<0xb9, 3, 4, N|Z> { static inline Asm name{group}; };
+		struct IndirectX : Opcode<0xa1, 2, 6, N|Z> { static inline Asm name{group}; };
+		struct IndirectY : Opcode<0xb1, 2, 5, N|Z> { static inline Asm name{group}; };
 	}
 
 	namespace CMP

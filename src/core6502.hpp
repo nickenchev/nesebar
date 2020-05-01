@@ -117,6 +117,7 @@ class Core
 		return result;
 	}
 
+
 	// stack
 	void stackPush(byte data)
 	{
@@ -231,7 +232,7 @@ class Core
 		state.opcodeResult = reg - data;
 		updateStatus(Status::Carry, data <= reg);
 	}
-	
+
 	// branching
 	inline void branchIf(Status flag, bool checkStatus)
 	{

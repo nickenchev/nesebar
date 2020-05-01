@@ -2,6 +2,7 @@
 #define MEM6502_H
 
 #include <iostream>
+#include <iomanip>
 #include "common.hpp"
 #include "memaddress.hpp"
 #include "memchunk.hpp"
@@ -88,7 +89,7 @@ namespace mos6502
 			return data;
 		}
 
-		byte memImmediate()
+		byte fetchImmediate()
 		{
 			byte data = fetchByte();
 			std::cout << " #" << std::hex << std::setw(2)
@@ -106,7 +107,7 @@ namespace mos6502
 			std::cout << " $" << std::hex << std::setw(4) << static_cast<uint16_t>(addr.value);
 			return addr;
 		}
-		byte memAbsolute()
+		byte fetchAbsolute()
 		{
 			MemAddress addr = fetchNextMemAddress();
 			byte data = read(addr);
@@ -119,13 +120,13 @@ namespace mos6502
 			const MemAddress address = addressAbsolute();
 			write(address, value);
 		}
-		byte memAbsoluteX()
+		byte fetchAbsoluteX()
 		{
 			MemAddress addr = fetchNextMemAddress();
 			if (addr.add(cpuState.x)) ++cpuState.cycles;
 			return read(addr);
 		}
-		byte memAbsoluteY()
+		byte fetchAbsoluteY()
 		{
 			MemAddress addr = fetchNextMemAddress();
 			if (addr.add(cpuState.y)) ++cpuState.cycles;
@@ -146,19 +147,25 @@ namespace mos6502
 
 			write(MemAddress(address), value);
 		}
-		byte memZeroPageX()
+		byte fetchZeroPageIndexed(byte index)
 		{
-			byte val = fetchByte();
-			return read(MemAddress{val}.addLow(cpuState.x));
+			byte address{static_cast<byte>((fetchByte() + index) % 256)};
+			byte data = read(MemAddress(address));
+			std::cout << " $" << std::hex << std::setw(2) << address
+					  << " = " << static_cast<int>(data);
+			return data;
 		}
-		byte memZeroPageY()
+		byte fetchZeroPageX()
 		{
-			byte val = fetchByte();
-			return read(MemAddress{val}.addLow(cpuState.y));
+			return fetchZeroPageIndexed(cpuState.x);
+		}
+		byte fetchZeroPageY()
+		{
+			return fetchZeroPageIndexed(cpuState.y);
 		}
 
 		// indexed addressing
-		byte memAbsuluteIndexed()
+		byte memAbsoluteIndexed()
 		{
 			MemAddress addr = fetchNextMemAddress();
 			if (addr.add(cpuState.x)) ++cpuState.cycles;
@@ -166,7 +173,7 @@ namespace mos6502
 		}
 		byte memIndexedIndirect()
 		{
-			MemAddress addr = readMemAddress(MemAddress{memZeroPageX()});
+			MemAddress addr = readMemAddress(MemAddress{fetchZeroPageX()});
 			return read(addr);
 		}
 		byte memIndirectIndexed()

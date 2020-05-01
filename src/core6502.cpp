@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "core6502.hpp"
+#include "flags.hpp"
 #include "nesmemory.hpp"
 #include "opcodes.hpp"
 
@@ -39,7 +40,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<ADC::Immediate>();
 			byte operand = state.a;
-			byte data = memory.memImmediate();
+			byte data = memory.fetchImmediate();
 			byte carry = static_cast<int>(isStatus(Status::Carry));
 			state.setA(operand + data + carry);
 
@@ -54,7 +55,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<SBC::Immediate>();
 			byte minuhend = state.a;
-			byte subtrahend = memory.memImmediate();
+			byte subtrahend = memory.fetchImmediate();
 			byte carry = static_cast<int>(isStatus(Status::Carry));
 
 			state.setA(minuhend - subtrahend - (1 - carry));
@@ -136,14 +137,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case ORA::Immediate::value:
 		{
 			beginInstruction<ORA::Immediate>();
-			state.setA(state.a | memory.memImmediate());
+			state.setA(state.a | memory.fetchImmediate());
 			endInstruction<ORA::Immediate>();
 			break;
 		}
 		case EOR::Immediate::value:
 		{
 			beginInstruction<EOR::Immediate>();
-			state.setA(state.a ^ memory.memImmediate());
+			state.setA(state.a ^ memory.fetchImmediate());
 			endInstruction<EOR::Immediate>();
 			break;
 		}
@@ -247,7 +248,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case AND::Immediate::value:
 		{
 			beginInstruction<AND::Immediate>();
-			state.setA(state.a & memory.memImmediate());
+			state.setA(state.a & memory.fetchImmediate());
 			endInstruction<AND::Immediate>();
 			break;
 		}
@@ -360,7 +361,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDX::Immediate::value:
 		{
 			beginInstruction<LDX::Immediate>();
-			state.setX(memory.memImmediate());
+			state.setX(memory.fetchImmediate());
 			endInstruction<LDX::Immediate>();
 			break;
 		}
@@ -374,43 +375,71 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDX::ZeroPageY::value:
 		{
 			beginInstruction<LDX::ZeroPageY>();
-			state.setX(memory.memZeroPageY());
+			state.setX(memory.fetchZeroPageY());
 			endInstruction<LDX::ZeroPageY>();
 			break;
 		}
 		case LDX::Absolute::value:
 		{
 			beginInstruction<LDX::Absolute>();
-			state.setX(memory.memAbsolute());
+			state.setX(memory.fetchAbsolute());
 			endInstruction<LDX::Absolute>();
 			break;
 		}
 		case LDX::AbsoluteY::value:
 		{
 			beginInstruction<LDX::AbsoluteY>();
-			state.setX(memory.memAbsoluteY());
+			state.setX(memory.fetchAbsoluteY());
 			endInstruction<LDX::AbsoluteY>();
 			break;
 		}
 		case LDY::Immediate::value:
 		{
 			beginInstruction<LDY::Immediate>();
-			state.setY(memory.memImmediate());
+			state.setY(memory.fetchImmediate());
 			endInstruction<LDY::Immediate>();
 			break;
 		}
 		case LDA::Immediate::value:
 		{
 			beginInstruction<LDA::Immediate>();
-			state.setA(memory.memImmediate());
+			state.setA(memory.fetchImmediate());
 			endInstruction<LDA::Immediate>();
+			break;
+		}
+		case LDA::ZeroPage::value:
+		{
+			beginInstruction<LDA::ZeroPage>();
+			state.setA(memory.fetchZeroPage().value);
+			endInstruction<LDA::ZeroPage>();
+			break;
+		}
+		case LDA::ZeroPageX::value:
+		{
+			beginInstruction<LDA::ZeroPageX>();
+			state.setA(memory.fetchZeroPageX());
+			endInstruction<LDA::ZeroPageX>();
 			break;
 		}
 		case LDA::Absolute::value:
 		{
 			beginInstruction<LDA::Absolute>();
-			state.setA(memory.memAbsolute());
+			state.setA(memory.fetchAbsolute());
 			endInstruction<LDA::Absolute>();
+			break;
+		}
+		case LDA::AbsoluteX::value:
+		{
+			beginInstruction<LDA::AbsoluteX>();
+			state.setA(memory.fetchAbsoluteX());
+			endInstruction<LDA::AbsoluteX>();
+			break;
+		}
+		case LDA::AbsoluteY::value:
+		{
+			beginInstruction<LDA::AbsoluteY>();
+			state.setA(memory.fetchAbsoluteY());
+			endInstruction<LDA::AbsoluteY>();
 			break;
 		}
 		case BCS::value:
@@ -424,7 +453,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::Immediate;
 			beginInstruction<OP>();
-			const byte data = memory. memImmediate();
+			const byte data = memory. fetchImmediate();
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;
@@ -433,7 +462,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPX::Immediate;
 			beginInstruction<OP>();
-			const byte data = memory.memImmediate();
+			const byte data = memory.fetchImmediate();
 			compare(state.x, data);
 			endInstruction<OP>(state.x, data);
 			break;
@@ -451,7 +480,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPX::Absolute;
 			beginInstruction<OP>();
-			byte data = memory.memAbsolute();
+			byte data = memory.fetchAbsolute();
 			compare(state.x, data);
 			endInstruction<OP>(state.x, data);
 			break;
@@ -460,7 +489,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPX::Immediate;
 			beginInstruction<OP>();
-			byte data = memory.memImmediate();
+			byte data = memory.fetchImmediate();
 			compare(state.y, data);
 			endInstruction<OP>(state.y, data);
 			break;
@@ -478,7 +507,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPY::Absolute;
 			beginInstruction<OP>();
-			byte data = memory.memAbsolute();
+			byte data = memory.fetchAbsolute();
 			compare(state.y, data);
 			endInstruction<OP>(state.y, data);
 			break;
