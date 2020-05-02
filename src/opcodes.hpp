@@ -218,8 +218,13 @@ namespace mos6502 { namespace opcodes
 
 	namespace LDY
 	{
-		static constexpr const char *groupName = "LDY";
-		struct Immediate: Opcode<0xa0, 2, 2, N|Z> { static inline Asm name{groupName}; };
+		static constexpr const char *group = "LDY";
+		static constexpr byte flags = N|Z;
+		struct Immediate: Opcode<0xa0, 2, 2, flags> { static inline Asm name{group}; };
+		struct ZeroPage: Opcode<0xa4, 2, 3, flags> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0xb4, 2, 4, flags> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0xac, 3, 4, flags> { static inline Asm name{group}; };
+		struct AbsoluteX: Opcode<0xbc, 3, 4, flags> { static inline Asm name{group}; };
 	}
 
 	namespace LDA
