@@ -152,6 +152,10 @@ namespace mos6502
 					<< " = " << static_cast<int>(data);
 			return MemAccess(addr, data);
 		}
+		void writeZeroPage(MemAddress address, byte value)
+		{
+			writeZeroPage(address.low(), value);
+		}
 		void writeZeroPage(byte address, byte value)
 		{
 			std::cout << " $" << std::setw(2) << std::hex << static_cast<uint16_t>(address)

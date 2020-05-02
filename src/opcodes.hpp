@@ -41,6 +41,26 @@ namespace mos6502 { namespace opcodes
 		struct IndirectIndexed : Opcode<0xf1, 2, 5, flags, manual> { static inline Asm name{group}; };
 	}
 
+	namespace INC
+	{
+		static constexpr const char *group = "INC";
+		static constexpr byte flags = N|Z;
+		struct ZeroPage: Opcode<0xe6, 2, 5, flags> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0xf6, 2, 6, flags> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0xee, 3, 6, flags> { static inline Asm name{group}; };
+		struct AbsoluteX: Opcode<0xfe, 3, 7, flags> { static inline Asm name{group}; };
+	}
+
+	namespace DEC
+	{
+		static constexpr const char *group = "DEC";
+		static constexpr byte flags = N|Z;
+		struct ZeroPage: Opcode<0xc6, 2, 5, flags> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0xd6, 2, 6, flags> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0xce, 3, 6, flags> { static inline Asm name{group}; };
+		struct AbsoluteX: Opcode<0xde, 3, 7, flags> { static inline Asm name{group}; };
+	}
+
 	// register related
 	struct INX : Opcode<0xe8, 1, 2, N|Z> { static inline Asm name{"INX"}; };
 	struct INY : Opcode<0xc8, 1, 2, N|Z> { static inline Asm name{"INY"}; };

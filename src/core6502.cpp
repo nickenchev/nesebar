@@ -90,6 +90,24 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<SBC::IndexedIndirect>(aCopy, value);
 			break;
 		}
+		case INC::ZeroPage::value:
+		{
+			beginInstruction<INC::ZeroPage>();
+			MemAccess access = memory.fetchZeroPage();
+			memory.writeZeroPage(access.address, ++access.value);
+			state.opcodeResult = access.value;
+			endInstruction<INC::ZeroPage>();
+			break;
+		}
+		case DEC::ZeroPage::value:
+		{
+			beginInstruction<DEC::ZeroPage>();
+			MemAccess access = memory.fetchZeroPage();
+			memory.writeZeroPage(access.address, --access.value);
+			state.opcodeResult = access.value;
+			endInstruction<DEC::ZeroPage>();
+			break;
+		}
 		case INX::value:
 		{
 			beginInstruction<INX>();
@@ -231,6 +249,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<ROL::Accumulator>();
 			state.a = rotateLeft(state.a); // set opcodeResult once
 			endInstruction<ROL::Accumulator>();
+			break;
+		}
+		case ROL::ZeroPage::value:
+		{
+			beginInstruction<ROL::ZeroPage>();
+			MemAccess access = memory.fetchZeroPage();
+			state.opcodeResult = rotateLeft(access.value);
+			memory.writeZeroPage(access.address.low(), state.opcodeResult);
+			endInstruction<ROL::ZeroPage>();
 			break;
 		}
 		case ROR::Accumulator::value:
