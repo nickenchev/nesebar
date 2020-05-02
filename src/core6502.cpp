@@ -202,6 +202,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ASL::Accumulator>();
 			break;
 		}
+		case ASL::ZeroPage::value:
+		{
+			beginInstruction<ASL::ZeroPage>();
+			MemAccess access = memory.fetchZeroPage();
+			memory.writeZeroPage(access.address.low(), arithmeticShiftLeft(access.value));
+			endInstruction<ASL::ZeroPage>();
+			break;
+		}
 		case LSR::Accumulator::value:
 		{
 			beginInstruction<LSR::Accumulator>();
@@ -230,6 +238,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<ROR::Accumulator>();
 			state.a = rotateRight(state.a); // set opcodeResult once
 			endInstruction<ROR::Accumulator>();
+			break;
+		}
+		case ROR::ZeroPage::value:
+		{
+			beginInstruction<ROR::ZeroPage>();
+			MemAccess access = memory.fetchZeroPage();
+			state.opcodeResult = rotateRight(access.value);
+			memory.writeZeroPage(access.address.low(), state.opcodeResult);
+			endInstruction<ROR::ZeroPage>();
 			break;
 		}
 		case PHP::value:
