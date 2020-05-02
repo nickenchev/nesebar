@@ -45,6 +45,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ADC::Immediate>(aCopy, data);
 			break;
 		}
+		case ADC::ZeroPage::value:
+		{
+			beginInstruction<ADC::ZeroPage>();
+			byte aCopy = state.a;
+			byte data = memory.fetchZeroPage().value;
+			adc(data);
+			endInstruction<ADC::ZeroPage>(aCopy, data);
+			break;
+		}
 		case ADC::IndexedIndirect::value:
 		{
 			beginInstruction<ADC::IndexedIndirect>();
@@ -142,6 +151,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ORA::Immediate>();
 			break;
 		}
+		case ORA::ZeroPage::value:
+		{
+			beginInstruction<ORA::ZeroPage>();
+			state.setA(state.a | memory.fetchZeroPage().value);
+			endInstruction<ORA::ZeroPage>();
+			break;
+		}
         case ORA::IndexedIndirect::value:
 		{
 			beginInstruction<ORA::IndexedIndirect>();
@@ -154,6 +170,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<EOR::Immediate>();
 			state.setA(state.a ^ memory.fetchImmediate());
 			endInstruction<EOR::Immediate>();
+			break;
+		}
+		case EOR::ZeroPage::value:
+		{
+			beginInstruction<EOR::ZeroPage>();
+			state.setA(state.a ^ memory.fetchZeroPage().value);
+			endInstruction<EOR::ZeroPage>();
 			break;
 		}
 		case EOR::IndexedIndirect::value:
@@ -265,6 +288,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<AND::Immediate>();
 			state.setA(state.a & memory.fetchImmediate());
 			endInstruction<AND::Immediate>();
+			break;
+		}
+		case AND::ZeroPage::value:
+		{
+			beginInstruction<AND::ZeroPage>();
+			state.setA(state.a & memory.fetchZeroPage().value);
+			endInstruction<AND::ZeroPage>();
 			break;
 		}
 		case AND::IndexedIndirect::value:
@@ -450,6 +480,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<LDY::Immediate>();
 			break;
 		}
+		case LDY::ZeroPage::value:
+		{
+			beginInstruction<LDY::ZeroPage>();
+			state.setY(memory.fetchZeroPage().value);
+			endInstruction<LDY::ZeroPage>();
+			break;
+		}
 		case LDA::Immediate::value:
 		{
 			beginInstruction<LDA::Immediate>();
@@ -510,7 +547,16 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::Immediate;
 			beginInstruction<OP>();
-			const byte data = memory. fetchImmediate();
+			const byte data = memory.fetchImmediate();
+			compare(state.a, data);
+			endInstruction<OP>(state.a, data);
+			break;
+		}
+		case CMP::ZeroPage::value:
+		{
+			using OP = CMP::ZeroPage;
+			beginInstruction<OP>();
+			const byte data = memory.fetchZeroPage().value;
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;
