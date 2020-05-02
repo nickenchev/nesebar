@@ -72,6 +72,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<SBC::Immediate>(aCopy, value);
 			break;
 		}
+		case SBC::ZeroPage::value:
+		{
+			beginInstruction<SBC::ZeroPage>();
+			byte aCopy = state.a;
+			byte value = memory.fetchZeroPage().value;
+			sbc(value);
+			endInstruction<SBC::ZeroPage>(aCopy, value);
+			break;
+		}
 		case SBC::IndexedIndirect::value:
 		{
 			beginInstruction<SBC::IndexedIndirect>();
@@ -203,14 +212,11 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LSR::ZeroPage::value:
 		{
 			beginInstruction<LSR::ZeroPage>();
-			exit(1);
-			/*
 			MemAccess access = memory.fetchZeroPage();
-			byte result = logicalShiftRight(access.value);
-			state.opcodeResult = result;
-			memory.writeZeroPage(access.address.low(), result);
+			access.value = logicalShiftRight(access.value);
+			memory.writeZeroPage(access.address.low(), access.value);
 			endInstruction<LSR::ZeroPage>();
-			*/
+			break;
 		}
 		case ROL::Accumulator::value:
 		{
