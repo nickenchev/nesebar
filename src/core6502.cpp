@@ -54,6 +54,42 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ADC::ZeroPage>(aCopy, data);
 			break;
 		}
+		case ADC::ZeroPageX::value:
+		{
+			beginInstruction<ADC::ZeroPageX>();
+			byte aCopy = state.a;
+			byte data = memory.fetchZeroPageX();
+			adc(data);
+			endInstruction<ADC::ZeroPageX>(aCopy, data);
+			break;
+		}
+		case ADC::Absolute::value:
+		{
+			beginInstruction<ADC::Absolute>();
+			byte aCopy = state.a;
+			byte data = memory.fetchAbsolute();
+			adc(data);
+			endInstruction<ADC::Absolute>(aCopy, data);
+			break;
+		}
+		case ADC::AbsoluteX::value:
+		{
+			beginInstruction<ADC::AbsoluteX>();
+			byte aCopy = state.a;
+			byte data = memory.fetchAbsoluteX();
+			adc(data);
+			endInstruction<ADC::AbsoluteX>(aCopy, data);
+			break;
+		}
+		case ADC::AbsoluteY::value:
+		{
+			beginInstruction<ADC::AbsoluteY>();
+			byte aCopy = state.a;
+			byte data = memory.fetchAbsoluteY();
+			adc(data);
+			endInstruction<ADC::AbsoluteY>(aCopy, data);
+			break;
+		}
 		case ADC::IndexedIndirect::value:
 		{
 			beginInstruction<ADC::IndexedIndirect>();
@@ -234,6 +270,34 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<EOR::ZeroPage>();
 			break;
 		}
+		case EOR::ZeroPageX::value:
+		{
+			beginInstruction<EOR::ZeroPageX>();
+			state.setA(state.a ^ memory.fetchZeroPageX());
+			endInstruction<EOR::ZeroPage>();
+			break;
+		}
+		case EOR::Absolute::value:
+		{
+			beginInstruction<EOR::Absolute>();
+			state.setA(state.a ^ memory.fetchAbsolute());
+			endInstruction<EOR::Absolute>();
+			break;
+		}
+		case EOR::AbsoluteX::value:
+		{
+			beginInstruction<EOR::AbsoluteX>();
+			state.setA(state.a ^ memory.fetchAbsoluteX());
+			endInstruction<EOR::AbsoluteX>();
+			break;
+		}
+		case EOR::AbsoluteY::value:
+		{
+			beginInstruction<EOR::AbsoluteY>();
+			state.setA(state.a ^ memory.fetchAbsoluteY());
+			endInstruction<EOR::AbsoluteY>();
+			break;
+		}
 		case EOR::IndexedIndirect::value:
 		{
 			beginInstruction<EOR::IndexedIndirect>();
@@ -375,6 +439,34 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<AND::ZeroPage>();
 			state.setA(state.a & memory.fetchZeroPage().value);
 			endInstruction<AND::ZeroPage>();
+			break;
+		}
+		case AND::ZeroPageX::value:
+		{
+			beginInstruction<AND::ZeroPageX>();
+			state.setA(state.a & memory.fetchZeroPageX());
+			endInstruction<AND::ZeroPageX>();
+			break;
+		}
+		case AND::Absolute::value:
+		{
+			beginInstruction<AND::Absolute>();
+			state.setA(state.a & memory.fetchAbsolute());
+			endInstruction<AND::Absolute>();
+			break;
+		}
+		case AND::AbsoluteX::value:
+		{
+			beginInstruction<AND::AbsoluteX>();
+			state.setA(state.a & memory.fetchAbsoluteX());
+			endInstruction<AND::AbsoluteX>();
+			break;
+		}
+		case AND::AbsoluteY::value:
+		{
+			beginInstruction<AND::AbsoluteY>();
+			state.setA(state.a & memory.fetchAbsoluteY());
+			endInstruction<AND::AbsoluteY>();
 			break;
 		}
 		case AND::IndexedIndirect::value:
