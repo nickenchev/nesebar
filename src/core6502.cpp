@@ -754,6 +754,42 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<OP>(state.a, data);
 			break;
 		}
+		case CMP::ZeroPageX::value:
+		{
+			using OP = CMP::ZeroPageX;
+			beginInstruction<OP>();
+			const byte data = memory.fetchZeroPageX();
+			compare(state.a, data);
+			endInstruction<OP>(state.a, data);
+			break;
+		}
+		case CMP::Absolute::value:
+		{
+			using OP = CMP::Absolute;
+			beginInstruction<OP>();
+			const byte data = memory.fetchAbsolute();
+			compare(state.a, data);
+			endInstruction<OP>(state.a, data);
+			break;
+		}
+		case CMP::AbsoluteX::value:
+		{
+			using OP = CMP::AbsoluteX;
+			beginInstruction<OP>();
+			const byte data = memory.fetchAbsoluteX();
+			compare(state.a, data);
+			endInstruction<OP>(state.a, data);
+			break;
+		}
+		case CMP::AbsoluteY::value:
+		{
+			using OP = CMP::AbsoluteY;
+			beginInstruction<OP>();
+			const byte data = memory.fetchAbsoluteY();
+			compare(state.a, data);
+			endInstruction<OP>(state.a, data);
+			break;
+		}
 		case CMP::IndexedIndirect::value:
 		{
 			using OP = CMP::IndexedIndirect;
