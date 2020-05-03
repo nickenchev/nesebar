@@ -924,6 +924,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<LDA::IndexedIndirect>();
 			break;
 		}
+		case LDA::IndirectIndexed::value:
+		{
+			beginInstruction<LDA::IndirectIndexed>();
+			state.setA(memory.fetchIndirectIndexed());
+			endInstruction<LDA::IndirectIndexed>();
+			break;
+		}
 		case BCS::value:
 		{
 			beginInstruction<BCS>();

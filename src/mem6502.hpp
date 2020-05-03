@@ -217,9 +217,9 @@ namespace mos6502
 		}
 
 		// indexed addressing
-		MemAccess getIndexedIndirectAddress()
+		MemAccess getIndirectAddress(byte index)
 		{
-			byte zeroPageAddr = (fetchByte() + cpuState.x) % 256;
+			byte zeroPageAddr = (fetchByte() + index) % 256;
 			std::cout << " @ " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
 			MemAddress indirect(read(zeroPageAddr), read((zeroPageAddr + 1) % 256));
 
@@ -231,17 +231,20 @@ namespace mos6502
 		}
 		byte fetchIndexedIndirect()
 		{
-			return getIndexedIndirectAddress().value;
+			return getIndirectAddress(cpuState.x).value;
 		}
 		void writeIndexedIndirect(byte value)
 		{
-			write(getIndexedIndirectAddress().address, value);
+			write(getIndirectAddress(cpuState.x).address, value);
 		}
-		byte memIndirectIndexed()
+
+		byte fetchIndirectIndexed()
 		{
-			MemAddress addr = readMemAddress(MemAddress{fetchByte()});
-			if (addr.add(cpuState.y)) ++cpuState.pageCrossCycles;
-			return read(addr);
+			return getIndirectAddress(cpuState.y).value;
+		}
+		void writeIndirectIndexed(byte value)
+		{
+			write(getIndirectAddress(cpuState.x).address, value);
 		}
 	};
 }
