@@ -507,7 +507,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<LSR::Absolute>();
 			MemAccess access = memory.fetchAbsolute();
 			access.value = logicalShiftRight(access.value);
-			memory.writeAbsolute(access.address, access.value);
+			memory.write(access.address, access.value);
 			endInstruction<LSR::Absolute>();
 			break;
 		}
@@ -516,7 +516,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<LSR::AbsoluteX>();
 			MemAccess access = memory.fetchAbsoluteX();
 			access.value = logicalShiftRight(access.value);
-			memory.writeAbsoluteX(access.address, access.value);
+			memory.write(access.address, access.value);
 			endInstruction<LSR::AbsoluteX>();
 			break;
 		}
@@ -865,6 +865,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<STX::ZeroPage>();
 			memory.writeZeroPage(memory.fetchByte(), state.x);
 			endInstruction<STX::ZeroPage>();
+			break;
+		}
+		case STX::ZeroPageY::value:
+		{
+			beginInstruction<STX::ZeroPageY>();
+			memory.writeZeroPageY(state.x);
+			endInstruction<STX::ZeroPageY>();
 			break;
 		}
 		case STX::Absolute::value:

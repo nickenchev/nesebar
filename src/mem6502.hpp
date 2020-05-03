@@ -148,9 +148,7 @@ namespace mos6502
 		}
 		void writeAbsoluteX(byte value)
 		{
-			MemAddress addr = fetchNextMemAddress();
-			if (addr.add(cpuState.x)) ++cpuState.pageCrossCycles;
-			write(addr, value);
+			writeAbsoluteX(fetchNextMemAddress(), value);
 		}
 		void writeAbsoluteX(MemAddress address, byte value)
 		{
@@ -206,10 +204,14 @@ namespace mos6502
 			MemAddress address = addressZeroPageIndexed(cpuState.x);
 			write(address, value);
 		}
-		
 		MemAccess fetchZeroPageY()
 		{
 			return fetchZeroPageIndexed(cpuState.y);
+		}
+		void writeZeroPageY(byte value)
+		{
+			MemAddress address = addressZeroPageIndexed(cpuState.y);
+			write(address, value);
 		}
 
 		// indexed addressing
