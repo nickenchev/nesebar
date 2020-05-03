@@ -206,10 +206,6 @@ namespace mos6502
 			MemAddress address = addressZeroPageIndexed(cpuState.x);
 			write(address, value);
 		}
-		void writeZeroPageX(MemAddress address, byte value)
-		{
-			write(address, value);
-		}
 		
 		MemAccess fetchZeroPageY()
 		{
@@ -243,7 +239,7 @@ namespace mos6502
 			byte zeroPageAddr = fetchByte();
 			std::cout << " @ " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
 			MemAddress indirect(read(zeroPageAddr), read((zeroPageAddr + 1) % 256));
-			if (indirect.add(cpuState.y)) cpuState.addCycles(1);
+			if (indirect.add(cpuState.y)) ++cpuState.pageCrossCycles;
 
 			std::cout << " " << std::setw(4) << std::hex << static_cast<int>(indirect.value);
 			byte value = read(indirect); // TODO: This read is pointless, only for debug
