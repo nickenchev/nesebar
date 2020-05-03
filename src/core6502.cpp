@@ -439,6 +439,33 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ROL::ZeroPage>();
 			break;
 		}
+		case ROL::ZeroPageX::value:
+		{
+			beginInstruction<ROL::ZeroPageX>();
+			MemAccess access = memory.fetchZeroPageX();
+			state.opcodeResult = rotateLeft(access.value);
+			memory.writeZeroPageX(access.address, state.opcodeResult);
+			endInstruction<ROL::ZeroPageX>();
+			break;
+		}
+		case ROL::Absolute::value:
+		{
+			beginInstruction<ROL::Absolute>();
+			MemAccess access = memory.fetchAbsolute();
+			state.opcodeResult = rotateLeft(access.value);
+			memory.writeAbsolute(access.address, state.opcodeResult);
+			endInstruction<ROL::Absolute>();
+			break;
+		}
+		case ROL::AbsoluteX::value:
+		{
+			beginInstruction<ROL::AbsoluteX>();
+			MemAccess access = memory.fetchAbsoluteX();
+			state.opcodeResult = rotateLeft(access.value);
+			memory.writeAbsoluteX(access.address, state.opcodeResult);
+			endInstruction<ROL::AbsoluteX>();
+			break;
+		}
 		case ROR::Accumulator::value:
 		{
 			beginInstruction<ROR::Accumulator>();
@@ -453,6 +480,33 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			state.opcodeResult = rotateRight(access.value);
 			memory.writeZeroPage(access.address, state.opcodeResult);
 			endInstruction<ROR::ZeroPage>();
+			break;
+		}
+		case ROR::ZeroPageX::value:
+		{
+			beginInstruction<ROR::ZeroPageX>();
+			MemAccess access = memory.fetchZeroPageX();
+			state.opcodeResult = rotateRight(access.value);
+			memory.writeZeroPageX(access.address, state.opcodeResult);
+			endInstruction<ROR::ZeroPageX>();
+			break;
+		}
+		case ROR::Absolute::value:
+		{
+			beginInstruction<ROR::Absolute>();
+			MemAccess access = memory.fetchAbsolute();
+			state.opcodeResult = rotateRight(access.value);
+			memory.writeAbsolute(access.address, state.opcodeResult);
+			endInstruction<ROR::Absolute>();
+			break;
+		}
+		case ROR::AbsoluteX::value:
+		{
+			beginInstruction<ROR::AbsoluteX>();
+			MemAccess access = memory.fetchAbsoluteX();
+			state.opcodeResult = rotateRight(access.value);
+			memory.writeAbsoluteX(access.address, state.opcodeResult);
+			endInstruction<ROR::AbsoluteX>();
 			break;
 		}
 		case PHP::value:
