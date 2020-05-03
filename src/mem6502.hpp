@@ -217,9 +217,9 @@ namespace mos6502
 		}
 
 		// indexed addressing
-		MemAccess getIndirectAddress(byte index)
+		MemAccess addressIndexedIndirect()
 		{
-			byte zeroPageAddr = (fetchByte() + index) % 256;
+			byte zeroPageAddr = (fetchByte() + cpuState.x) % 256;
 			std::cout << " @ " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
 			MemAddress indirect(read(zeroPageAddr), read((zeroPageAddr + 1) % 256));
 
@@ -231,20 +231,33 @@ namespace mos6502
 		}
 		byte fetchIndexedIndirect()
 		{
-			return getIndirectAddress(cpuState.x).value;
+			return addressIndexedIndirect().value;
 		}
 		void writeIndexedIndirect(byte value)
 		{
-			write(getIndirectAddress(cpuState.x).address, value);
+			write(addressIndexedIndirect().address, value);
 		}
 
+		MemAccess addressIndirectIndexed()
+		{
+			byte zeroPageAddr = fetchByte();
+			std::cout << " @ " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
+			MemAddress indirect(read(zeroPageAddr), read((zeroPageAddr + 1) % 256));
+			if (indirect.add(cpuState.y)) cpuState.addCycles(1);
+
+			std::cout << " " << std::setw(4) << std::hex << static_cast<int>(indirect.value);
+			byte value = read(indirect); // TODO: This read is pointless, only for debug
+
+			std::cout << " = " << std::setw(2) << std::hex << static_cast<int>(value);
+			return MemAccess(indirect, value);
+		}
 		byte fetchIndirectIndexed()
 		{
-			return getIndirectAddress(cpuState.y).value;
+			return addressIndirectIndexed().value;
 		}
 		void writeIndirectIndexed(byte value)
 		{
-			write(getIndirectAddress(cpuState.x).address, value);
+			write(addressIndirectIndexed().address, value);
 		}
 	};
 }

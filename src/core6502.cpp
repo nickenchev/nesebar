@@ -346,6 +346,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ORA::IndexedIndirect>();
 			break;
 		}
+        case ORA::IndirectIndexed::value:
+		{
+			beginInstruction<ORA::IndirectIndexed>();
+			state.setA(state.a | memory.fetchIndirectIndexed());
+			endInstruction<ORA::IndirectIndexed>();
+			break;
+		}
 		case EOR::Immediate::value:
 		{
 			beginInstruction<EOR::Immediate>();
@@ -669,6 +676,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<AND::IndexedIndirect>();
 			state.setA(state.a & memory.fetchIndexedIndirect());
 			endInstruction<AND::IndexedIndirect>();
+			break;
+		}
+		case AND::IndirectIndexed::value:
+		{
+			beginInstruction<AND::IndirectIndexed>();
+			state.setA(state.a & memory.fetchIndirectIndexed());
+			endInstruction<AND::IndirectIndexed>();
 			break;
 		}
 		case SEC::value:
