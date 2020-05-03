@@ -58,7 +58,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<ADC::ZeroPageX>();
 			byte aCopy = state.a;
-			byte data = memory.fetchZeroPageX();
+			byte data = memory.fetchZeroPageX().value;
 			adc(data);
 			endInstruction<ADC::ZeroPageX>(aCopy, data);
 			break;
@@ -121,7 +121,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<SBC::ZeroPageX>();
 			byte aCopy = state.a;
-			byte value = memory.fetchZeroPageX();
+			byte value = memory.fetchZeroPageX().value;
 			sbc(value);
 			endInstruction<SBC::ZeroPageX>(aCopy, value);
 			break;
@@ -260,7 +260,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case ORA::ZeroPageX::value:
 		{
 			beginInstruction<ORA::ZeroPageX>();
-			state.setA(state.a | memory.fetchZeroPageX());
+			state.setA(state.a | memory.fetchZeroPageX().value);
 			endInstruction<ORA::ZeroPageX>();
 			break;
 		}
@@ -309,7 +309,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case EOR::ZeroPageX::value:
 		{
 			beginInstruction<EOR::ZeroPageX>();
-			state.setA(state.a ^ memory.fetchZeroPageX());
+			state.setA(state.a ^ memory.fetchZeroPageX().value);
 			endInstruction<EOR::ZeroPage>();
 			break;
 		}
@@ -367,6 +367,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<LSR::ZeroPage>();
 			MemAccess access = memory.fetchZeroPage();
+			access.value = logicalShiftRight(access.value);
+			memory.writeZeroPage(access.address.low(), access.value);
+			endInstruction<LSR::ZeroPage>();
+			break;
+		}
+		case LSR::ZeroPageX::value:
+		{
+			beginInstruction<LSR::ZeroPageX>();
+			MemAccess access = memory.fetchZeroPageX();
 			access.value = logicalShiftRight(access.value);
 			memory.writeZeroPage(access.address.low(), access.value);
 			endInstruction<LSR::ZeroPage>();
@@ -480,7 +489,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case AND::ZeroPageX::value:
 		{
 			beginInstruction<AND::ZeroPageX>();
-			state.setA(state.a & memory.fetchZeroPageX());
+			state.setA(state.a & memory.fetchZeroPageX().value);
 			endInstruction<AND::ZeroPageX>();
 			break;
 		}
@@ -677,7 +686,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDX::ZeroPageY::value:
 		{
 			beginInstruction<LDX::ZeroPageY>();
-			state.setX(memory.fetchZeroPageY());
+			state.setX(memory.fetchZeroPageY().value);
 			endInstruction<LDX::ZeroPageY>();
 			break;
 		}
@@ -733,7 +742,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDA::ZeroPageX::value:
 		{
 			beginInstruction<LDA::ZeroPageX>();
-			state.setA(memory.fetchZeroPageX());
+			state.setA(memory.fetchZeroPageX().value);
 			endInstruction<LDA::ZeroPageX>();
 			break;
 		}
@@ -794,7 +803,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::ZeroPageX;
 			beginInstruction<OP>();
-			const byte data = memory.fetchZeroPageX();
+			const byte data = memory.fetchZeroPageX().value;
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;

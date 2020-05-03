@@ -184,15 +184,15 @@ namespace mos6502
 			MemAddress address{static_cast<byte>((fetchByte() + index) % 256)};
 			return address;
 		}
-		byte fetchZeroPageIndexed(byte index)
+		MemAccess fetchZeroPageIndexed(byte index)
 		{
 			MemAddress address = addressZeroPageIndexed(index);
 			byte data = read(address);
 			std::cout << " $" << std::hex << std::setw(2) << static_cast<int>(address.value)
 					  << " = " << static_cast<int>(data);
-			return data;
+			return MemAccess(address, data);
 		}
-		byte fetchZeroPageX()
+		MemAccess fetchZeroPageX()
 		{
 			return fetchZeroPageIndexed(cpuState.x);
 		}
@@ -202,7 +202,7 @@ namespace mos6502
 			write(address, value);
 		}
 		
-		byte fetchZeroPageY()
+		MemAccess fetchZeroPageY()
 		{
 			return fetchZeroPageIndexed(cpuState.y);
 		}
