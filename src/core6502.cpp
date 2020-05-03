@@ -372,16 +372,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ASL::Absolute>();
 			break;
 		}
-		/*
 		case ASL::AbsoluteX::value:
 		{
 			beginInstruction<ASL::AbsoluteX>();
 			MemAccess access = memory.fetchAbsoluteX();
-			memory.writeAbsoluteX(access.address.low(), arithmeticShiftLeft(access.value));
+			memory.writeAbsoluteX(access.address, arithmeticShiftLeft(access.value));
 			endInstruction<ASL::AbsoluteX>();
 			break;
 		}
-		*/
 		case LSR::Accumulator::value:
 		{
 			beginInstruction<LSR::Accumulator>();
