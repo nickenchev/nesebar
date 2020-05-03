@@ -117,6 +117,42 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<SBC::ZeroPage>(aCopy, value);
 			break;
 		}
+		case SBC::ZeroPageX::value:
+		{
+			beginInstruction<SBC::ZeroPageX>();
+			byte aCopy = state.a;
+			byte value = memory.fetchZeroPageX();
+			sbc(value);
+			endInstruction<SBC::ZeroPageX>(aCopy, value);
+			break;
+		}
+		case SBC::Absolute::value:
+		{
+			beginInstruction<SBC::Absolute>();
+			byte aCopy = state.a;
+			byte value = memory.fetchAbsolute();
+			sbc(value);
+			endInstruction<SBC::Absolute>(aCopy, value);
+			break;
+		}
+		case SBC::AbsoluteX::value:
+		{
+			beginInstruction<SBC::AbsoluteX>();
+			byte aCopy = state.a;
+			byte value = memory.fetchAbsoluteX();
+			sbc(value);
+			endInstruction<SBC::AbsoluteX>(aCopy, value);
+			break;
+		}
+		case SBC::AbsoluteY::value:
+		{
+			beginInstruction<SBC::AbsoluteY>();
+			byte aCopy = state.a;
+			byte value = memory.fetchAbsoluteY();
+			sbc(value);
+			endInstruction<SBC::AbsoluteY>(aCopy, value);
+			break;
+		}
 		case SBC::IndexedIndirect::value:
 		{
 			beginInstruction<SBC::IndexedIndirect>();
