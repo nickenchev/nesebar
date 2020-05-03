@@ -179,14 +179,10 @@ namespace mos6502
 		}
 		void writeZeroPage(MemAddress address, byte value)
 		{
-			writeZeroPage(address.low(), value);
-		}
-		void writeZeroPage(byte address, byte value)
-		{
-			std::cout << " $" << std::setw(2) << std::hex << static_cast<uint16_t>(address)
+			std::cout << " $" << std::setw(2) << std::hex << address.value
 					<< " = " << static_cast<int>(value);
 
-			write(MemAddress(address), value);
+			write(address, value);
 		}
 		MemAddress addressZeroPageIndexed(byte index)
 		{
