@@ -9,7 +9,10 @@
 namespace mos6502 { namespace opcodes
 {
 	using namespace status_bits;
+	struct BRK : Opcode<0x00, 1, 7, I, I> { static inline Asm name{"BRK"}; };
 
+	// interrupt related
+	
 	// arithmetic 
 	namespace ADC
 	{
@@ -170,7 +173,14 @@ namespace mos6502 { namespace opcodes
 	
 	// jumping
 	struct JSR : Opcode<0x20, 3, 6, None> { static inline Asm name{"JSR"}; };
-	struct JMP : Opcode<0x4c, 3, 3, None> { static inline Asm name{"JMP"}; };
+
+	namespace JMP
+	{
+		static constexpr const char *group = "JMP";
+		struct Absolute : Opcode<0x4c, 3, 3, None> { static inline Asm name{group}; };
+		struct Indirect : Opcode<0x6c, 3, 5, None> { static inline Asm name{group}; };
+	}
+
 	struct RTS : Opcode<0x60, 1, 6, None> { static inline Asm name{"RTS"}; };
 	struct RTI : Opcode<0x40, 1, 6, None> { static inline Asm name{"RTI"}; };
 

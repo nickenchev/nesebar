@@ -36,6 +36,17 @@ void Core<Memory, Mapping, DecimalMode>::step()
 	const byte opcode = nextOpcode();
 	switch (opcode)
 	{
+		case BRK::value:
+		{
+			exit(1);
+			beginInstruction<BRK>();
+			stackPush(state.p);
+			byte throwAway = memory.fetchByte();
+			stackPushAddress(state.pc);
+			updateStatus(Status::InterruptDisable, true);
+			endInstruction<BRK>();
+			break;
+		}
 		case ADC::Immediate::value:
 		{
 			beginInstruction<ADC::Immediate>();
@@ -99,6 +110,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ADC::IndexedIndirect>(aCopy, value);
 			break;
 		}
+		case ADC::IndirectIndexed::value:
+		{
+			beginInstruction<ADC::IndirectIndexed>();
+			byte aCopy = state.a;
+			byte value = memory.fetchIndirectIndexed();
+			adc(value);
+			endInstruction<ADC::IndirectIndexed>(aCopy, value);
+			break;
+		}
 		case SBC::Immediate::value:
 		{
 			beginInstruction<SBC::Immediate>();
@@ -160,6 +180,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			byte value = memory.fetchIndexedIndirect();
 			sbc(value);
 			endInstruction<SBC::IndexedIndirect>(aCopy, value);
+			break;
+		}
+		case SBC::IndirectIndexed::value:
+		{
+			beginInstruction<SBC::IndirectIndexed>();
+			byte aCopy = state.a;
+			byte value = memory.fetchIndirectIndexed();
+			sbc(value);
+			endInstruction<SBC::IndirectIndexed>(aCopy, value);
 			break;
 		}
 		case INC::ZeroPage::value:
@@ -400,6 +429,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<EOR::IndexedIndirect>();
 			state.setA(state.a ^ memory.fetchIndexedIndirect());
 			endInstruction<EOR::IndexedIndirect>();
+			break;
+		}
+		case EOR::IndirectIndexed::value:
+		{
+			beginInstruction<EOR::IndirectIndexed>();
+			state.setA(state.a ^ memory.fetchIndirectIndexed());
+			endInstruction<EOR::IndirectIndexed>();
 			break;
 		}
 		case ASL::Accumulator::value:
@@ -692,11 +728,23 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<SEC>();
 			break;
 		}
-		case JMP::value:
+		case JMP::Absolute::value:
 		{
-			beginInstruction<JMP>();
+			beginInstruction<JMP::Absolute>();
 			state.pc = memory.addressAbsolute();
-			endInstruction<JMP>();
+			endInstruction<JMP::Absolute>();
+			break;
+		}
+		case JMP::Indirect::value:
+		{
+			// 6502 has a bug where there is no page cross on this instruction
+			beginInstruction<JMP::Indirect>();
+			MemAddress ial = memory.fetchNextMemAddress();
+			MemAddress iah = ial;
+			iah.addLow(1);
+			MemAddress indirect(memory.read(ial), memory.read(iah));
+			state.pc = indirect;
+			endInstruction<JMP::Indirect>();
 			break;
 		}
 		case BVC::value:
@@ -800,9 +848,9 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		}
 		case STA::IndirectIndexed::value:
 		{
-			exit(1);
 			beginInstruction<STA::IndirectIndexed>();
-			endInstruction<STA::IndirectIndexed, false>();
+			memory.writeIndirectIndexed(state.a);
+			endInstruction<STA::IndirectIndexed>();
 			break;
 		}
 		case STX::ZeroPage::value:
@@ -1011,6 +1059,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			using OP = CMP::IndexedIndirect;
 			beginInstruction<OP>();
 			const byte data = memory. fetchIndexedIndirect();
+			compare(state.a, data);
+			endInstruction<OP>(state.a, data);
+			break;
+		}
+		case CMP::IndirectIndexed::value:
+		{
+			using OP = CMP::IndirectIndexed;
+			beginInstruction<OP>();
+			const byte data = memory.fetchIndirectIndexed();
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;

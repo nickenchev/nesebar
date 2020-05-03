@@ -62,6 +62,7 @@ class Core
 	template<typename T>
 	constexpr inline void beginInstruction()
 	{
+		state.pageCrossCycles = 0;
 		state.cycles = T::cycles;
 		state.byteStep = T::byteSize;
 

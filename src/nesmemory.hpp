@@ -57,10 +57,8 @@ public:
 				}
 			}
 		}
-
 		return mapped;
 	}
-
 };
 
 #endif /* NESMEMORY_H */
