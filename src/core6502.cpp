@@ -67,7 +67,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<ADC::Absolute>();
 			byte aCopy = state.a;
-			byte data = memory.fetchAbsolute();
+			byte data = memory.fetchAbsolute().value;
 			adc(data);
 			endInstruction<ADC::Absolute>(aCopy, data);
 			break;
@@ -130,7 +130,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<SBC::Absolute>();
 			byte aCopy = state.a;
-			byte value = memory.fetchAbsolute();
+			byte value = memory.fetchAbsolute().value;
 			sbc(value);
 			endInstruction<SBC::Absolute>(aCopy, value);
 			break;
@@ -267,7 +267,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case ORA::Absolute::value:
 		{
 			beginInstruction<ORA::Absolute>();
-			state.setA(state.a | memory.fetchAbsolute());
+			state.setA(state.a | memory.fetchAbsolute().value);
 			endInstruction<ORA::Absolute>();
 			break;
 		}
@@ -316,7 +316,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case EOR::Absolute::value:
 		{
 			beginInstruction<EOR::Absolute>();
-			state.setA(state.a ^ memory.fetchAbsolute());
+			state.setA(state.a ^ memory.fetchAbsolute().value);
 			endInstruction<EOR::Absolute>();
 			break;
 		}
@@ -377,8 +377,17 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<LSR::ZeroPageX>();
 			MemAccess access = memory.fetchZeroPageX();
 			access.value = logicalShiftRight(access.value);
-			memory.writeZeroPage(access.address.low(), access.value);
-			endInstruction<LSR::ZeroPage>();
+			memory.writeZeroPageX(access.address.low(), access.value);
+			endInstruction<LSR::ZeroPageX>();
+			break;
+		}
+		case LSR::Absolute::value:
+		{
+			beginInstruction<LSR::Absolute>();
+			MemAccess access = memory.fetchAbsolute();
+			access.value = logicalShiftRight(access.value);
+			memory.writeAbsolute(access.address, access.value);
+			endInstruction<LSR::Absolute>();
 			break;
 		}
 		case ROL::Accumulator::value:
@@ -468,7 +477,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case BIT::Absolute::value:
 		{
 			beginInstruction<BIT::Absolute>();
-			bit(memory.fetchAbsolute());
+			bit(memory.fetchAbsolute().value);
 			endInstruction<BIT::Absolute>();
 			break;
 		}
@@ -496,7 +505,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case AND::Absolute::value:
 		{
 			beginInstruction<AND::Absolute>();
-			state.setA(state.a & memory.fetchAbsolute());
+			state.setA(state.a & memory.fetchAbsolute().value);
 			endInstruction<AND::Absolute>();
 			break;
 		}
@@ -693,7 +702,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDX::Absolute::value:
 		{
 			beginInstruction<LDX::Absolute>();
-			state.setX(memory.fetchAbsolute());
+			state.setX(memory.fetchAbsolute().value);
 			endInstruction<LDX::Absolute>();
 			break;
 		}
@@ -721,7 +730,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDY::Absolute::value:
 		{
 			beginInstruction<LDY::Absolute>();
-			state.setY(memory.fetchAbsolute());
+			state.setY(memory.fetchAbsolute().value);
 			endInstruction<LDY::Absolute>();
 			break;
 		}
@@ -749,7 +758,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDA::Absolute::value:
 		{
 			beginInstruction<LDA::Absolute>();
-			state.setA(memory.fetchAbsolute());
+			state.setA(memory.fetchAbsolute().value);
 			endInstruction<LDA::Absolute>();
 			break;
 		}
@@ -812,7 +821,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::Absolute;
 			beginInstruction<OP>();
-			const byte data = memory.fetchAbsolute();
+			const byte data = memory.fetchAbsolute().value;
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;
@@ -866,7 +875,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPX::Absolute;
 			beginInstruction<OP>();
-			byte data = memory.fetchAbsolute();
+			byte data = memory.fetchAbsolute().value;
 			compare(state.x, data);
 			endInstruction<OP>(state.x, data);
 			break;
@@ -893,7 +902,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CPY::Absolute;
 			beginInstruction<OP>();
-			byte data = memory.fetchAbsolute();
+			byte data = memory.fetchAbsolute().value;
 			compare(state.y, data);
 			endInstruction<OP>(state.y, data);
 			break;
