@@ -11,6 +11,23 @@
 
 namespace mos6502
 {
+	enum class AddressMode
+	{
+		Implicit,
+		Accumulator,
+		Immediate,
+		ZeroPage,
+		ZeroPageX,
+		ZeroPageY,
+		Relative,
+		Absolute,
+		AbsoluteX,
+		AbsoluteY,
+		Indirect,
+		IndexedIndirect,
+		IndirectIndexed
+	};
+
 	struct MemAccess
 	{
 		MemAddress address;
@@ -59,7 +76,6 @@ namespace mos6502
 		{
 			return MemAddress(read(address), read(address + 1));
 		}
-
 		
 		byte &operator[](const MemAddress &address)
 		{
@@ -163,11 +179,16 @@ namespace mos6502
 
 			write(MemAddress(address), value);
 		}
+		MemAddress addressZeroPageIndexed(byte index)
+		{
+			MemAddress address{static_cast<byte>((fetchByte() + index) % 256)};
+			return address;
+		}
 		byte fetchZeroPageIndexed(byte index)
 		{
-			byte address{static_cast<byte>((fetchByte() + index) % 256)};
-			byte data = read(MemAddress(address));
-			std::cout << " $" << std::hex << std::setw(2) << static_cast<int>(address)
+			MemAddress address = addressZeroPageIndexed(index);
+			byte data = read(address);
+			std::cout << " $" << std::hex << std::setw(2) << static_cast<int>(address.value)
 					  << " = " << static_cast<int>(data);
 			return data;
 		}
@@ -175,6 +196,12 @@ namespace mos6502
 		{
 			return fetchZeroPageIndexed(cpuState.x);
 		}
+		void writeZeroPageX(byte value)
+		{
+			MemAddress address = addressZeroPageIndexed(cpuState.x);
+			write(address, value);
+		}
+		
 		byte fetchZeroPageY()
 		{
 			return fetchZeroPageIndexed(cpuState.y);

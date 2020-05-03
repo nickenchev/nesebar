@@ -202,6 +202,8 @@ namespace mos6502 { namespace opcodes
 	{
 		static constexpr const char *group = "STY";
 		struct ZeroPage: Opcode<0x84, 2, 3, None> { static inline Asm name{group}; };
+		struct ZeroPageX: Opcode<0x94, 2, 4, None> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0x8c, 3, 4, None> { static inline Asm name{group}; };
 	}
 
 	namespace STA

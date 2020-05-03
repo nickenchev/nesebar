@@ -418,6 +418,20 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<STY::ZeroPage>();
 			break;
 		}
+		case STY::ZeroPageX::value:
+		{
+			beginInstruction<STY::ZeroPageX>();
+			memory.writeZeroPageX(state.y);
+			endInstruction<STY::ZeroPageX>();
+			break;
+		}
+		case STY::Absolute::value:
+		{
+			beginInstruction<STY::Absolute>();
+			memory.writeAbsolute(state.y);
+			endInstruction<STY::Absolute>();
+			break;
+		}
 		case STA::ZeroPage::value:
 		{
 			beginInstruction<STA::ZeroPage>();
@@ -535,6 +549,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<LDY::ZeroPage>();
 			state.setY(memory.fetchZeroPage().value);
 			endInstruction<LDY::ZeroPage>();
+			break;
+		}
+		case LDY::Absolute::value:
+		{
+			beginInstruction<LDY::Absolute>();
+			state.setY(memory.fetchAbsolute());
+			endInstruction<LDY::Absolute>();
 			break;
 		}
 		case LDA::Immediate::value:
