@@ -171,6 +171,33 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<INC::ZeroPage>();
 			break;
 		}
+		case INC::ZeroPageX::value:
+		{
+			beginInstruction<INC::ZeroPageX>();
+			MemAccess access = memory.fetchZeroPageX();
+			memory.writeZeroPageX(access.address, ++access.value);
+			state.opcodeResult = access.value;
+			endInstruction<INC::ZeroPageX>();
+			break;
+		}
+		case INC::Absolute::value:
+		{
+			beginInstruction<INC::Absolute>();
+			MemAccess access = memory.fetchAbsolute();
+			memory.writeAbsolute(access.address, ++access.value);
+			state.opcodeResult = access.value;
+			endInstruction<INC::Absolute>();
+			break;
+		}
+		case INC::AbsoluteX::value:
+		{
+			beginInstruction<INC::AbsoluteX>();
+			MemAccess access = memory.fetchAbsoluteX();
+			memory.writeAbsoluteX(access.address, ++access.value);
+			state.opcodeResult = access.value;
+			endInstruction<INC::AbsoluteX>();
+			break;
+		}
 		case DEC::ZeroPage::value:
 		{
 			beginInstruction<DEC::ZeroPage>();
@@ -178,6 +205,33 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			memory.writeZeroPage(access.address, --access.value);
 			state.opcodeResult = access.value;
 			endInstruction<DEC::ZeroPage>();
+			break;
+		}
+		case DEC::ZeroPageX::value:
+		{
+			beginInstruction<DEC::ZeroPageX>();
+			MemAccess access = memory.fetchZeroPageX();
+			memory.writeZeroPageX(access.address, --access.value);
+			state.opcodeResult = access.value;
+			endInstruction<DEC::ZeroPageX>();
+			break;
+		}
+		case DEC::Absolute::value:
+		{
+			beginInstruction<DEC::Absolute>();
+			MemAccess access = memory.fetchAbsolute();
+			memory.writeAbsolute(access.address, --access.value);
+			state.opcodeResult = access.value;
+			endInstruction<DEC::Absolute>();
+			break;
+		}
+		case DEC::AbsoluteX::value:
+		{
+			beginInstruction<DEC::AbsoluteX>();
+			MemAccess access = memory.fetchAbsoluteX();
+			memory.writeAbsoluteX(access.address, --access.value);
+			state.opcodeResult = access.value;
+			endInstruction<DEC::AbsoluteX>();
 			break;
 		}
 		case INX::value:
