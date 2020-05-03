@@ -140,17 +140,22 @@ namespace mos6502
 		{
 			write(address, value);
 		}
-		byte fetchAbsoluteX()
+		MemAccess fetchAbsoluteX()
 		{
 			MemAddress addr = fetchNextMemAddress();
 			if (addr.add(cpuState.x)) ++cpuState.pageCrossCycles;
-			return read(addr);
+			return MemAccess(addr, read(addr));
 		}
 		void writeAbsoluteX(byte value)
 		{
 			MemAddress addr = fetchNextMemAddress();
 			if (addr.add(cpuState.x)) ++cpuState.pageCrossCycles;
 			write(addr, value);
+		}
+		void writeAbsoluteX(MemAddress address, byte value)
+		{
+			if (address.add(cpuState.x)) ++cpuState.pageCrossCycles;
+			write(address, value);
 		}
 		byte fetchAbsoluteY()
 		{

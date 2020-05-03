@@ -76,7 +76,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<ADC::AbsoluteX>();
 			byte aCopy = state.a;
-			byte data = memory.fetchAbsoluteX();
+			byte data = memory.fetchAbsoluteX().value;
 			adc(data);
 			endInstruction<ADC::AbsoluteX>(aCopy, data);
 			break;
@@ -139,7 +139,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<SBC::AbsoluteX>();
 			byte aCopy = state.a;
-			byte value = memory.fetchAbsoluteX();
+			byte value = memory.fetchAbsoluteX().value;
 			sbc(value);
 			endInstruction<SBC::AbsoluteX>(aCopy, value);
 			break;
@@ -274,7 +274,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case ORA::AbsoluteX::value:
 		{
 			beginInstruction<ORA::AbsoluteX>();
-			state.setA(state.a | memory.fetchAbsoluteX());
+			state.setA(state.a | memory.fetchAbsoluteX().value);
 			endInstruction<ORA::AbsoluteX>();
 			break;
 		}
@@ -323,7 +323,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case EOR::AbsoluteX::value:
 		{
 			beginInstruction<EOR::AbsoluteX>();
-			state.setA(state.a ^ memory.fetchAbsoluteX());
+			state.setA(state.a ^ memory.fetchAbsoluteX().value);
 			endInstruction<EOR::AbsoluteX>();
 			break;
 		}
@@ -388,6 +388,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			access.value = logicalShiftRight(access.value);
 			memory.writeAbsolute(access.address, access.value);
 			endInstruction<LSR::Absolute>();
+			break;
+		}
+		case LSR::AbsoluteX::value:
+		{
+			beginInstruction<LSR::AbsoluteX>();
+			MemAccess access = memory.fetchAbsoluteX();
+			access.value = logicalShiftRight(access.value);
+			memory.writeAbsoluteX(access.address, access.value);
+			endInstruction<LSR::AbsoluteX>();
 			break;
 		}
 		case ROL::Accumulator::value:
@@ -512,7 +521,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case AND::AbsoluteX::value:
 		{
 			beginInstruction<AND::AbsoluteX>();
-			state.setA(state.a & memory.fetchAbsoluteX());
+			state.setA(state.a & memory.fetchAbsoluteX().value);
 			endInstruction<AND::AbsoluteX>();
 			break;
 		}
@@ -765,7 +774,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDA::AbsoluteX::value:
 		{
 			beginInstruction<LDA::AbsoluteX>();
-			state.setA(memory.fetchAbsoluteX());
+			state.setA(memory.fetchAbsoluteX().value);
 			endInstruction<LDA::AbsoluteX>();
 			break;
 		}
@@ -830,7 +839,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::AbsoluteX;
 			beginInstruction<OP>();
-			const byte data = memory.fetchAbsoluteX();
+			const byte data = memory.fetchAbsoluteX().value;
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;
