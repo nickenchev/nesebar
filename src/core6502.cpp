@@ -222,7 +222,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<INC::AbsoluteX>();
 			MemAccess access = memory.fetchAbsoluteX();
-			memory.writeAbsoluteX(access.address, ++access.value);
+			memory.write(access.address, ++access.value);
 			state.opcodeResult = access.value;
 			endInstruction<INC::AbsoluteX>();
 			break;
@@ -258,7 +258,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<DEC::AbsoluteX>();
 			MemAccess access = memory.fetchAbsoluteX();
-			memory.writeAbsoluteX(access.address, --access.value);
+			memory.write(access.address, --access.value);
 			state.opcodeResult = access.value;
 			endInstruction<DEC::AbsoluteX>();
 			break;
@@ -473,7 +473,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<ASL::AbsoluteX>();
 			MemAccess access = memory.fetchAbsoluteX();
-			memory.writeAbsoluteX(access.address, arithmeticShiftLeft(access.value));
+			memory.write(access.address, arithmeticShiftLeft(access.value));
 			endInstruction<ASL::AbsoluteX>();
 			break;
 		}
@@ -559,7 +559,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<ROL::AbsoluteX>();
 			MemAccess access = memory.fetchAbsoluteX();
 			state.opcodeResult = rotateLeft(access.value);
-			memory.writeAbsoluteX(access.address, state.opcodeResult);
+			memory.write(access.address, state.opcodeResult);
 			endInstruction<ROL::AbsoluteX>();
 			break;
 		}
@@ -602,7 +602,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<ROR::AbsoluteX>();
 			MemAccess access = memory.fetchAbsoluteX();
 			state.opcodeResult = rotateRight(access.value);
-			memory.writeAbsoluteX(access.address, state.opcodeResult);
+			memory.write(access.address, state.opcodeResult);
 			endInstruction<ROR::AbsoluteX>();
 			break;
 		}
