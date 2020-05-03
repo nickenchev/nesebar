@@ -222,11 +222,18 @@ class Core
 		}
 	}
 
-	// compare
+	// compare and bit testing
 	inline void compare(byte &reg, const byte &data)
 	{
 		state.opcodeResult = reg - data;
 		updateStatus(Status::Carry, data <= reg);
+	}
+
+	inline void bit(byte operand)
+	{
+		updateStatus(Status::NegativeResult, checkBit(operand, status_int(Status::NegativeResult)));
+		updateStatus(Status::Overflow, checkBit(operand, status_int(Status::Overflow)));
+		state.opcodeResult = operand & state.a;
 	}
 
 	// branching

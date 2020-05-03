@@ -180,6 +180,7 @@ namespace mos6502 { namespace opcodes
 		static constexpr byte all = N|V|Z;
 		static constexpr byte flags = N|V;
 		struct ZeroPage: Opcode<0x24, 2, 3, all, flags> { static inline Asm name{group}; };
+		struct Absolute: Opcode<0x2c, 3, 4, all, flags> { static inline Asm name{group}; };
 	}
 
 	namespace AND

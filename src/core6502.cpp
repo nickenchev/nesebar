@@ -185,6 +185,34 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<ORA::ZeroPage>();
 			break;
 		}
+		case ORA::ZeroPageX::value:
+		{
+			beginInstruction<ORA::ZeroPageX>();
+			state.setA(state.a | memory.fetchZeroPageX());
+			endInstruction<ORA::ZeroPageX>();
+			break;
+		}
+		case ORA::Absolute::value:
+		{
+			beginInstruction<ORA::Absolute>();
+			state.setA(state.a | memory.fetchAbsolute());
+			endInstruction<ORA::Absolute>();
+			break;
+		}
+		case ORA::AbsoluteX::value:
+		{
+			beginInstruction<ORA::AbsoluteX>();
+			state.setA(state.a | memory.fetchAbsoluteX());
+			endInstruction<ORA::AbsoluteX>();
+			break;
+		}
+		case ORA::AbsoluteY::value:
+		{
+			beginInstruction<ORA::AbsoluteY>();
+			state.setA(state.a | memory.fetchAbsoluteY());
+			endInstruction<ORA::AbsoluteY>();
+			break;
+		}
         case ORA::IndexedIndirect::value:
 		{
 			beginInstruction<ORA::IndexedIndirect>();
@@ -324,13 +352,15 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case BIT::ZeroPage::value:
 		{
 			beginInstruction<BIT::ZeroPage>();
-			byte operand = memory.fetchZeroPage().value;
-			updateStatus(Status::NegativeResult,
-						 checkBit(operand, status_int(Status::NegativeResult)));
-			updateStatus(Status::Overflow,
-						 checkBit(operand, status_int(Status::Overflow)));
-			state.opcodeResult = operand & state.a;
+			bit(memory.fetchZeroPage().value);
 			endInstruction<BIT::ZeroPage>();
+			break;
+		}
+		case BIT::Absolute::value:
+		{
+			beginInstruction<BIT::Absolute>();
+			bit(memory.fetchAbsolute());
+			endInstruction<BIT::Absolute>();
 			break;
 		}
 		case AND::Immediate::value:
