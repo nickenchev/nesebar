@@ -204,7 +204,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<INC::ZeroPageX>();
 			MemAccess access = memory.fetchZeroPageX();
-			memory.writeZeroPageX(access.address, ++access.value);
+			memory.write(access.address, ++access.value);
 			state.opcodeResult = access.value;
 			endInstruction<INC::ZeroPageX>();
 			break;
@@ -240,7 +240,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<DEC::ZeroPageX>();
 			MemAccess access = memory.fetchZeroPageX();
-			memory.writeZeroPageX(access.address, --access.value);
+			memory.write(access.address, --access.value);
 			state.opcodeResult = access.value;
 			endInstruction<DEC::ZeroPageX>();
 			break;
@@ -457,7 +457,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<ASL::ZeroPageX>();
 			MemAccess access = memory.fetchZeroPageX();
-			memory.writeZeroPageX(access.address, arithmeticShiftLeft(access.value));
+			memory.write(access.address, arithmeticShiftLeft(access.value));
 			endInstruction<ASL::ZeroPageX>();
 			break;
 		}
@@ -498,7 +498,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<LSR::ZeroPageX>();
 			MemAccess access = memory.fetchZeroPageX();
 			access.value = logicalShiftRight(access.value);
-			memory.writeZeroPageX(access.address, access.value);
+			memory.write(access.address, access.value);
 			endInstruction<LSR::ZeroPageX>();
 			break;
 		}
@@ -541,7 +541,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<ROL::ZeroPageX>();
 			MemAccess access = memory.fetchZeroPageX();
 			state.opcodeResult = rotateLeft(access.value);
-			memory.writeZeroPageX(access.address, state.opcodeResult);
+			memory.write(access.address, state.opcodeResult);
 			endInstruction<ROL::ZeroPageX>();
 			break;
 		}
@@ -584,7 +584,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<ROR::ZeroPageX>();
 			MemAccess access = memory.fetchZeroPageX();
 			state.opcodeResult = rotateRight(access.value);
-			memory.writeZeroPageX(access.address, state.opcodeResult);
+			memory.write(access.address, state.opcodeResult);
 			endInstruction<ROR::ZeroPageX>();
 			break;
 		}
@@ -818,6 +818,13 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<STA::ZeroPage>();
 			break;
 		}
+		case STA::ZeroPageX::value:
+		{
+			beginInstruction<STA::ZeroPageX>();
+			memory.writeZeroPageX(state.a);
+			endInstruction<STA::ZeroPageX>();
+			break;
+		}
 		case STA::Absolute::value:
 		{
 			beginInstruction<STA::Absolute>();
@@ -930,11 +937,25 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<LDY::ZeroPage>();
 			break;
 		}
+		case LDY::ZeroPageX::value:
+		{
+			beginInstruction<LDY::ZeroPageX>();
+			state.setY(memory.fetchZeroPageX().value);
+			endInstruction<LDY::ZeroPageX>();
+			break;
+		}
 		case LDY::Absolute::value:
 		{
 			beginInstruction<LDY::Absolute>();
 			state.setY(memory.fetchAbsolute().value);
 			endInstruction<LDY::Absolute>();
+			break;
+		}
+		case LDY::AbsoluteX::value:
+		{
+			beginInstruction<LDY::AbsoluteX>();
+			state.setY(memory.fetchAbsoluteX().value);
+			endInstruction<LDY::AbsoluteX>();
 			break;
 		}
 		case LDA::Immediate::value:
