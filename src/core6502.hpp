@@ -77,6 +77,14 @@ class Core
 		if constexpr (addPageCrossCycles) state.totalCycles += state.pageCrossCycles;
 	}
 
+	template<typename T>
+	constexpr inline void noOperation()
+	{
+		beginInstruction<T>();
+		state.pc += T::byteSize - 1;
+		endInstruction<T>();
+	}
+
 	inline byte logicalShiftRight(byte value)
 	{
 		byte result = value >> 1;

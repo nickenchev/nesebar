@@ -1182,12 +1182,6 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<CLV>();
 			break;
 		}
-		case NOP::value:
-		{
-			beginInstruction<NOP>();
-			endInstruction<NOP>();
-			break;
-		}
 		case BEQ::value:
 		{
 			beginInstruction<BEQ>();
@@ -1200,6 +1194,127 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			beginInstruction<SED>();
 			updateStatus(Status::DecimalMode, true);
 			endInstruction<SED>();
+			break;
+		}
+		case NOP::Implied::Official::value:
+		{
+			beginInstruction<NOP::Implied::Official>();
+			endInstruction<NOP::Implied::Official>();
+			break;
+		}
+		case NOP::ZeroPage::_1::value:
+		{
+			noOperation<NOP::ZeroPage::_1>();
+			break;
+		}
+		case NOP::ZeroPage::_2::value:
+		{
+			noOperation<NOP::ZeroPage::_2>();
+			break;
+		}
+		case NOP::ZeroPage::_3::value:
+		{
+			noOperation<NOP::ZeroPage::_3>();
+			break;
+		}
+		case NOP::Absolute::_1::value:
+		{
+			noOperation<NOP::Absolute::_1>();
+			break;
+		}
+		case NOP::ZeroPageX::_1::value:
+		{
+			noOperation<NOP::ZeroPageX::_1>();
+			break;
+		}
+		case NOP::ZeroPageX::_2::value:
+		{
+			noOperation<NOP::ZeroPageX::_2>();
+			break;
+		}
+		case NOP::ZeroPageX::_3::value:
+		{
+			noOperation<NOP::ZeroPageX::_3>();
+			break;
+		}
+		case NOP::ZeroPageX::_4::value:
+		{
+			noOperation<NOP::ZeroPageX::_4>();
+			break;
+		}
+		case NOP::ZeroPageX::_5::value:
+		{
+			noOperation<NOP::ZeroPageX::_5>();
+			break;
+		}
+		case NOP::ZeroPageX::_6::value:
+		{
+			noOperation<NOP::ZeroPageX::_6>();
+			break;
+		}
+		case NOP::Implied::_1::value:
+		{
+			noOperation<NOP::Implied::_1>();
+			break;
+		}
+		case NOP::Implied::_2::value:
+		{
+			noOperation<NOP::Implied::_2>();
+			break;
+		}
+		case NOP::Implied::_3::value:
+		{
+			noOperation<NOP::Implied::_3>();
+			break;
+		}
+		case NOP::Implied::_4::value:
+		{
+			noOperation<NOP::Implied::_4>();
+			break;
+		}
+		case NOP::Implied::_5::value:
+		{
+			noOperation<NOP::Implied::_5>();
+			break;
+		}
+		case NOP::Implied::_6::value:
+		{
+			noOperation<NOP::Implied::_6>();
+			break;
+		}
+		case NOP::Immediate::value:
+		{
+			noOperation<NOP::Immediate>();
+			break;
+		}
+		case NOP::AbsoluteX::_1::value:
+		{
+			noOperation<NOP::AbsoluteX::_1>();
+			break;
+		}
+		case NOP::AbsoluteX::_2::value:
+		{
+			noOperation<NOP::AbsoluteX::_2>();
+			break;
+		}
+		case NOP::AbsoluteX::_3::value:
+		{
+			noOperation<NOP::AbsoluteX::_3>();
+			break;
+		}
+		case NOP::AbsoluteX::_4::value:
+		{
+			noOperation<NOP::AbsoluteX::_4>();
+			break;
+		}
+		case NOP::AbsoluteX::_5::value:
+		{
+			noOperation<NOP::AbsoluteX::_5>();
+			break;
+		}
+		case NOP::AbsoluteX::_6::value:
+		{
+			noOperation<NOP::AbsoluteX::_6>();
 			break;
 		}
 		default:

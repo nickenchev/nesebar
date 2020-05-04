@@ -309,7 +309,51 @@ namespace mos6502 { namespace opcodes
 		struct Absolute : Opcode<0xcc, 3, 4, flags, manual> { static inline Asm name{group}; };
 	}
 
-	struct NOP : Opcode<0xea, 1, 2, None> { static inline Asm name{"NOP"}; };
+	namespace NOP
+	{
+		static constexpr const char *group = "*NOP";
+
+		namespace ZeroPage
+		{
+			struct _1 : Opcode<0x04, 2, 3, None> { static inline Asm name{group}; };
+			struct _2 : Opcode<0x44, 2, 3, None> { static inline Asm name{group}; };
+			struct _3 : Opcode<0x64, 2, 3, None> { static inline Asm name{group}; };
+		}
+		namespace Absolute
+		{
+			struct _1 : Opcode<0x0c, 3, 4, None> { static inline Asm name{group}; };
+		}
+		namespace ZeroPageX
+		{
+			struct _1 : Opcode<0x14, 2, 4, None> { static inline Asm name{group}; };
+			struct _2 : Opcode<0x34, 2, 4, None> { static inline Asm name{group}; };
+			struct _3 : Opcode<0x54, 2, 4, None> { static inline Asm name{group}; };
+			struct _4 : Opcode<0x74, 2, 4, None> { static inline Asm name{group}; };
+			struct _5 : Opcode<0xd4, 2, 4, None> { static inline Asm name{group}; };
+			struct _6 : Opcode<0xf4, 2, 4, None> { static inline Asm name{group}; };
+		}
+		namespace Implied
+		{
+			struct Official : Opcode<0xea, 1, 2, None> { static inline Asm name{"NOP"}; };
+			struct _1 : Opcode<0x1a, 1, 2, None> { static inline Asm name{group}; };
+			struct _2 : Opcode<0x3a, 1, 2, None> { static inline Asm name{group}; };
+			struct _3 : Opcode<0x5a, 1, 2, None> { static inline Asm name{group}; };
+			struct _4 : Opcode<0x7a, 1, 2, None> { static inline Asm name{group}; };
+			struct _5 : Opcode<0xda, 1, 2, None> { static inline Asm name{group}; };
+			struct _6 : Opcode<0xfa, 1, 2, None> { static inline Asm name{group}; };
+		}
+		struct Immediate : Opcode<0x80, 2, 2, None> { static inline Asm name{group}; };
+
+		namespace AbsoluteX
+		{
+			struct _1 : Opcode<0x1c, 3, 5, None> { static inline Asm name{group}; };
+			struct _2 : Opcode<0x3c, 3, 5, None> { static inline Asm name{group}; };
+			struct _3 : Opcode<0x5c, 3, 5, None> { static inline Asm name{group}; };
+			struct _4 : Opcode<0x7c, 3, 5, None> { static inline Asm name{group}; };
+			struct _5 : Opcode<0xdc, 3, 5, None> { static inline Asm name{group}; };
+			struct _6 : Opcode<0xfc, 3, 5, None> { static inline Asm name{group}; };
+		}
+	}
 };
 };
 
