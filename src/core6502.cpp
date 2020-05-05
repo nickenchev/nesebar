@@ -79,20 +79,12 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		}
 		case ADC::IndexedIndirect::value:
 		{
-			beginInstruction<ADC::IndexedIndirect>();
-			byte aCopy = state.a;
-			byte value = memory.fetchIndexedIndirect();
-			adc(value);
-			endInstruction<ADC::IndexedIndirect>(aCopy, value);
+			perform<ADC::IndexedIndirect>([this](const MemAccess access) { adc(access.value); });
 			break;
 		}
 		case ADC::IndirectIndexed::value:
 		{
-			beginInstruction<ADC::IndirectIndexed>();
-			byte aCopy = state.a;
-			byte value = memory.fetchIndirectIndexed();
-			adc(value);
-			endInstruction<ADC::IndirectIndexed>(aCopy, value);
+			perform<ADC::IndirectIndexed>([this](const MemAccess access) { adc(access.value); });
 			break;
 		}
 		case SBC::Immediate::value:

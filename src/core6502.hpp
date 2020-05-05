@@ -91,6 +91,14 @@ class Core
 		{
 			body(memory.fetchAbsoluteY());
 		}
+		else if constexpr (T::addressingMode == Addressing::Mode::IndexedIndirect)
+		{
+			body(memory.fetchIndexedIndirect());
+		}
+		else if constexpr (T::addressingMode == Addressing::Mode::IndirectIndexed)
+		{
+			body(memory.fetchIndirectIndexed());
+		}
 		endInstruction<T, addPageCrossCycles>();
 	}
 
