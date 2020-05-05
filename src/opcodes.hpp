@@ -52,7 +52,7 @@ namespace mos6502 { namespace opcodes
 		static constexpr byte flags = N|Z;
 		struct ZeroPage: Addr::ZeroPage<0xe6, 2, 5, flags> { static inline Asm name{group}; };
 		struct ZeroPageX: Addr::ZeroPageX<0xf6, 2, 6, flags> { static inline Asm name{group}; };
-		struct Absolute: Addr::ZeroPageY<0xee, 3, 6, flags> { static inline Asm name{group}; };
+		struct Absolute: Addr::Absolute<0xee, 3, 6, flags> { static inline Asm name{group}; };
 		struct AbsoluteX: Addr::AbsoluteX<0xfe, 3, 7, flags> { static inline Asm name{group}; };
 	}
 
