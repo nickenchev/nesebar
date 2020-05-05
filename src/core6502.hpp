@@ -59,47 +59,51 @@ class Core
 		return memory.fetchByte();
 	}
 
-	template<typename T, typename F, bool addPageCrossCycles = true>
+	template<typename Opcode, typename F, bool addPageCrossCycles = true>
 	constexpr inline void perform(F body)
 	{
-		beginInstruction<T>();
-		if constexpr (T::addressingMode == Addressing::Mode::Immediate)
+		beginInstruction<Opcode>();
+		if constexpr (Opcode::addressingMode == Addressing::Mode::Immediate)
 		{
 			body(memory.fetchImmediate());
 		}
-		else if constexpr (T::addressingMode == Addressing::Mode::ZeroPage)
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::ZeroPage)
 		{
 			body(memory.fetchZeroPage());
 		}
-		else if constexpr (T::addressingMode == Addressing::Mode::ZeroPageX)
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::ZeroPageX)
 		{
 			body(memory.fetchZeroPageX());
 		}
-		else if constexpr (T::addressingMode == Addressing::Mode::ZeroPageY)
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::ZeroPageY)
 		{
 			body(memory.fetchZeroPageY());
 		}
-		else if constexpr (T::addressingMode == Addressing::Mode::Absolute)
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::Absolute)
 		{
 			body(memory.fetchAbsolute());
 		}
-		else if constexpr (T::addressingMode == Addressing::Mode::AbsoluteX)
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::AbsoluteX)
 		{
 			body(memory.fetchAbsoluteX());
 		}
-		else if constexpr (T::addressingMode == Addressing::Mode::AbsoluteY)
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::AbsoluteY)
 		{
 			body(memory.fetchAbsoluteY());
 		}
-		else if constexpr (T::addressingMode == Addressing::Mode::IndexedIndirect)
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::IndexedIndirect)
 		{
 			body(memory.fetchIndexedIndirect());
 		}
-		else if constexpr (T::addressingMode == Addressing::Mode::IndirectIndexed)
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::IndirectIndexed)
 		{
 			body(memory.fetchIndirectIndexed());
 		}
-		endInstruction<T, addPageCrossCycles>();
+		else
+		{
+			exit(EXIT_FAILURE); // invalid addressing mode
+		}
+		endInstruction<Opcode, addPageCrossCycles>();
 	}
 
 	template<typename T>
