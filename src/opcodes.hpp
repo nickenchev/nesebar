@@ -346,12 +346,12 @@ namespace mos6502 { namespace opcodes
 
 		namespace AbsoluteX
 		{
-			struct _1 : Opcode<0x1c, 3, 5, None> { static inline Asm name{group}; };
-			struct _2 : Opcode<0x3c, 3, 5, None> { static inline Asm name{group}; };
-			struct _3 : Opcode<0x5c, 3, 5, None> { static inline Asm name{group}; };
-			struct _4 : Opcode<0x7c, 3, 5, None> { static inline Asm name{group}; };
-			struct _5 : Opcode<0xdc, 3, 5, None> { static inline Asm name{group}; };
-			struct _6 : Opcode<0xfc, 3, 5, None> { static inline Asm name{group}; };
+			struct _1 : Opcode<0x1c, 3, 4, None> { static inline Asm name{group}; };
+			struct _2 : Opcode<0x3c, 3, 4, None> { static inline Asm name{group}; };
+			struct _3 : Opcode<0x5c, 3, 4, None> { static inline Asm name{group}; };
+			struct _4 : Opcode<0x7c, 3, 4, None> { static inline Asm name{group}; };
+			struct _5 : Opcode<0xdc, 3, 4, None> { static inline Asm name{group}; };
+			struct _6 : Opcode<0xfc, 3, 4, None> { static inline Asm name{group}; };
 		}
 	}
 };

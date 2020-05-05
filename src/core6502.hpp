@@ -77,11 +77,18 @@ class Core
 		if constexpr (addPageCrossCycles) state.totalCycles += state.pageCrossCycles;
 	}
 
+	template<typename T, typename F>
+	constexpr inline void noOperation(F body)
+	{
+		beginInstruction<T>();
+		body();
+		endInstruction<T>();
+	}
+	
 	template<typename T>
 	constexpr inline void noOperation()
 	{
 		beginInstruction<T>();
-		state.pc += T::byteSize - 1;
 		endInstruction<T>();
 	}
 

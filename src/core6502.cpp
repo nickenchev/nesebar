@@ -1204,52 +1204,52 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		}
 		case NOP::ZeroPage::_1::value:
 		{
-			noOperation<NOP::ZeroPage::_1>();
+			noOperation<NOP::ZeroPage::_1>([this]() { memory.fetchZeroPage(); });
 			break;
 		}
 		case NOP::ZeroPage::_2::value:
 		{
-			noOperation<NOP::ZeroPage::_2>();
+			noOperation<NOP::ZeroPage::_2>([this]() { memory.fetchZeroPage(); });
 			break;
 		}
 		case NOP::ZeroPage::_3::value:
 		{
-			noOperation<NOP::ZeroPage::_3>();
+			noOperation<NOP::ZeroPage::_3>([this]() { memory.fetchZeroPage(); });
 			break;
 		}
 		case NOP::Absolute::_1::value:
 		{
-			noOperation<NOP::Absolute::_1>();
+			noOperation<NOP::Absolute::_1>([this]() { memory.fetchAbsolute(); });
 			break;
 		}
 		case NOP::ZeroPageX::_1::value:
 		{
-			noOperation<NOP::ZeroPageX::_1>();
+			noOperation<NOP::ZeroPageX::_1>([this]() { memory.fetchZeroPageX(); });
 			break;
 		}
 		case NOP::ZeroPageX::_2::value:
 		{
-			noOperation<NOP::ZeroPageX::_2>();
+			noOperation<NOP::ZeroPageX::_2>([this]() { memory.fetchZeroPageX(); });
 			break;
 		}
 		case NOP::ZeroPageX::_3::value:
 		{
-			noOperation<NOP::ZeroPageX::_3>();
+			noOperation<NOP::ZeroPageX::_3>([this]() { memory.fetchZeroPageX(); });
 			break;
 		}
 		case NOP::ZeroPageX::_4::value:
 		{
-			noOperation<NOP::ZeroPageX::_4>();
+			noOperation<NOP::ZeroPageX::_4>([this]() { memory.fetchZeroPageX(); });
 			break;
 		}
 		case NOP::ZeroPageX::_5::value:
 		{
-			noOperation<NOP::ZeroPageX::_5>();
+			noOperation<NOP::ZeroPageX::_5>([this]() { memory.fetchZeroPageX(); });
 			break;
 		}
 		case NOP::ZeroPageX::_6::value:
 		{
-			noOperation<NOP::ZeroPageX::_6>();
+			noOperation<NOP::ZeroPageX::_6>([this]() { memory.fetchZeroPageX(); });
 			break;
 		}
 		case NOP::Implied::_1::value:
@@ -1284,37 +1284,37 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		}
 		case NOP::Immediate::value:
 		{
-			noOperation<NOP::Immediate>();
+			noOperation<NOP::Immediate>([this]() { memory.fetchImmediate(); });
 			break;
 		}
 		case NOP::AbsoluteX::_1::value:
 		{
-			noOperation<NOP::AbsoluteX::_1>();
+			noOperation<NOP::AbsoluteX::_1>([this]() { memory.fetchAbsoluteX(); });
 			break;
 		}
 		case NOP::AbsoluteX::_2::value:
 		{
-			noOperation<NOP::AbsoluteX::_2>();
+			noOperation<NOP::AbsoluteX::_2>([this]() { memory.fetchAbsoluteX(); });
 			break;
 		}
 		case NOP::AbsoluteX::_3::value:
 		{
-			noOperation<NOP::AbsoluteX::_3>();
+			noOperation<NOP::AbsoluteX::_3>([this]() { memory.fetchAbsoluteX(); });
 			break;
 		}
 		case NOP::AbsoluteX::_4::value:
 		{
-			noOperation<NOP::AbsoluteX::_4>();
+			noOperation<NOP::AbsoluteX::_4>([this]() { memory.fetchAbsoluteX(); });
 			break;
 		}
 		case NOP::AbsoluteX::_5::value:
 		{
-			noOperation<NOP::AbsoluteX::_5>();
+			noOperation<NOP::AbsoluteX::_5>([this]() { memory.fetchAbsoluteX(); });
 			break;
 		}
 		case NOP::AbsoluteX::_6::value:
 		{
-			noOperation<NOP::AbsoluteX::_6>();
+			noOperation<NOP::AbsoluteX::_6>([this]() { memory.fetchAbsoluteX(); });
 			break;
 		}
 		default:
