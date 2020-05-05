@@ -1285,6 +1285,20 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			noOperation<NOP::AbsoluteX::_6>([this]() { memory.fetchAbsoluteX(); });
 			break;
 		}
+		case LAX::ZeroPage::value:
+		{
+			perform<LAX::ZeroPage>([this](const MemAccess access) {
+				state.opcodeResult = state.a = state.x = access.value;
+			});
+			break;
+		}
+		case LAX::IndexedIndirect::value:
+		{
+			perform<LAX::IndexedIndirect>([this](const MemAccess access) {
+				state.opcodeResult = state.a = state.x = access.value;
+			});
+			break;
+		}
 		default:
 		{
 			std::cout << std::endl << std::hex << "Unsupported opcode \""
