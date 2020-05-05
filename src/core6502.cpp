@@ -1292,9 +1292,37 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			});
 			break;
 		}
+		case LAX::ZeroPageY::value:
+		{
+			perform<LAX::ZeroPageY>([this](const MemAccess access) {
+				state.opcodeResult = state.a = state.x = access.value;
+			});
+			break;
+		}
+		case LAX::Absolute::value:
+		{
+			perform<LAX::Absolute>([this](const MemAccess access) {
+				state.opcodeResult = state.a = state.x = access.value;
+			});
+			break;
+		}
+		case LAX::AbsoluteY::value:
+		{
+			perform<LAX::AbsoluteY>([this](const MemAccess access) {
+				state.opcodeResult = state.a = state.x = access.value;
+			});
+			break;
+		}
 		case LAX::IndexedIndirect::value:
 		{
 			perform<LAX::IndexedIndirect>([this](const MemAccess access) {
+				state.opcodeResult = state.a = state.x = access.value;
+			});
+			break;
+		}
+		case LAX::IndirectIndexed::value:
+		{
+			perform<LAX::IndirectIndexed>([this](const MemAccess access) {
 				state.opcodeResult = state.a = state.x = access.value;
 			});
 			break;

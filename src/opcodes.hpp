@@ -362,6 +362,9 @@ namespace mos6502 { namespace opcodes
 		static constexpr const char *group = "*LAX";
 		static constexpr byte flags = N|Z;
 		struct ZeroPage : Addr::ZeroPage<0xa7, 3, flags> { static inline Asm name{group}; };
+		struct ZeroPageY : Addr::ZeroPageY<0xb7, 4, flags> { static inline Asm name{group}; };
+		struct Absolute : Addr::Absolute<0xaf, 4, flags> { static inline Asm name{group}; };
+		struct AbsoluteY : Addr::AbsoluteY<0xbf, 4, flags> { static inline Asm name{group}; };
 		struct IndexedIndirect : Addr::IndexedIndirect<0xa3, 6, flags> { static inline Asm name{group}; };
 		struct IndirectIndexed : Addr::IndirectIndexed<0xb3, 5, flags> { static inline Asm name{group}; };
 	}
