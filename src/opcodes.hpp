@@ -355,14 +355,14 @@ namespace mos6502 { namespace opcodes
 			struct _5 : Addr::AbsoluteX<0xdc, 3, 4, None> { static inline Asm name{group}; };
 			struct _6 : Addr::AbsoluteX<0xfc, 3, 4, None> { static inline Asm name{group}; };
 		}
+	}
 
-		namespace LAX
-		{
-			static constexpr const char *group = "*LAX";
-			static constexpr byte flags = N|Z|C;
-			static constexpr byte manual = C;
-			struct Immediate : Addr::Immediate<0xc0, 2, 2, flags, manual> { static inline Asm name{group}; };
-		}
+	namespace LAX
+	{
+		static constexpr const char *group = "*LAX";
+		static constexpr byte flags = N|Z|C;
+		static constexpr byte manual = C;
+		struct IndexedIndirect : Addr::IndexedIndirect<0xa3, 2, 6, flags, manual> { static inline Asm name{group}; };
 	}
 };
 };
