@@ -41,7 +41,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			exit(1);
 			beginInstruction<BRK>();
 			stackPush(state.p);
-			byte throwAway = memory.fetchByte();
+			memory.fetchByte();
 			stackPushAddress(state.pc);
 			updateStatus(Status::InterruptDisable, true);
 			endInstruction<BRK>();
@@ -49,11 +49,9 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		}
 		case ADC::Immediate::value:
 		{
-			beginInstruction<ADC::Immediate>();
-			byte aCopy = state.a;
-			byte data = memory.fetchImmediate();
-			adc(data);
-			endInstruction<ADC::Immediate>(aCopy, data);
+			perform<ADC::Immediate>([this](const byte data) {
+				adc(data);
+			});
 			break;
 		}
 		case ADC::ZeroPage::value:
@@ -1196,10 +1194,10 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			endInstruction<SED>();
 			break;
 		}
-		case NOP::Implied::Official::value:
+		case NOP::Implicit::Official::value:
 		{
-			beginInstruction<NOP::Implied::Official>();
-			endInstruction<NOP::Implied::Official>();
+			beginInstruction<NOP::Implicit::Official>();
+			endInstruction<NOP::Implicit::Official>();
 			break;
 		}
 		case NOP::ZeroPage::_1::value:
@@ -1252,34 +1250,34 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			noOperation<NOP::ZeroPageX::_6>([this]() { memory.fetchZeroPageX(); });
 			break;
 		}
-		case NOP::Implied::_1::value:
+		case NOP::Implicit::_1::value:
 		{
-			noOperation<NOP::Implied::_1>();
+			noOperation<NOP::Implicit::_1>();
 			break;
 		}
-		case NOP::Implied::_2::value:
+		case NOP::Implicit::_2::value:
 		{
-			noOperation<NOP::Implied::_2>();
+			noOperation<NOP::Implicit::_2>();
 			break;
 		}
-		case NOP::Implied::_3::value:
+		case NOP::Implicit::_3::value:
 		{
-			noOperation<NOP::Implied::_3>();
+			noOperation<NOP::Implicit::_3>();
 			break;
 		}
-		case NOP::Implied::_4::value:
+		case NOP::Implicit::_4::value:
 		{
-			noOperation<NOP::Implied::_4>();
+			noOperation<NOP::Implicit::_4>();
 			break;
 		}
-		case NOP::Implied::_5::value:
+		case NOP::Implicit::_5::value:
 		{
-			noOperation<NOP::Implied::_5>();
+			noOperation<NOP::Implicit::_5>();
 			break;
 		}
-		case NOP::Implied::_6::value:
+		case NOP::Implicit::_6::value:
 		{
-			noOperation<NOP::Implied::_6>();
+			noOperation<NOP::Implicit::_6>();
 			break;
 		}
 		case NOP::Immediate::value:

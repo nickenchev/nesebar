@@ -59,6 +59,17 @@ class Core
 		return memory.fetchByte();
 	}
 
+	template<typename T, typename F, bool addPageCrossCycles = true>
+	constexpr inline void perform(F body)
+	{
+		beginInstruction<T>();
+		if constexpr (T::addressingMode == Addressing::Mode::Immediate)
+		{
+			body(memory.fetchImmediate());
+		}
+		endInstruction<T, addPageCrossCycles>();
+	}
+
 	template<typename T>
 	constexpr inline void beginInstruction()
 	{
@@ -84,7 +95,6 @@ class Core
 		body();
 		endInstruction<T>();
 	}
-	
 	template<typename T>
 	constexpr inline void noOperation()
 	{
@@ -290,7 +300,6 @@ class Core
 		byte carry = static_cast<int>(isStatus(Status::Carry));
 
 		state.setA(minuhend - subtrahend - (1 - carry));
-		int16_t diff = minuhend - subtrahend - (1 - carry);
 
 		// figure out if there is carry from subtraction
 		updateStatus(Status::Carry, static_cast<signed_byte>(state.a) >= 0);

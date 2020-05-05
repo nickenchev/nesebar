@@ -11,23 +11,6 @@
 
 namespace mos6502
 {
-	enum class AddressMode
-	{
-		Implicit,
-		Accumulator,
-		Immediate,
-		ZeroPage,
-		ZeroPageX,
-		ZeroPageY,
-		Relative,
-		Absolute,
-		AbsoluteX,
-		AbsoluteY,
-		Indirect,
-		IndexedIndirect,
-		IndirectIndexed
-	};
-
 	struct MemAccess
 	{
 		MemAddress address;
