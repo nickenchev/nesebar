@@ -49,54 +49,32 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		}
 		case ADC::Immediate::value:
 		{
-			perform<ADC::Immediate>([this](const byte data) {
-				adc(data);
-			});
+			perform<ADC::Immediate>([this](const byte data) { adc(data); });
 			break;
 		}
 		case ADC::ZeroPage::value:
 		{
-			beginInstruction<ADC::ZeroPage>();
-			byte aCopy = state.a;
-			byte data = memory.fetchZeroPage().value;
-			adc(data);
-			endInstruction<ADC::ZeroPage>(aCopy, data);
+			perform<ADC::ZeroPage>([this](const MemAccess access) { adc(access.value); });
 			break;
 		}
 		case ADC::ZeroPageX::value:
 		{
-			beginInstruction<ADC::ZeroPageX>();
-			byte aCopy = state.a;
-			byte data = memory.fetchZeroPageX().value;
-			adc(data);
-			endInstruction<ADC::ZeroPageX>(aCopy, data);
+			perform<ADC::ZeroPageX>([this](const MemAccess access) { adc(access.value); });
 			break;
 		}
 		case ADC::Absolute::value:
 		{
-			beginInstruction<ADC::Absolute>();
-			byte aCopy = state.a;
-			byte data = memory.fetchAbsolute().value;
-			adc(data);
-			endInstruction<ADC::Absolute>(aCopy, data);
+			perform<ADC::Absolute>([this](const MemAccess access) { adc(access.value); });
 			break;
 		}
 		case ADC::AbsoluteX::value:
 		{
-			beginInstruction<ADC::AbsoluteX>();
-			byte aCopy = state.a;
-			byte data = memory.fetchAbsoluteX().value;
-			adc(data);
-			endInstruction<ADC::AbsoluteX>(aCopy, data);
+			perform<ADC::AbsoluteX>([this](const MemAccess access) { adc(access.value); });
 			break;
 		}
 		case ADC::AbsoluteY::value:
 		{
-			beginInstruction<ADC::AbsoluteY>();
-			byte aCopy = state.a;
-			byte data = memory.fetchAbsoluteY();
-			adc(data);
-			endInstruction<ADC::AbsoluteY>(aCopy, data);
+			perform<ADC::AbsoluteY>([this](const MemAccess access) { adc(access.value); });
 			break;
 		}
 		case ADC::IndexedIndirect::value:
@@ -166,7 +144,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<SBC::AbsoluteY>();
 			byte aCopy = state.a;
-			byte value = memory.fetchAbsoluteY();
+			byte value = memory.fetchAbsoluteY().value;
 			sbc(value);
 			endInstruction<SBC::AbsoluteY>(aCopy, value);
 			break;
@@ -362,7 +340,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case ORA::AbsoluteY::value:
 		{
 			beginInstruction<ORA::AbsoluteY>();
-			state.setA(state.a | memory.fetchAbsoluteY());
+			state.setA(state.a | memory.fetchAbsoluteY().value);
 			endInstruction<ORA::AbsoluteY>();
 			break;
 		}
@@ -418,7 +396,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case EOR::AbsoluteY::value:
 		{
 			beginInstruction<EOR::AbsoluteY>();
-			state.setA(state.a ^ memory.fetchAbsoluteY());
+			state.setA(state.a ^ memory.fetchAbsoluteY().value);
 			endInstruction<EOR::AbsoluteY>();
 			break;
 		}
@@ -701,7 +679,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case AND::AbsoluteY::value:
 		{
 			beginInstruction<AND::AbsoluteY>();
-			state.setA(state.a & memory.fetchAbsoluteY());
+			state.setA(state.a & memory.fetchAbsoluteY().value);
 			endInstruction<AND::AbsoluteY>();
 			break;
 		}
@@ -924,7 +902,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDX::AbsoluteY::value:
 		{
 			beginInstruction<LDX::AbsoluteY>();
-			state.setX(memory.fetchAbsoluteY());
+			state.setX(memory.fetchAbsoluteY().value);
 			endInstruction<LDX::AbsoluteY>();
 			break;
 		}
@@ -1001,7 +979,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDA::AbsoluteY::value:
 		{
 			beginInstruction<LDA::AbsoluteY>();
-			state.setA(memory.fetchAbsoluteY());
+			state.setA(memory.fetchAbsoluteY().value);
 			endInstruction<LDA::AbsoluteY>();
 			break;
 		}
@@ -1075,7 +1053,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::AbsoluteY;
 			beginInstruction<OP>();
-			const byte data = memory.fetchAbsoluteY();
+			const byte data = memory.fetchAbsoluteY().value;
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;

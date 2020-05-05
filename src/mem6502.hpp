@@ -138,11 +138,11 @@ namespace mos6502
 			if (address.add(cpuState.x)) ++cpuState.pageCrossCycles;
 			write(address, value);
 		}
-		byte fetchAbsoluteY()
+		MemAccess fetchAbsoluteY()
 		{
 			MemAddress addr = fetchNextMemAddress();
 			if (addr.add(cpuState.y)) ++cpuState.pageCrossCycles;
-			return read(addr);
+			return MemAccess(addr, read(addr));
 		}
 		void writeAbsoluteY(byte value)
 		{

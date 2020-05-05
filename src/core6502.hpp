@@ -67,12 +67,37 @@ class Core
 		{
 			body(memory.fetchImmediate());
 		}
+		else if constexpr (T::addressingMode == Addressing::Mode::ZeroPage)
+		{
+			body(memory.fetchZeroPage());
+		}
+		else if constexpr (T::addressingMode == Addressing::Mode::ZeroPageX)
+		{
+			body(memory.fetchZeroPageX());
+		}
+		else if constexpr (T::addressingMode == Addressing::Mode::ZeroPageY)
+		{
+			body(memory.fetchZeroPageY());
+		}
+		else if constexpr (T::addressingMode == Addressing::Mode::Absolute)
+		{
+			body(memory.fetchAbsolute());
+		}
+		else if constexpr (T::addressingMode == Addressing::Mode::AbsoluteX)
+		{
+			body(memory.fetchAbsoluteX());
+		}
+		else if constexpr (T::addressingMode == Addressing::Mode::AbsoluteY)
+		{
+			body(memory.fetchAbsoluteY());
+		}
 		endInstruction<T, addPageCrossCycles>();
 	}
 
 	template<typename T>
 	constexpr inline void beginInstruction()
 	{
+		state.operand1 = state.operand2 = state.opcodeResult = 0;
 		state.pageCrossCycles = 0;
 		state.cycles = T::cycles;
 		state.byteStep = T::byteSize;
@@ -80,8 +105,23 @@ class Core
 		std::cout << std::setw(2) << (int)T::value << ' ' << T::name;
 	}
 
+	constexpr inline void setOperands(const byte operand1, const byte operand2)
+	{
+		state.operand1 = operand1;
+		state.operand2 = operand2;
+	}
+
+	// TODO: Consolidate these two methods
 	template<typename T, bool addPageCrossCycles = true>
-	constexpr inline void endInstruction(byte operand1 = 0, byte operand2 = 0)
+	constexpr inline void endInstruction()
+	{
+		handleFlags<T::autoFlags ^ T::manualFlags>(state.operand1, state.operand2);
+		state.totalCycles += state.cycles;
+		if constexpr (addPageCrossCycles) state.totalCycles += state.pageCrossCycles;
+	}
+
+	template<typename T, bool addPageCrossCycles = true>
+	constexpr inline void endInstruction(byte operand1, byte operand2)
 	{
 		handleFlags<T::autoFlags ^ T::manualFlags>(operand1, operand2);
 		state.totalCycles += state.cycles;
@@ -285,6 +325,7 @@ class Core
 		else
 		{
 			byte operand = state.a;
+			setOperands(operand, value);
 			byte carry = static_cast<int>(isStatus(Status::Carry));
 			state.setA(operand + value + carry);
 

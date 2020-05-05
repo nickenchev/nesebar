@@ -13,7 +13,7 @@ namespace mos6502
 		MemAddress pc;
 		short cycles, pageCrossCycles, totalCycles;
 		short byteStep;
-		byte opcodeResult;
+		byte operand1, operand2, opcodeResult;
 
 		State()
 		{
