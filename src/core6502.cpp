@@ -1327,6 +1327,34 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			});
 			break;
 		}
+		case SAX::ZeroPage::value:
+		{
+			perform<SAX::ZeroPage>([this](const MemAccess access) {
+				memory.write(access.address, state.a & state.x);
+			});
+			break;
+		}
+		case SAX::ZeroPageY::value:
+		{
+			perform<SAX::ZeroPageY>([this](const MemAccess access) {
+				memory.write(access.address, state.a & state.x);
+			});
+			break;
+		}
+		case SAX::Absolute::value:
+		{
+			perform<SAX::Absolute>([this](const MemAccess access) {
+				memory.write(access.address, state.a & state.x);
+			});
+			break;
+		}
+		case SAX::IndexedIndirect::value:
+		{
+			perform<SAX::IndexedIndirect>([this](const MemAccess access) {
+				memory.write(access.address, state.a & state.x);
+			});
+			break;
+		}
 		default:
 		{
 			std::cout << std::endl << std::hex << "Unsupported opcode \""

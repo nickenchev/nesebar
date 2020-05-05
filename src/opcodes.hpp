@@ -368,6 +368,16 @@ namespace mos6502 { namespace opcodes
 		struct IndexedIndirect : Addr::IndexedIndirect<0xa3, 6, flags> { static inline Asm name{group}; };
 		struct IndirectIndexed : Addr::IndirectIndexed<0xb3, 5, flags> { static inline Asm name{group}; };
 	}
+
+	namespace SAX
+	{
+		static constexpr const char *group = "*SAX";
+		static constexpr byte flags = None;
+		struct ZeroPage : Addr::ZeroPage<0x87, 3, flags> { static inline Asm name{group}; };
+		struct ZeroPageY : Addr::ZeroPageY<0x97, 4, flags> { static inline Asm name{group}; };
+		struct Absolute : Addr::Absolute<0x8f, 4, flags> { static inline Asm name{group}; };
+		struct IndexedIndirect : Addr::IndexedIndirect<0x83, 6, flags> { static inline Asm name{group}; };
+	}
 };
 };
 
