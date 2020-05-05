@@ -210,9 +210,9 @@ namespace mos6502
 			std::cout << " = " << std::setw(2) << std::hex << static_cast<int>(value);
 			return MemAccess(indirect, value);
 		}
-		byte fetchIndexedIndirect()
+		MemAccess fetchIndexedIndirect()
 		{
-			return addressIndexedIndirect().value;
+			return addressIndexedIndirect();
 		}
 		void writeIndexedIndirect(byte value)
 		{
@@ -232,9 +232,9 @@ namespace mos6502
 			std::cout << " = " << std::setw(2) << std::hex << static_cast<int>(value);
 			return MemAccess(indirect, value);
 		}
-		byte fetchIndirectIndexed()
+		MemAccess fetchIndirectIndexed()
 		{
-			return addressIndirectIndexed().value;
+			return addressIndirectIndexed();
 		}
 		void writeIndirectIndexed(byte value)
 		{

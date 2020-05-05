@@ -145,7 +145,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<SBC::IndexedIndirect>();
 			byte aCopy = state.a;
-			byte value = memory.fetchIndexedIndirect();
+			byte value = memory.fetchIndexedIndirect().value;
 			sbc(value);
 			endInstruction<SBC::IndexedIndirect>(aCopy, value);
 			break;
@@ -154,7 +154,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			beginInstruction<SBC::IndirectIndexed>();
 			byte aCopy = state.a;
-			byte value = memory.fetchIndirectIndexed();
+			byte value = memory.fetchIndirectIndexed().value;
 			sbc(value);
 			endInstruction<SBC::IndirectIndexed>(aCopy, value);
 			break;
@@ -339,14 +339,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
         case ORA::IndexedIndirect::value:
 		{
 			beginInstruction<ORA::IndexedIndirect>();
-			state.setA(state.a | memory.fetchIndexedIndirect());
+			state.setA(state.a | memory.fetchIndexedIndirect().value);
 			endInstruction<ORA::IndexedIndirect>();
 			break;
 		}
         case ORA::IndirectIndexed::value:
 		{
 			beginInstruction<ORA::IndirectIndexed>();
-			state.setA(state.a | memory.fetchIndirectIndexed());
+			state.setA(state.a | memory.fetchIndirectIndexed().value);
 			endInstruction<ORA::IndirectIndexed>();
 			break;
 		}
@@ -395,14 +395,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case EOR::IndexedIndirect::value:
 		{
 			beginInstruction<EOR::IndexedIndirect>();
-			state.setA(state.a ^ memory.fetchIndexedIndirect());
+			state.setA(state.a ^ memory.fetchIndexedIndirect().value);
 			endInstruction<EOR::IndexedIndirect>();
 			break;
 		}
 		case EOR::IndirectIndexed::value:
 		{
 			beginInstruction<EOR::IndirectIndexed>();
-			state.setA(state.a ^ memory.fetchIndirectIndexed());
+			state.setA(state.a ^ memory.fetchIndirectIndexed().value);
 			endInstruction<EOR::IndirectIndexed>();
 			break;
 		}
@@ -678,14 +678,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case AND::IndexedIndirect::value:
 		{
 			beginInstruction<AND::IndexedIndirect>();
-			state.setA(state.a & memory.fetchIndexedIndirect());
+			state.setA(state.a & memory.fetchIndexedIndirect().value);
 			endInstruction<AND::IndexedIndirect>();
 			break;
 		}
 		case AND::IndirectIndexed::value:
 		{
 			beginInstruction<AND::IndirectIndexed>();
-			state.setA(state.a & memory.fetchIndirectIndexed());
+			state.setA(state.a & memory.fetchIndirectIndexed().value);
 			endInstruction<AND::IndirectIndexed>();
 			break;
 		}
@@ -978,14 +978,14 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case LDA::IndexedIndirect::value:
 		{
 			beginInstruction<LDA::IndexedIndirect>();
-			state.setA(memory.fetchIndexedIndirect());
+			state.setA(memory.fetchIndexedIndirect().value);
 			endInstruction<LDA::IndexedIndirect>();
 			break;
 		}
 		case LDA::IndirectIndexed::value:
 		{
 			beginInstruction<LDA::IndirectIndexed>();
-			state.setA(memory.fetchIndirectIndexed());
+			state.setA(memory.fetchIndirectIndexed().value);
 			endInstruction<LDA::IndirectIndexed>();
 			break;
 		}
@@ -1054,7 +1054,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::IndexedIndirect;
 			beginInstruction<OP>();
-			const byte data = memory. fetchIndexedIndirect();
+			const byte data = memory. fetchIndexedIndirect().value;
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;
@@ -1063,7 +1063,7 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		{
 			using OP = CMP::IndirectIndexed;
 			beginInstruction<OP>();
-			const byte data = memory.fetchIndirectIndexed();
+			const byte data = memory.fetchIndirectIndexed().value;
 			compare(state.a, data);
 			endInstruction<OP>(state.a, data);
 			break;
