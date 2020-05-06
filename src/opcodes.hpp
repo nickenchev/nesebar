@@ -37,6 +37,7 @@ namespace mos6502 { namespace opcodes
 		static constexpr byte flags = N|Z|C|V;
 		static constexpr byte manual = C|V;
 		struct Immediate : Addr::Immediate<0xe9, 2, flags, manual> { static inline Asm name{group}; };
+		struct Immediate_2 : Addr::Immediate<0xeb, 2, flags, manual> { static inline Asm name{group}; };
 		struct ZeroPage: Addr::ZeroPage<0xe5, 3, flags, manual> { static inline Asm name{group}; };
 		struct ZeroPageX: Addr::ZeroPageX<0xf5, 4, flags, manual> { static inline Asm name{group}; };
 		struct Absolute: Addr::Absolute<0xed, 4, flags, manual> { static inline Asm name{group}; };
@@ -377,6 +378,20 @@ namespace mos6502 { namespace opcodes
 		struct ZeroPageY : Addr::ZeroPageY<0x97, 4, flags> { static inline Asm name{group}; };
 		struct Absolute : Addr::Absolute<0x8f, 4, flags> { static inline Asm name{group}; };
 		struct IndexedIndirect : Addr::IndexedIndirect<0x83, 6, flags> { static inline Asm name{group}; };
+	}
+
+	namespace DCP
+	{
+		static constexpr const char *group = "*DCP";
+		static constexpr byte flags = N|Z|C;
+		static constexpr byte manual = C;
+		struct ZeroPage : Addr::ZeroPage<0xc7, 5, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX : Addr::ZeroPageX<0xd7, 6, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Addr::Absolute<0xcf, 6, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Addr::AbsoluteX<0xdb, 7, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteY : Addr::AbsoluteY<0xdf, 7, flags, manual> { static inline Asm name{group}; };
+		struct IndexedIndirect : Addr::IndexedIndirect<0xc3, 8, flags, manual> { static inline Asm name{group}; };
+		struct IndirectIndexed : Addr::IndirectIndexed<0xd3, 8, flags, manual> { static inline Asm name{group}; };
 	}
 };
 };
