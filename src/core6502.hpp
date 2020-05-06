@@ -366,6 +366,7 @@ class Core
 		const byte newValue = access.value - 1;
 		memory.write(access.address, newValue);
 		compare(state.a, newValue);
+		state.pageCrossCycles = 0;
 	}
 
 	// interrupts

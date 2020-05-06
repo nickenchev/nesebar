@@ -242,7 +242,7 @@ namespace mos6502
 			byte value = read(effective); // TODO: This read is pointless, only for debug
 			std::cout << " = " << std::setw(2) << std::hex << static_cast<int>(value);
 
-			return MemAccess(indirect, value);
+			return MemAccess(effective, value);
 		}
 		MemAccess fetchIndirectIndexed()
 		{

@@ -388,8 +388,8 @@ namespace mos6502 { namespace opcodes
 		struct ZeroPage : Addr::ZeroPage<0xc7, 5, flags, manual> { static inline Asm name{group}; };
 		struct ZeroPageX : Addr::ZeroPageX<0xd7, 6, flags, manual> { static inline Asm name{group}; };
 		struct Absolute : Addr::Absolute<0xcf, 6, flags, manual> { static inline Asm name{group}; };
-		struct AbsoluteX : Addr::AbsoluteX<0xdb, 7, flags, manual> { static inline Asm name{group}; };
-		struct AbsoluteY : Addr::AbsoluteY<0xdf, 7, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Addr::AbsoluteX<0xdf, 7, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteY : Addr::AbsoluteY<0xdb, 7, flags, manual> { static inline Asm name{group}; };
 		struct IndexedIndirect : Addr::IndexedIndirect<0xc3, 8, flags, manual> { static inline Asm name{group}; };
 		struct IndirectIndexed : Addr::IndirectIndexed<0xd3, 8, flags, manual> { static inline Asm name{group}; };
 	}
