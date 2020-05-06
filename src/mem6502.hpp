@@ -221,10 +221,19 @@ namespace mos6502
 
 		MemAccess addressIndirectIndexed()
 		{
-			byte zeroPageAddr = fetchByte();
-			std::cout << " @ " << std::setw(2) << std::hex << static_cast<int>(zeroPageAddr);
-			MemAddress indirect(read(zeroPageAddr), read((zeroPageAddr + 1) % 256));
-			if (indirect.add(cpuState.y)) ++cpuState.pageCrossCycles;
+			// get the zero page address
+			const byte zeroPage = fetchByte();
+			const byte zeroPageVal = read(zeroPage);
+
+			// add Y to the zero page, and check for carry
+			const uint16_t sum = zeroPageVal + cpuState.y;
+			const short carry = sum > 0xFF;
+			if (carry) ++cpuState.pageCrossCycles;
+
+			// get the final address
+			const byte addrLow = zeroPageVal + cpuState.y;
+			const byte addrHigh = read((zeroPage + 1) % 256) + carry;
+			MemAddress indirect(addrLow, addrHigh);
 
 			std::cout << " " << std::setw(4) << std::hex << static_cast<int>(indirect.value);
 			byte value = read(indirect); // TODO: This read is pointless, only for debug
