@@ -25,7 +25,12 @@ union MemAddress
 
 	MemAddress &addLow(byte lowInc)
 	{
-		low() += lowInc;
+		bytes[0] += lowInc;
+		return *this;
+	}
+	MemAddress &addHigh(byte highInc)
+	{
+		bytes[1] += highInc;
 		return *this;
 	}
 

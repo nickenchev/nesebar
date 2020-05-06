@@ -39,7 +39,8 @@ namespace mos6502
 
 		byte read(const MemAddress &address)
 		{
-			return memory[mapping.mapAddress(address).address];
+			const byte result = memory[mapping.mapAddress(address).address];
+			return result;
 		}
 
 		void write(const MemAddress &address, byte value)
@@ -142,7 +143,11 @@ namespace mos6502
 		{
 			MemAddress addr = fetchNextMemAddress();
 			if (addr.add(cpuState.y)) ++cpuState.pageCrossCycles;
-			return MemAccess(addr, read(addr));
+			const byte data = read(addr);
+
+			std::cout << " $" << std::hex << std::setw(2) << addr.value
+					  << " = " << static_cast<int>(data);
+			return MemAccess(addr, data);
 		}
 		void writeAbsoluteY(byte value)
 		{
@@ -223,22 +228,20 @@ namespace mos6502
 		{
 			// get the zero page address
 			const byte zeroPage = fetchByte();
-			const byte zeroPageVal = read(zeroPage);
+			const byte zeroPage2 = zeroPage + 1;
+			const byte ial = read(zeroPage);
+			const byte iah = read(zeroPage2);
+			MemAddress indirect(ial, iah);
 
-			// add Y to the zero page, and check for carry
-			const uint16_t sum = zeroPageVal + cpuState.y;
-			const short carry = sum > 0xFF;
-			if (carry) ++cpuState.pageCrossCycles;
+			MemAddress effective = indirect;
+			if (effective.add(cpuState.y)) ++cpuState.pageCrossCycles;
 
-			// get the final address
-			const byte addrLow = zeroPageVal + cpuState.y;
-			const byte addrHigh = read((zeroPage + 1) % 256) + carry;
-			MemAddress indirect(addrLow, addrHigh);
-
-			std::cout << " " << std::setw(4) << std::hex << static_cast<int>(indirect.value);
-			byte value = read(indirect); // TODO: This read is pointless, only for debug
-
+			std::cout << std::hex << " ($" << std::setw(2) << static_cast<int>(zeroPage) << "), Y = "
+					  << std::setw(4) << indirect.value
+					  << " @ " << std::setw(4) << std::hex << effective.value;
+			byte value = read(effective); // TODO: This read is pointless, only for debug
 			std::cout << " = " << std::setw(2) << std::hex << static_cast<int>(value);
+
 			return MemAccess(indirect, value);
 		}
 		MemAccess fetchIndirectIndexed()
