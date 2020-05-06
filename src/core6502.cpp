@@ -1355,6 +1355,46 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			});
 			break;
 		}
+		case SBC::Immediate_2::value:
+		{
+			perform<SBC::Immediate_2>([this](const byte value) { sbc(value); });
+			break;
+		}
+		case DCP::ZeroPage::value:
+		{
+			perform<DCP::ZeroPage>([this](const MemAccess access) { dcp(access); });
+			break;
+		}
+		case DCP::ZeroPageX::value:
+		{
+			perform<DCP::ZeroPageX>([this](const MemAccess access) { dcp(access); });
+			break;
+		}
+		case DCP::Absolute::value:
+		{
+			perform<DCP::Absolute>([this](const MemAccess access) { dcp(access); });
+			break;
+		}
+		case DCP::AbsoluteX::value:
+		{
+			perform<DCP::AbsoluteX>([this](const MemAccess access) { dcp(access); });
+			break;
+		}
+		case DCP::AbsoluteY::value:
+		{
+			perform<DCP::AbsoluteY>([this](const MemAccess access) { dcp(access); });
+			break;
+		}
+		case DCP::IndexedIndirect::value:
+		{
+			perform<DCP::IndexedIndirect>([this](const MemAccess access) { dcp(access); });
+			break;
+		}
+		case DCP::IndirectIndexed::value:
+		{
+			perform<DCP::IndirectIndexed>([this](const MemAccess access) { dcp(access); });
+			break;
+		}
 		default:
 		{
 			std::cout << std::endl << std::hex << "Unsupported opcode \""

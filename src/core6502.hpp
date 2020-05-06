@@ -114,7 +114,7 @@ class Core
 		state.cycles = T::cycles;
 		state.byteStep = T::byteSize;
 
-		std::cout << std::setw(2) << (int)T::value << ' ' << T::name;
+		std::cout << std::setw(2) << (int)T::value << ' ' << T::name << std::flush;
 	}
 
 	constexpr inline void setOperands(const byte operand1, const byte operand2)
@@ -360,6 +360,12 @@ class Core
 		constexpr byte signBit = 0b10000000;
 		const bool isOverflow = (minuhend ^ subtrahend) & (minuhend ^ state.opcodeResult) & signBit;
 		updateStatus(Status::Overflow, isOverflow);
+	}
+	inline void dcp(const MemAccess &access)
+	{
+		const byte newValue = access.value - 1;
+		memory.write(access.address, newValue);
+		compare(state.a, newValue);
 	}
 
 	// interrupts
