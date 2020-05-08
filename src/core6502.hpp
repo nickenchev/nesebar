@@ -413,6 +413,14 @@ class Core
 
 		state.pageCrossCycles = 0;
 	}
+	
+	inline void rra(const MemAccess &access)
+	{
+		const byte newValue = rotateRight(access.value);
+		memory.write(access.address, newValue);
+		adc(newValue);
+		state.pageCrossCycles = 0;
+	}
 
 	// interrupts
 	void interruptReset();

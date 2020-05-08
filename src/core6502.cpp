@@ -1535,6 +1535,41 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			perform<SRE::IndirectIndexed>([this](const MemAccess access) { sre(access); });
 			break;
 		}
+		case RRA::ZeroPage::value:
+		{
+			perform<RRA::ZeroPage>([this](const MemAccess access) { rra(access); });
+			break;
+		}
+		case RRA::ZeroPageX::value:
+		{
+			perform<RRA::ZeroPageX>([this](const MemAccess access) { rra(access); });
+			break;
+		}
+		case RRA::Absolute::value:
+		{
+			perform<RRA::Absolute>([this](const MemAccess access) { rra(access); });
+			break;
+		}
+		case RRA::AbsoluteX::value:
+		{
+			perform<RRA::AbsoluteX>([this](const MemAccess access) { rra(access); });
+			break;
+		}
+		case RRA::AbsoluteY::value:
+		{
+			perform<RRA::AbsoluteY>([this](const MemAccess access) { rra(access); });
+			break;
+		}
+		case RRA::IndexedIndirect::value:
+		{
+			perform<RRA::IndexedIndirect>([this](const MemAccess access) { rra(access); });
+			break;
+		}
+		case RRA::IndirectIndexed::value:
+		{
+			perform<RRA::IndirectIndexed>([this](const MemAccess access) { rra(access); });
+			break;
+		}
 		default:
 		{
 			std::cout << std::endl << std::hex << "Unsupported opcode \""

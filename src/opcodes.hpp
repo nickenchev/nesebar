@@ -449,6 +449,20 @@ namespace mos6502 { namespace opcodes
 		struct IndexedIndirect : Addr::IndexedIndirect<0x43, 8, flags, manual> { static inline Asm name{group}; };
 		struct IndirectIndexed : Addr::IndirectIndexed<0x53, 8, flags, manual> { static inline Asm name{group}; };
 	}
+
+	namespace RRA
+	{
+		static constexpr const char *group = "RRA";
+		static constexpr byte flags = N|V|Z|C;
+		static constexpr byte manual = C;
+		struct ZeroPage : Addr::ZeroPage<0x67, 5, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX : Addr::ZeroPageX<0x77, 6, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Addr::Absolute<0x6f, 6, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Addr::AbsoluteX<0x7f, 7, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteY : Addr::AbsoluteY<0x7b, 7, flags, manual> { static inline Asm name{group}; };
+		struct IndexedIndirect : Addr::IndexedIndirect<0x63, 8, flags, manual> { static inline Asm name{group}; };
+		struct IndirectIndexed : Addr::IndirectIndexed<0x73, 8, flags, manual> { static inline Asm name{group}; };
+	}
 };
 };
 
