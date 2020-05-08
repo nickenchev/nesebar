@@ -11,7 +11,8 @@ namespace mos6502
 	{
 		byte a, x, y, sp, p;
 		MemAddress pc;
-		short cycles, pageCrossCycles, totalCycles;
+		short cycles, pageCrossCycles;
+		long totalCycles;
 		short byteStep;
 		byte operand1, operand2, opcodeResult;
 
