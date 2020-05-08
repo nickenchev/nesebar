@@ -1598,7 +1598,7 @@ void Core<Memory, Mapping, DecimalMode>::interruptReset()
 	state.sp = -3; // cycle 0: sp = 0, then gets decremented 3 times, look more into this
 	state.p = 0x24; // TODO: Properly configure the status flags
 	state.pc = memory.readMemAddress(0xfffc);
-	state.pc = 0xc000; // TODO: This is only for nestest.nes "auto mode"
+	//state.pc = 0xc000; // TODO: This is only for nestest.nes "auto mode"
 
 	state.totalCycles = 7;
 }
