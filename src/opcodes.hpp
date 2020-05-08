@@ -314,7 +314,7 @@ namespace mos6502 { namespace opcodes
 
 	namespace NOP
 	{
-		static constexpr const char *group = "*NOP";
+		static constexpr const char *group = "NOP";
 
 		namespace ZeroPage
 		{
@@ -360,7 +360,7 @@ namespace mos6502 { namespace opcodes
 
 	namespace LAX
 	{
-		static constexpr const char *group = "*LAX";
+		static constexpr const char *group = "LAX";
 		static constexpr byte flags = N|Z;
 		struct ZeroPage : Addr::ZeroPage<0xa7, 3, flags> { static inline Asm name{group}; };
 		struct ZeroPageY : Addr::ZeroPageY<0xb7, 4, flags> { static inline Asm name{group}; };
@@ -372,7 +372,7 @@ namespace mos6502 { namespace opcodes
 
 	namespace SAX
 	{
-		static constexpr const char *group = "*SAX";
+		static constexpr const char *group = "SAX";
 		static constexpr byte flags = None;
 		struct ZeroPage : Addr::ZeroPage<0x87, 3, flags> { static inline Asm name{group}; };
 		struct ZeroPageY : Addr::ZeroPageY<0x97, 4, flags> { static inline Asm name{group}; };
@@ -382,7 +382,7 @@ namespace mos6502 { namespace opcodes
 
 	namespace DCP
 	{
-		static constexpr const char *group = "*DCP";
+		static constexpr const char *group = "DCP";
 		static constexpr byte flags = N|Z|C;
 		static constexpr byte manual = C;
 		struct ZeroPage : Addr::ZeroPage<0xc7, 5, flags, manual> { static inline Asm name{group}; };
@@ -392,6 +392,20 @@ namespace mos6502 { namespace opcodes
 		struct AbsoluteY : Addr::AbsoluteY<0xdb, 7, flags, manual> { static inline Asm name{group}; };
 		struct IndexedIndirect : Addr::IndexedIndirect<0xc3, 8, flags, manual> { static inline Asm name{group}; };
 		struct IndirectIndexed : Addr::IndirectIndexed<0xd3, 8, flags, manual> { static inline Asm name{group}; };
+	}
+
+	namespace ISC
+	{
+		static constexpr const char *group = "ISC";
+		static constexpr byte flags = N|V|Z|C;
+		static constexpr byte manual = V|C;
+		struct ZeroPage : Addr::ZeroPage<0xe7, 5, flags, manual> { static inline Asm name{group}; };
+		struct ZeroPageX : Addr::ZeroPageX<0xf7, 6, flags, manual> { static inline Asm name{group}; };
+		struct Absolute : Addr::Absolute<0xef, 6, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteX : Addr::AbsoluteX<0xff, 7, flags, manual> { static inline Asm name{group}; };
+		struct AbsoluteY : Addr::AbsoluteY<0xfb, 7, flags, manual> { static inline Asm name{group}; };
+		struct IndexedIndirect : Addr::IndexedIndirect<0xe3, 8, flags, manual> { static inline Asm name{group}; };
+		struct IndirectIndexed : Addr::IndirectIndexed<0xf3, 8, flags, manual> { static inline Asm name{group}; };
 	}
 };
 };

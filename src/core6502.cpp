@@ -1395,6 +1395,41 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			perform<DCP::IndirectIndexed>([this](const MemAccess access) { dcp(access); });
 			break;
 		}
+		case ISC::ZeroPage::value:
+		{
+			perform<ISC::ZeroPage>([this](const MemAccess access) { isc(access); });
+			break;
+		}
+		case ISC::ZeroPageX::value:
+		{
+			perform<ISC::ZeroPageX>([this](const MemAccess access) { isc(access); });
+			break;
+		}
+		case ISC::Absolute::value:
+		{
+			perform<ISC::Absolute>([this](const MemAccess access) { isc(access); });
+			break;
+		}
+		case ISC::AbsoluteX::value:
+		{
+			perform<ISC::AbsoluteX>([this](const MemAccess access) { isc(access); });
+			break;
+		}
+		case ISC::AbsoluteY::value:
+		{
+			perform<ISC::AbsoluteY>([this](const MemAccess access) { isc(access); });
+			break;
+		}
+		case ISC::IndexedIndirect::value:
+		{
+			perform<ISC::IndexedIndirect>([this](const MemAccess access) { isc(access); });
+			break;
+		}
+		case ISC::IndirectIndexed::value:
+		{
+			perform<ISC::IndirectIndexed>([this](const MemAccess access) { isc(access); });
+			break;
+		}
 		default:
 		{
 			std::cout << std::endl << std::hex << "Unsupported opcode \""

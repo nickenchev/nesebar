@@ -352,20 +352,30 @@ class Core
 		byte subtrahend = value;
 		byte carry = static_cast<int>(isStatus(Status::Carry));
 
-		state.setA(minuhend - subtrahend - (1 - carry));
+		int16_t difference = minuhend - subtrahend - (1 - carry);
+		state.setA(difference);
 
 		// figure out if there is carry from subtraction
-		updateStatus(Status::Carry, static_cast<signed_byte>(state.a) >= 0);
+		updateStatus(Status::Carry, difference >= 0);
 
 		constexpr byte signBit = 0b10000000;
 		const bool isOverflow = (minuhend ^ subtrahend) & (minuhend ^ state.opcodeResult) & signBit;
 		updateStatus(Status::Overflow, isOverflow);
 	}
+	
 	inline void dcp(const MemAccess &access)
 	{
 		const byte newValue = access.value - 1;
 		memory.write(access.address, newValue);
 		compare(state.a, newValue);
+		state.pageCrossCycles = 0;
+	}
+
+	inline void isc(const MemAccess &access)
+	{
+		const byte newValue = access.value + 1;
+		memory.write(access.address, newValue);
+		sbc(newValue);
 		state.pageCrossCycles = 0;
 	}
 
