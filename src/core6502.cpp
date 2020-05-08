@@ -1430,6 +1430,41 @@ void Core<Memory, Mapping, DecimalMode>::step()
 			perform<ISC::IndirectIndexed>([this](const MemAccess access) { isc(access); });
 			break;
 		}
+		case SLO::ZeroPage::value:
+		{
+			perform<SLO::ZeroPage>([this](const MemAccess access) { slo(access); });
+			break;
+		}
+		case SLO::ZeroPageX::value:
+		{
+			perform<SLO::ZeroPageX>([this](const MemAccess access) { slo(access); });
+			break;
+		}
+		case SLO::Absolute::value:
+		{
+			perform<SLO::Absolute>([this](const MemAccess access) { slo(access); });
+			break;
+		}
+		case SLO::AbsoluteX::value:
+		{
+			perform<SLO::AbsoluteX>([this](const MemAccess access) { slo(access); });
+			break;
+		}
+		case SLO::AbsoluteY::value:
+		{
+			perform<SLO::AbsoluteY>([this](const MemAccess access) { slo(access); });
+			break;
+		}
+		case SLO::IndexedIndirect::value:
+		{
+			perform<SLO::IndexedIndirect>([this](const MemAccess access) { slo(access); });
+			break;
+		}
+		case SLO::IndirectIndexed::value:
+		{
+			perform<SLO::IndirectIndexed>([this](const MemAccess access) { slo(access); });
+			break;
+		}
 		default:
 		{
 			std::cout << std::endl << std::hex << "Unsupported opcode \""

@@ -379,6 +379,17 @@ class Core
 		state.pageCrossCycles = 0;
 	}
 
+	inline void slo(const MemAccess &access)
+	{
+		const byte newValue = access.value << 1;
+		memory.write(access.address, newValue);
+		state.setA(state.a | newValue);
+
+		updateStatus(Status::NegativeResult, checkBit(state.a, Status::NegativeResult));
+		updateStatus(Status::Carry, checkBit(access.value, Status::NegativeResult));
+		state.pageCrossCycles = 0;
+	}
+
 	// interrupts
 	void interruptReset();
 
