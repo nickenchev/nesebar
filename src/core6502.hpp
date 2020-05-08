@@ -63,7 +63,11 @@ class Core
 	constexpr inline void perform(F body)
 	{
 		beginInstruction<Opcode>();
-		if constexpr (Opcode::addressingMode == Addressing::Mode::Immediate)
+		if constexpr (Opcode::addressingMode == Addressing::Mode::Implicit)
+		{
+			body();
+		}
+		else if constexpr (Opcode::addressingMode == Addressing::Mode::Immediate)
 		{
 			body(memory.fetchImmediate());
 		}
@@ -408,7 +412,6 @@ class Core
 		memory.write(access.address, newValue);
 		state.setA(state.a ^ newValue);
 
-		updateStatus(Status::NegativeResult, false);
 		updateStatus(Status::Carry, checkBit(access.value, Status::Carry));
 
 		state.pageCrossCycles = 0;

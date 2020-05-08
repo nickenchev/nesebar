@@ -440,7 +440,7 @@ namespace mos6502 { namespace opcodes
 	{
 		static constexpr const char *group = "SRE";
 		static constexpr byte flags = N|Z|C;
-		static constexpr byte manual = N|C;
+		static constexpr byte manual = C;
 		struct ZeroPage : Addr::ZeroPage<0x47, 5, flags, manual> { static inline Asm name{group}; };
 		struct ZeroPageX : Addr::ZeroPageX<0x57, 6, flags, manual> { static inline Asm name{group}; };
 		struct Absolute : Addr::Absolute<0x4f, 6, flags, manual> { static inline Asm name{group}; };

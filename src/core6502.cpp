@@ -33,20 +33,19 @@ void Core<Memory, Mapping, DecimalMode>::step()
 	std::cout << '$' << std::hex << std::setfill('0')
 			  << std::setw(4) << state.pc.value << ": ";
 
+	byte error1 = memory.read(0x02);
+	byte error2 = memory.read(0x03);
+	if (error1 != 0 || error2 != 0)
+	{
+		std::cout << std::endl << std::hex << "Error at $02 = "
+					<< std::setw(2) << static_cast<int>(memory.read(0x02)) << std::endl;
+		std::cout << std::endl << std::hex << "Error at $03 = "
+					<< std::setw(2) << static_cast<int>(memory.read(0x03)) << std::endl;
+		exit(1);
+	}
 	const byte opcode = nextOpcode();
 	switch (opcode)
 	{
-		case BRK::value:
-		{
-			exit(1);
-			beginInstruction<BRK>();
-			stackPush(state.p);
-			memory.fetchByte();
-			stackPushAddress(state.pc);
-			updateStatus(Status::InterruptDisable, true);
-			endInstruction<BRK>();
-			break;
-		}
 		case ADC::Immediate::value:
 		{
 			perform<ADC::Immediate>([this](const byte data) { adc(data); });
@@ -1568,6 +1567,16 @@ void Core<Memory, Mapping, DecimalMode>::step()
 		case RRA::IndirectIndexed::value:
 		{
 			perform<RRA::IndirectIndexed>([this](const MemAccess access) { rra(access); });
+			break;
+		}
+		case BRK::value:
+		{
+			perform<BRK>([this]() {
+				stackPush(state.p);
+				memory.fetchByte();
+				stackPushAddress(state.pc);
+				updateStatus(Status::InterruptDisable, true);
+			});
 			break;
 		}
 		default:
