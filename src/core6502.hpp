@@ -390,6 +390,18 @@ class Core
 		state.pageCrossCycles = 0;
 	}
 
+	inline void rla(const MemAccess &access)
+	{
+		const byte newValue = rotateLeft(access.value);
+		memory.write(access.address, newValue);
+		state.setA(state.a & newValue);
+
+		updateStatus(Status::Carry, checkBit(access.value, 7));
+		updateStatus(Status::NegativeResult, checkBit(access.value, 6));
+
+		state.pageCrossCycles = 0;
+	}
+
 	// interrupts
 	void interruptReset();
 
