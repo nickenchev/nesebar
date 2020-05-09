@@ -8,6 +8,8 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
+find_package(SDL2 REQUIRED)
+
 add_executable(nesebar
   src/main.cpp
   src/core6502.cpp
@@ -15,3 +17,5 @@ add_executable(nesebar
   src/nescart.cpp)
 
 target_compile_options(nesebar PUBLIC -Wall -Wextra -Werror)
+target_include_directories(nesebar PRIVATE SDL2::SDL2)
+target_link_libraries(nesebar SDL2::SDL2)
