@@ -9,15 +9,10 @@ NES::NES(const NESCart &cart) : cart(cart), mapping(cart), cpu(mapping)
 		const MemAddress romStart = 0x8000;
 		memory[addr + romStart] = cart.prgRom[addr.value];
 	}
+	cpu.reset();
 }
 
 void NES::run()
 {
-	cpu.reset();
-
-	bool keepRunning = true;
-	while (keepRunning)
-	{
-		cpu.step();
-	}
+	cpu.step();
 }

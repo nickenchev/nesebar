@@ -16,7 +16,8 @@ int main(int argc, const char *argv[])
 
 		SDL_Init(SDL_INIT_VIDEO);
 		SDL_Window *window = SDL_CreateWindow("Nesebar", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-											  256, 240, SDL_WINDOW_OPENGL);
+											  256, 240, 0);
+		SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 
 		if (!window)
 		{
@@ -25,7 +26,40 @@ int main(int argc, const char *argv[])
 
 		NESCart cart(path);
 		NES nes(cart);
-		nes.run();
+
+		bool keepRunning = true;
+		while (keepRunning)
+		{
+			SDL_Event event;
+			while (SDL_PollEvent(&event))
+			{
+				if (event.type == SDL_WINDOWEVENT)
+				{
+					switch (event.window.event)
+					{
+						case SDL_WINDOWEVENT_CLOSE:
+						{
+							keepRunning = false;
+							break;
+						}
+					}
+				}
+			}
+
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderClear(renderer);
+			
+			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+			SDL_RenderDrawPoint(renderer, 100, 200);
+
+			SDL_RenderPresent(renderer);
+
+			nes.run();
+		}
+
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+		SDL_Quit();
 	}
 	else
 	{
