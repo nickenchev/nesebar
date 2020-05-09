@@ -1,6 +1,7 @@
 #include "nes.hpp"
 
-NES::NES(const NESCart &cart) : cart(cart), mapping(cart), cpu(mapping)
+NES::NES(const NESCart &cart, SDL_Renderer *renderer) :
+	cart(cart), mapping(cart), cpu(mapping), ppu(renderer)
 {
 	// copy cart ROM into CPU memory directly
 	for (MemAddress addr = 0; addr < cart.prgRom.size(); ++addr)
@@ -15,4 +16,5 @@ NES::NES(const NESCart &cart) : cart(cart), mapping(cart), cpu(mapping)
 void NES::run()
 {
 	cpu.step();
+	ppu.run();
 }

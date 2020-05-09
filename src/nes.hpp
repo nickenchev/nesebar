@@ -4,8 +4,7 @@
 #include "core6502.hpp"
 #include "mem6502.hpp"
 #include "nesmemory.hpp"
-
-class NESCart;
+#include "nesppu.hpp"
 
 class NES
 {
@@ -14,9 +13,10 @@ class NES
 	const NESCart &cart;
 	const NESMemory mapping;
 	mos6502::Core<Memory, NESMemory, false> cpu;
+	NESPPU ppu;
 
 public:
-	NES(const NESCart &cart);
+	NES(const NESCart &cart, SDL_Renderer *renderer);
 	void run();
 };
 

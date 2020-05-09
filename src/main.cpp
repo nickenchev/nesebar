@@ -25,7 +25,7 @@ int main(int argc, const char *argv[])
 		}
 
 		NESCart cart(path);
-		NES nes(cart);
+		NES nes(cart, renderer);
 
 		bool keepRunning = true;
 		while (keepRunning)
@@ -45,14 +45,6 @@ int main(int argc, const char *argv[])
 					}
 				}
 			}
-
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-			SDL_RenderClear(renderer);
-			
-			SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-			SDL_RenderDrawPoint(renderer, 100, 200);
-
-			SDL_RenderPresent(renderer);
 
 			nes.run();
 		}
