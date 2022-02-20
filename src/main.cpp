@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "nes.hpp"
 #include "nescart.hpp"

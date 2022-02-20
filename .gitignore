@@ -10,3 +10,4 @@ compile_commands.json
 *swp
 nes-test-roms/
 **/a.out
+/.cache/

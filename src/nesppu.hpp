@@ -1,7 +1,7 @@
 #ifndef NESPPU_H
 #define NESPPU_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class NESPPU
 {
