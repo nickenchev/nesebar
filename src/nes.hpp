@@ -10,7 +10,6 @@ class NES
 {
 	using Memory = mos6502::Mem6502<NESMemory>;
 
-	const NESCart &cart;
 	const NESMemory mapping;
 	mos6502::Core<Memory, NESMemory, false> cpu;
 	NESPPU ppu;
